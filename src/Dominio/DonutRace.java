@@ -44,7 +44,7 @@ import utility.TileSetManager;
  * @see Obstaculo
  * @see MotorColision
  */
-public class DonutRace  {
+public class DonutRace implements Juego{
     
    /** Imagen de fondo (el mar)  */
     private final BufferedImage imagen;
@@ -253,6 +253,7 @@ public class DonutRace  {
      *
      * @param g contexto gráfico sobre el que se dibuja
      */
+    @Override
     public void dibujar(Graphics g) {
        g.drawImage( this.imagen, 0 , 0 , 1280, 720 , null);
        pista.dibujar(g);
@@ -277,6 +278,7 @@ public class DonutRace  {
      * colisiones con el {@link MotorColision} y elimina de la lista (y del motor)
      * los obstáculos que quedaron inactivos tras ser golpeados.
      */
+    @Override
     public void actualizar(){
         barcoJugador1.actualizar();
         barcoJugador2.actualizar();
@@ -356,6 +358,7 @@ public class DonutRace  {
     *
     * @param e código de la tecla presionada (constante de {@link KeyEvent})
     */
+    @Override
    public void procesarTeclaPresionada(int e) {
  
         switch (e) {
@@ -380,6 +383,7 @@ public class DonutRace  {
     *
     * @param e código de la tecla liberada (constante de {@link KeyEvent})
     */
+    @Override
    public void procesarTeclaLiberada(int e) {
  
         switch (e) {
@@ -394,5 +398,12 @@ public class DonutRace  {
             default: break;
         } //switch
     } //procesarTeclaLiberada
+
+    @Override
+    public boolean haTerminado() {
+      
+        return false;
+      
+    }
  
 } //fin clase 

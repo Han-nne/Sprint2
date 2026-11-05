@@ -8,124 +8,67 @@ import java.awt.Graphics;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * La clase {@code Torneo} coordina el torneo de juegos y actúa como punto de
- * entrada desde la interfaz hacia la lógica del juego.
- * <p>
- * Recibe las dos tripulaciones que compiten y la lista de configuraciones de
- * los juegos, y delega en la partida activa (por ahora {@link DonutRace}) las
- * operaciones de actualización, dibujo y manejo del teclado. Además, sobre lo
- * que dibuja la partida superpone las banderas y los nombres de ambas
- * tripulaciones mediante {@link DibujarBandera}.
- * </p>
- *
- * @author johan
- * @see DonutRace
- * @see DibujarBandera
- * @see Tripulacion
- * @see ConfiguracionGeneral
- * @see ConfiguracionDonutRace
- */
 public class Torneo {
 
-    /**
-     * Partida de DonutRace que se encuentra activa en el torneo.
-     */
-    private DonutRace donutRace;
+    private Juego juegoActual;
+    private int indiceJuego = 0;
 
-    /**
-     * Configuraciones de los juegos del torneo. La posición 0 corresponde a la
-     * configuración de DonutRace.
-     */
+    private final Tripulacion tripulacion1;
+    private final Tripulacion tripulacion2;
     private final List<ConfiguracionGeneral> configuraciones;
-
-    /**
-     * Dibujador de las banderas y los nombres de las dos tripulaciones. Se
-     * crea una sola vez al construir el torneo y se dibuja encima de la
-     * partida activa en cada ciclo.
-     */
     private final DibujarBandera dibujarBandera;
 
-    /**
-     * Construye un torneo con las tripulaciones y configuraciones indicadas,
-     * prepara el dibujador de banderas e inicia de inmediato la partida de
-     * DonutRace usando la primera configuración de la lista (índice 0).
-     *
-     * @param tripulacion1 tripulación del jugador 1
-     * @param tripulacion2 tripulación del jugador 2
-     * @param configuraciones lista de configuraciones de los juegos; el
-     * elemento en la posición 0 debe ser una {@link ConfiguracionDonutRace}
-     * @throws IOException si ocurre un error al cargar las imágenes de los
-     * objetos del juego
-     * @throws ClassCastException si el primer elemento de la lista no es una
-     * {@link ConfiguracionDonutRace}
-     */
-    public Torneo(Tripulacion tripulacion1, Tripulacion tripulacion2, List<ConfiguracionGeneral> configuraciones) throws IOException {
+    public Torneo(Tripulacion t1, Tripulacion t2, List<ConfiguracionGeneral> configuraciones) throws IOException {
+        this.tripulacion1 = t1;
+        this.tripulacion2 = t2;
         this.configuraciones = configuraciones;
-        this.dibujarBandera = new DibujarBandera( tripulacion1 , tripulacion2);
-        iniciarJuegoDonutRace(tripulacion1, tripulacion2, (ConfiguracionDonutRace) configuraciones.get(0));
+        this.dibujarBandera = new DibujarBandera(t1, t2);
+        iniciarJuego(0);
     }
 
-    /**
-     * Crea una nueva partida de {@link DonutRace} con las tripulaciones y la
-     * configuración indicadas. Si ya existía una partida, es reemplazada por la
-     * nueva.
-     * <p>
-     * No modifica el dibujador de banderas, que conserva las tripulaciones
-     * recibidas al construir el torneo.
-     * </p>
-     *
-     * @param tripulacion1 tripulación del jugador 1
-     * @param tripulacion2 tripulación del jugador 2
-     * @param configuracionDonutRace configuración de la partida (velocidad de
-     * los barcos y cantidad de obstáculos fijos)
-     * @throws java.io.IOException si ocurre un error al cargar las imágenes de
-     * los objetos del juego
-     */
-    public void iniciarJuegoDonutRace(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionDonutRace configuracionDonutRace) throws IOException {
-        this.donutRace = new DonutRace(tripulacion1, tripulacion2, configuracionDonutRace);
+    public void iniciarJuego(int indice) throws IOException {
+        this.indiceJuego = indice;
+        switch (indice) {
+    case 0:
+        juegoActual = new DonutRace(tripulacion1, tripulacion2,
+                (ConfiguracionDonutRace) configuraciones.get(0));
+        break;
+    case 1:
+        juegoActual = new GroggyRing(//tripulacion1, tripulacion2,
+                /*(ConfiguracionGroggyRing) configuraciones.get(1)*/);
+        break;
+//    case 2:
+//        juegoActual = new Juego3(tripulacion1, tripulacion2,
+//                (ConfiguracionJuego3) configuraciones.get(2));
+//        break;
+//    default:
+//        throw new IllegalArgumentException("Juego inexistente: " + indice);
+}
     }
 
-    /**
-     * Actualiza el estado de la partida activa en cada ciclo del juego,
-     * delegando en {@link DonutRace#actualizar()}.
-     */
+    public void siguienteJuego() throws IOException {
+        if (indiceJuego + 1 < configuraciones.size()) {
+            //Aqui pantalla que muestra la puntuacion general del torneo de cada tripulacion
+            iniciarJuego(indiceJuego + 1);
+        }
+        // Aqui poner resultado final del torneo 
+    }
+
     public void actualizarJuego() {
-        donutRace.actualizar();
+        juegoActual.actualizar();
+        if (juegoActual.haTerminado()) {
+            try {
+                siguienteJuego();
+            } catch (IOException ex) {
+            }
+        }
     }
 
-    /**
-     * Dibuja los elementos del torneo: primero la partida activa, delegando en
-     * {@link DonutRace#dibujar(Graphics)}, y después las banderas y nombres de
-     * las tripulaciones con {@link DibujarBandera#dibujar(Graphics)}, de modo
-     * que queden por encima del juego.
-     *
-     * @param g contexto gráfico sobre el que se dibuja
-     */
     public void dibujar(Graphics g) {
-        donutRace.dibujar(g);
+        juegoActual.dibujar(g);
         dibujarBandera.dibujar(g);
     }
 
-    /**
-     * Reenvía a la partida activa una tecla presionada, delegando en
-     * {@link DonutRace#procesarTeclaPresionada(int)}.
-     *
-     * @param e código de la tecla presionada (constante de
-     * {@link java.awt.event.KeyEvent})
-     */
-    public void procesarTeclaPresionada(int e) {
-        donutRace.procesarTeclaPresionada(e);
-    }
-
-    /**
-     * Reenvía a la partida activa una tecla liberada, delegando en
-     * {@link DonutRace#procesarTeclaLiberada(int)}.
-     *
-     * @param e código de la tecla liberada (constante de
-     * {@link java.awt.event.KeyEvent})
-     */
-    public void procesarTeclaLiberada(int e) {
-        donutRace.procesarTeclaLiberada(e);
-    }
-} //fin clase
+    public void procesarTeclaPresionada(int e) { juegoActual.procesarTeclaPresionada(e); }
+    public void procesarTeclaLiberada(int e)   { juegoActual.procesarTeclaLiberada(e); }
+}

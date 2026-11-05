@@ -9,8 +9,6 @@ import Dominio.Tripulacion;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 /**
@@ -39,7 +37,7 @@ import javax.swing.JOptionPane;
  */
 public class JFVentanaPrincipal extends javax.swing.JFrame {
     
-       /** Registro de eventos y errores de esta ventana. */ 
+    /** Registro de eventos y errores de esta ventana. */ 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JFVentanaPrincipal.class.getName());
     
       /**
@@ -215,8 +213,6 @@ public class JFVentanaPrincipal extends javax.swing.JFrame {
         this.configuraciones = configuracionAdmin;
         JOptionPane.showMessageDialog(this, "¡Configuración de parámetros guardada con éxito!");
     }
-           
-    
         
     /**
      * Maneja la opción de menú "Iniciar Torneo".
@@ -242,7 +238,7 @@ public class JFVentanaPrincipal extends javax.swing.JFrame {
             return;
         }
 
-        JIFSeleccionTorneo seleccion = new JIFSeleccionTorneo(this, this.tripulaciones);
+        JIFSeleccionarTripulacion seleccion = new JIFSeleccionarTripulacion(this, this.tripulaciones);
         dtpContenedorPrincipal.add(seleccion);
         seleccion.setVisible(true);
     }//GEN-LAST:event_mniIniciarTorneoActionPerformed
@@ -257,12 +253,12 @@ public class JFVentanaPrincipal extends javax.swing.JFrame {
     
     /**
      * Método que recibe las tripulaciones validadas e inicia JIFVentanaTorneo con las configuraciones guardadas.
-     * @param t1
-     * @param t2
+     * @param tripulacion1
+     * @param tripulacion2
      * @throws java.io.IOException
      */
-    public void iniciarTorneoConTripulaciones(Tripulacion t1, Tripulacion t2) throws IOException {
-        JIFVentanaTorneo ventanaTorneo = new JIFVentanaTorneo(t1, t2, this.configuraciones);
+    public void iniciarTorneoConTripulaciones(Tripulacion tripulacion1, Tripulacion tripulacion2) throws IOException {
+        JIFVentanaTorneo ventanaTorneo = new JIFVentanaTorneo(tripulacion1, tripulacion2, this.configuraciones);
         dtpContenedorPrincipal.add(ventanaTorneo);
         ventanaTorneo.setVisible(true);
         this.jmbPrincipal.setVisible(false);

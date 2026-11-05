@@ -16,7 +16,7 @@ import javax.swing.DefaultComboBoxModel;
  *
  * @author Keithy Carrillo
  */
-public class JIFSeleccionTorneo extends javax.swing.JInternalFrame {
+public class JIFSeleccionarTripulacion extends javax.swing.JInternalFrame {
 
     private final JFVentanaPrincipal ventanaPrincipal;
     private final List<Tripulacion> listaTripulaciones;
@@ -27,7 +27,7 @@ public class JIFSeleccionTorneo extends javax.swing.JInternalFrame {
      * @param ventanaPrincipal
      * @param listaTripulaciones
      */
-    public JIFSeleccionTorneo(JFVentanaPrincipal ventanaPrincipal, List<Tripulacion> listaTripulaciones) {
+    public JIFSeleccionarTripulacion(JFVentanaPrincipal ventanaPrincipal, List<Tripulacion> listaTripulaciones) {
         this.ventanaPrincipal = ventanaPrincipal;
         this.listaTripulaciones = listaTripulaciones;
         
@@ -121,7 +121,7 @@ public class JIFSeleccionTorneo extends javax.swing.JInternalFrame {
             try {
                 this.ventanaPrincipal.iniciarTorneoConTripulaciones( tripulacion1 , tripulacion2 );
             } catch (IOException ex) {
-                Logger.getLogger(JIFSeleccionTorneo.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(JIFSeleccionarTripulacion.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
  

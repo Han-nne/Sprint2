@@ -10,7 +10,7 @@ import java.awt.Graphics;
  *
  * @author johan
  */
-public class GroggyRing {
+public class GroggyRing implements Juego{
     
    private  Casilla zonaJuego[][];
 
@@ -38,6 +38,37 @@ public class GroggyRing {
             } // for j
         } // for i
     } // crearZonaJuego
+
+    @Override
+    public void actualizar() {
+      
+    }
+
+    @Override
+    public void dibujar(Graphics g) {
+        for (int i = 0; i < this.zonaJuego.length; i++) {
+            for (int j = 0; j < this.zonaJuego.length; j++) {
+                this.zonaJuego[i][j].dibujar(g);
+            } // for j
+        } // for i
+    }
+
+    @Override
+    public void procesarTeclaPresionada(int e) {
+    
+    }
+
+    @Override
+    public void procesarTeclaLiberada(int e) {
+      
+    }
+
+    @Override
+    public boolean haTerminado() {
+        
+       return false;
+        
+    }
    
       
 }
