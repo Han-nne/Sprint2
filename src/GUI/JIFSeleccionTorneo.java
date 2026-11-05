@@ -5,14 +5,12 @@
 package GUI;
 
 import Dominio.Tripulacion;
-import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
+
 
 /**
  *
@@ -20,8 +18,9 @@ import javax.swing.JOptionPane;
  */
 public class JIFSeleccionTorneo extends javax.swing.JInternalFrame {
 
-    private JFVentanaPrincipal ventanaPrincipal;
-    private List<Tripulacion> listaTripulaciones;
+    private final JFVentanaPrincipal ventanaPrincipal;
+    private final List<Tripulacion> listaTripulaciones;
+    private boolean actualizando = false;
     
     /**
      * Creates new form JIFSeleccionTorneo
@@ -111,26 +110,16 @@ public class JIFSeleccionTorneo extends javax.swing.JInternalFrame {
 
     private void jbtnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnIniciarActionPerformed
         
-         int index1 = jcbPrimeraSeleccion.getSelectedIndex() - 1;
+        int index1 = jcbPrimeraSeleccion.getSelectedIndex() - 1;
         int index2 = jcbSegundaSeleccion.getSelectedIndex() - 1;
 
-        if (index1 < 0 || index2 < 0) {
-            JOptionPane.showMessageDialog(rootPane, "Debe seleccionar ambas tripulaciones.");
-            return;
-        }
 
-        if (index1 == index2) {
-            JOptionPane.showMessageDialog(rootPane, "Error: No puede seleccionar la misma tripulación para ambos bandos.");
-            jbtnIniciar.setEnabled(false);
-            return;
-        }
-
-        Tripulacion t1 = this.listaTripulaciones.get(index1);
-        Tripulacion t2 = this.listaTripulaciones.get(index2);
+        Tripulacion tripulacion1 = this.listaTripulaciones.get(index1);
+        Tripulacion tripulacion2 = this.listaTripulaciones.get(index2);
 
         if (this.ventanaPrincipal != null) {
             try {
-                this.ventanaPrincipal.iniciarTorneoConTripulaciones(t1, t2);
+                this.ventanaPrincipal.iniciarTorneoConTripulaciones(tripulacion1, tripulacion2);
             } catch (IOException ex) {
                 Logger.getLogger(JIFSeleccionTorneo.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -156,42 +145,53 @@ public class JIFSeleccionTorneo extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jlSegundaTripulacion;
     // End of variables declaration//GEN-END:variables
 
-    private void cargarComboBoxes() {
-        DefaultComboBoxModel<String> modelo1 = new DefaultComboBoxModel<>();
-        DefaultComboBoxModel<String> modelo2 = new DefaultComboBoxModel<>();
+   private void cargarComboBoxes() {
+    actualizando = true;
+    jcbPrimeraSeleccion.setModel(crearModelo(null));
+    jcbSegundaSeleccion.setModel(crearModelo(null));
+    actualizando = false;
+}
 
-        modelo1.addElement("Seleccione una tripulación...");
-        modelo2.addElement("Seleccione una tripulación...");
+   
+   private DefaultComboBoxModel<String> crearModelo(String excluir) {
+    DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<>();
+    modelo.addElement("Seleccione una tripulación...");
 
-        if (this.listaTripulaciones != null) {
-            for (Tripulacion t : this.listaTripulaciones) {
-                modelo1.addElement(t.getNombreTripulacion());
-                modelo2.addElement(t.getNombreTripulacion());
+    if (this.listaTripulaciones != null) {
+        for (Tripulacion t : this.listaTripulaciones) {
+            String nombre = t.getNombreTripulacion();
+            if (!nombre.equals(excluir)) {
+                modelo.addElement(nombre);
             }
         }
+    }
+    return modelo;
+}
 
-        jcbPrimeraSeleccion.setModel(modelo1);
-        jcbSegundaSeleccion.setModel(modelo2);
+   private void validarSeleccion() {
+    if (this.listaTripulaciones == null || actualizando) {
+        return;
     }
 
-    private void validarSeleccion() {
-        if (this.listaTripulaciones == null) {
-            return;
-        }
+    actualizando = true;
 
-        int index1 = jcbPrimeraSeleccion.getSelectedIndex();
-        int index2 = jcbSegundaSeleccion.getSelectedIndex();
+    String sel1 = jcbPrimeraSeleccion.getSelectedIndex() > 0
+            ? (String) jcbPrimeraSeleccion.getSelectedItem() : null;
+    String sel2 = jcbSegundaSeleccion.getSelectedIndex() > 0
+            ? (String) jcbSegundaSeleccion.getSelectedItem() : null;
 
-        if (index1 <= 0 || index2 <= 0) {
-            jbtnIniciar.setEnabled(false);
-            return;
-        }
+    jcbPrimeraSeleccion.setModel(crearModelo(sel2));
+    jcbSegundaSeleccion.setModel(crearModelo(sel1));
 
-        if (index1 == index2) {
-            jbtnIniciar.setEnabled(false);
-            return;
-        }
-
-        jbtnIniciar.setEnabled(true);
+    if (sel1 != null) {
+        jcbPrimeraSeleccion.setSelectedItem(sel1);
     }
+    if (sel2 != null) {
+        jcbSegundaSeleccion.setSelectedItem(sel2);
     }
+
+    actualizando = false;
+
+    jbtnIniciar.setEnabled(sel1 != null && sel2 != null);
+  }
+}
