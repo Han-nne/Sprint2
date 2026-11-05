@@ -4,6 +4,8 @@
  */
 package Dominio;
 
+import java.awt.image.BufferedImage;
+
 /**
  * Clase hija que controla los parametros del minijuego Groggy Ring,
  *   heredando de la clase padre ConfiguracionGeneral.
@@ -21,7 +23,7 @@ public class ConfiguracionGroggyRing extends ConfiguracionGeneral {
     */
     @Override
     public void nivelFacil() {
-        this.puntuacionVictoria = 5;
+        this.puntuacionVictoria = 1;
     }
     
   /**
@@ -31,7 +33,7 @@ public class ConfiguracionGroggyRing extends ConfiguracionGeneral {
     */
     @Override
     public void nivelNormal() {
-        this.puntuacionVictoria = 10;
+        this.puntuacionVictoria = 2;
     }
     
     /**
@@ -41,7 +43,7 @@ public class ConfiguracionGroggyRing extends ConfiguracionGeneral {
     */
     @Override
     public void nivelDificil() {
-        this.puntuacionVictoria = 15;
+        this.puntuacionVictoria = 3;
     }
     
     /**
@@ -52,5 +54,12 @@ public class ConfiguracionGroggyRing extends ConfiguracionGeneral {
     public int getPuntuacionVictoria() {
         return puntuacionVictoria;
     }
-    
+   
+    /**
+     * 
+     * @param puntuacionVictoria 
+     */
+    public void setPuntuacionVictoria(int puntuacionVictoria) {
+        this.puntuacionVictoria = puntuacionVictoria;
+    }
 } // fin de la clase

@@ -19,8 +19,10 @@ import static java.awt.event.KeyEvent.VK_RIGHT;
 import static java.awt.event.KeyEvent.VK_S;
 import static java.awt.event.KeyEvent.VK_UP;
 import static java.awt.event.KeyEvent.VK_W;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import utility.TileSetManager;
 
 /**
  * La clase {@code DonutRace} es la clase principal de la lógica del juego: crea
@@ -43,6 +45,9 @@ import java.util.ArrayList;
  * @see MotorColision
  */
 public class DonutRace  {
+    
+   /** Imagen de fondo (el mar)  */
+    private final BufferedImage imagen;
  
     /** Barco del jugador 1 (azul), controlado con W, A, S, D. */
     private Barco barcoJugador1;
@@ -88,7 +93,7 @@ public class DonutRace  {
     public DonutRace( Tripulacion tripulacion1 , Tripulacion tripulacion2 , ConfiguracionDonutRace configuracionDonutRace ) throws IOException {
          
         this.configuracionDonut = configuracionDonutRace;
-        
+        this.imagen = TileSetManager.cargarImagenMar();
         
          
         this.pista = new Pista(635, 357);
@@ -118,13 +123,13 @@ public class DonutRace  {
      */
    private void iniciarJuego() throws IOException{
         switch (configuracionDonut.getObstaculosFijos()) {
-            case 7:
+            case FACIL:
                 dificultadObstaculosFacil();
                 break;
-            case 15:
+            case NORMAL:
                 dificultadObstaculosNormal();
                 break;
-            case 20:
+            case DIFICIL:
                 dificultadObstaculosDificil();
                 break;
             default:
@@ -249,6 +254,7 @@ public class DonutRace  {
      * @param g contexto gráfico sobre el que se dibuja
      */
     public void dibujar(Graphics g) {
+       g.drawImage( this.imagen, 0 , 0 , 1280, 720 , null);
        pista.dibujar(g);
        isla.dibujar(g);
        meta.dibujar(g);

@@ -26,24 +26,31 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="jlConfiguracionParametros" min="-2" max="-2" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="jlDificultad" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jcbDificultad" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jbtnGuardarConfiguracion" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jlConfiguracionParametros" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jlModalidadJuego" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jlDificultad" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jcbDificultad" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="296" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                                      <Component id="jbtnGuardarConfiguracion" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jlModalidadJuego" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="btnTecladoCompartido" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="btnTurnos" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
+                      <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace pref="28" max="32767" attributes="0"/>
           </Group>
@@ -55,18 +62,18 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jlConfiguracionParametros" min="-2" pref="22" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="224" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane1" min="-2" pref="266" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jlDificultad" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jcbDificultad" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlModalidadJuego" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnTurnos" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnTecladoCompartido" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnTurnos" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="68" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jbtnGuardarConfiguracion" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
+              <EmptySpace pref="25" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -153,7 +160,7 @@
               <Font name="Segoe UI" size="12" style="1"/>
             </Property>
             <Property name="rows" type="int" value="5"/>
-            <Property name="text" type="java.lang.String" value="Dificultad de cada nivel&#xa;&#xf076; Nivel F&#xe1;cil&#xa;Minijuego Donut Race&#xa;&#x2022; Obst&#xe1;culos Fijos y por lanzar: 7&#xa;&#x2022; Velocidad de los barcos: 1.5&#xa;&#xa;Minijuego Groggy Ring&#xa;&#x2022; Puntuaci&#xf3;n de victoria: 5&#xa;&#xa;Minijuego Combat&#xa;&#x2022; Valor inicial de la barra de poder: 50&#xa;&#x2022; Modalidad de juego opcional (Teclado Compartido/Turnos)&#xa;&#xa;&#xf076; Nivel Medio&#xa;Minijuego Donut Race&#xa;&#x2022; Obst&#xe1;culos Fijos y por lanzar: 15&#xa;&#x2022; Velocidad de los barcos: 2.0&#xa;&#xa;Minijuego Groggy Ring&#xa;&#x2022; Puntuaci&#xf3;n de victoria: 10&#xa;&#xa;Minijuego Combat&#xa;&#x2022; Valor inicial de la barra de poder: 75&#xa;&#x2022; Modalidad de juego opcional (Teclado Compartido/Turnos)&#xa;&#xa;&#xf076; Nivel Dif&#xed;cil&#xa;Minijuego Donut Race&#xa;&#x2022; Obst&#xe1;culos Fijos y por lanzar: 20&#xa;&#x2022; Velocidad de los barcos: 3.0&#xa;&#xa;Minijuego Groggy Ring&#xa;&#x2022; Puntuaci&#xf3;n de victoria: 15&#xa;&#xa;Minijuego Combat&#xa;&#x2022; Valor inicial de la barra de poder: 100&#xa;&#x2022; Modalidad de juego opcional (Teclado Compartido/Turnos)&#xa;"/>
+            <Property name="text" type="java.lang.String" value="Dificultad de cada nivel&#xa;&#xf076; Nivel F&#xe1;cil&#xa;Minijuego Donut Race&#xa;&#x2022; Obst&#xe1;culos Fijos y por lanzar: 7&#xa;&#x2022; Velocidad de los barcos: 1.5&#xa;&#xa;Minijuego Groggy Ring&#xa;&#x2022; Puntuaci&#xf3;n de victoria: 1&#xa;&#xa;Minijuego Combat&#xa;&#x2022; Valor inicial de la barra de poder: 50&#xa;&#x2022; Modalidad de juego opcional (Teclado Compartido/Turnos)&#xa;&#xa;&#xf076; Nivel Medio&#xa;Minijuego Donut Race&#xa;&#x2022; Obst&#xe1;culos Fijos y por lanzar: 15&#xa;&#x2022; Velocidad de los barcos: 2.0&#xa;&#xa;Minijuego Groggy Ring&#xa;&#x2022; Puntuaci&#xf3;n de victoria: 2&#xa;&#xa;Minijuego Combat&#xa;&#x2022; Valor inicial de la barra de poder: 75&#xa;&#x2022; Modalidad de juego opcional (Teclado Compartido/Turnos)&#xa;&#xa;&#xf076; Nivel Dif&#xed;cil&#xa;Minijuego Donut Race&#xa;&#x2022; Obst&#xe1;culos Fijos y por lanzar: 20&#xa;&#x2022; Velocidad de los barcos: 3.0&#xa;&#xa;Minijuego Groggy Ring&#xa;&#x2022; Puntuaci&#xf3;n de victoria: 3&#xa;&#xa;Minijuego Combat&#xa;&#x2022; Valor inicial de la barra de poder: 100&#xa;&#x2022; Modalidad de juego opcional (Teclado Compartido/Turnos)&#xa;"/>
           </Properties>
         </Component>
       </SubComponents>

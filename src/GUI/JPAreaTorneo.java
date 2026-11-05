@@ -4,7 +4,6 @@
  */
 package GUI;
 
-import Dominio.DibujarBandera;
 import Dominio.ConfiguracionGeneral;
 import Dominio.Torneo;
 import Dominio.Tripulacion;
@@ -12,12 +11,10 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import utility.TileSetManager;
 
 /**
  * Panel gráfico donde se desarrolla el torneo. Dibuja el fondo marino y los
@@ -42,17 +39,9 @@ public class JPAreaTorneo extends JPanel implements KeyListener {
 
     /** Lógica del torneo: administra los minijuegos, sus estados y el dibujo. */
     private Torneo torneo ;
-    
-      /** Imagen de fondo (el mar), escalada al tamaño del panel al pintar. */
-    private final BufferedImage imagen;
    
      /** Temporizador que actualiza el torneo y repinta el panel cada 16 ms. */
     private final Timer timer;
-    
-    /** */
-    private List<ConfiguracionGeneral> configuraciones;
-    private Tripulacion tripulacion1;
-    private Tripulacion tripulacion2;
    
      /**
      * Construye el panel del torneo: define su tamaño y foco, registra el
@@ -71,15 +60,9 @@ public class JPAreaTorneo extends JPanel implements KeyListener {
      *                     lectura se capturan y se muestran en un mensaje
      */
     public JPAreaTorneo( Tripulacion tripulacion1 , Tripulacion tripulacion2 , List <ConfiguracionGeneral> configuraciones) throws IOException {
-        
-        this.tripulacion1 = tripulacion1;
-        this.tripulacion2 = tripulacion2;
-        this.configuraciones = configuraciones;
        
         this.setPreferredSize(new Dimension(1280, 720));
         this.addKeyListener(this);
-        
-        this.imagen = TileSetManager.cargarImagenMar();
         
         this.torneo= new Torneo(tripulacion1, tripulacion2 , configuraciones);
         timer = new Timer(16, e -> {
@@ -104,8 +87,6 @@ public class JPAreaTorneo extends JPanel implements KeyListener {
      */
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawImage( this.imagen , 0 , 0 , this.getWidth() ,  this.getHeight(), null);
         this.torneo.dibujar(g);
         
     } // paintComponent

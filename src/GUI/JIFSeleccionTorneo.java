@@ -110,16 +110,16 @@ public class JIFSeleccionTorneo extends javax.swing.JInternalFrame {
 
     private void jbtnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnIniciarActionPerformed
         
-        int index1 = jcbPrimeraSeleccion.getSelectedIndex() - 1;
-        int index2 = jcbSegundaSeleccion.getSelectedIndex() - 1;
+        String nombre1 = (String) jcbPrimeraSeleccion.getSelectedItem();
+        String nombre2 = (String) jcbSegundaSeleccion.getSelectedItem();
+        
+        Tripulacion tripulacion1 = buscarPorNombre(nombre1);
+        Tripulacion tripulacion2 = buscarPorNombre(nombre2);
 
-
-        Tripulacion tripulacion1 = this.listaTripulaciones.get(index1);
-        Tripulacion tripulacion2 = this.listaTripulaciones.get(index2);
 
         if (this.ventanaPrincipal != null) {
             try {
-                this.ventanaPrincipal.iniciarTorneoConTripulaciones(tripulacion1, tripulacion2);
+                this.ventanaPrincipal.iniciarTorneoConTripulaciones( tripulacion1 , tripulacion2 );
             } catch (IOException ex) {
                 Logger.getLogger(JIFSeleccionTorneo.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -151,6 +151,19 @@ public class JIFSeleccionTorneo extends javax.swing.JInternalFrame {
     jcbSegundaSeleccion.setModel(crearModelo(null));
     actualizando = false;
 }
+   
+   private Tripulacion buscarPorNombre( String nombre){
+       if (nombre == null) {
+           return null;
+       }
+       
+       for (Tripulacion tripulacion : listaTripulaciones) {
+           if (nombre.equals(tripulacion.getNombreTripulacion())) {
+               return tripulacion;
+           }
+       }
+       return null;
+   }
 
    
    private DefaultComboBoxModel<String> crearModelo(String excluir) {

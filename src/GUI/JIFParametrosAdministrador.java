@@ -84,7 +84,7 @@ public class JIFParametrosAdministrador extends javax.swing.JInternalFrame {
         jTextArea1.setColumns(20);
         jTextArea1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jTextArea1.setRows(5);
-        jTextArea1.setText("Dificultad de cada nivel\n Nivel Fácil\nMinijuego Donut Race\n• Obstáculos Fijos y por lanzar: 7\n• Velocidad de los barcos: 1.5\n\nMinijuego Groggy Ring\n• Puntuación de victoria: 5\n\nMinijuego Combat\n• Valor inicial de la barra de poder: 50\n• Modalidad de juego opcional (Teclado Compartido/Turnos)\n\n Nivel Medio\nMinijuego Donut Race\n• Obstáculos Fijos y por lanzar: 15\n• Velocidad de los barcos: 2.0\n\nMinijuego Groggy Ring\n• Puntuación de victoria: 10\n\nMinijuego Combat\n• Valor inicial de la barra de poder: 75\n• Modalidad de juego opcional (Teclado Compartido/Turnos)\n\n Nivel Difícil\nMinijuego Donut Race\n• Obstáculos Fijos y por lanzar: 20\n• Velocidad de los barcos: 3.0\n\nMinijuego Groggy Ring\n• Puntuación de victoria: 15\n\nMinijuego Combat\n• Valor inicial de la barra de poder: 100\n• Modalidad de juego opcional (Teclado Compartido/Turnos)\n");
+        jTextArea1.setText("Dificultad de cada nivel\n Nivel Fácil\nMinijuego Donut Race\n• Obstáculos Fijos y por lanzar: 7\n• Velocidad de los barcos: 1.5\n\nMinijuego Groggy Ring\n• Puntuación de victoria: 1\n\nMinijuego Combat\n• Valor inicial de la barra de poder: 50\n• Modalidad de juego opcional (Teclado Compartido/Turnos)\n\n Nivel Medio\nMinijuego Donut Race\n• Obstáculos Fijos y por lanzar: 15\n• Velocidad de los barcos: 2.0\n\nMinijuego Groggy Ring\n• Puntuación de victoria: 2\n\nMinijuego Combat\n• Valor inicial de la barra de poder: 75\n• Modalidad de juego opcional (Teclado Compartido/Turnos)\n\n Nivel Difícil\nMinijuego Donut Race\n• Obstáculos Fijos y por lanzar: 20\n• Velocidad de los barcos: 3.0\n\nMinijuego Groggy Ring\n• Puntuación de victoria: 3\n\nMinijuego Combat\n• Valor inicial de la barra de poder: 100\n• Modalidad de juego opcional (Teclado Compartido/Turnos)\n");
         jScrollPane1.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -94,21 +94,25 @@ public class JIFParametrosAdministrador extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jlConfiguracionParametros)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jlDificultad)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jcbDificultad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(43, 43, 43)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jbtnGuardarConfiguracion)
+                            .addComponent(jlConfiguracionParametros)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jlModalidadJuego)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jlDificultad)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jcbDificultad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(296, 296, 296))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jbtnGuardarConfiguracion)
+                                        .addComponent(jlModalidadJuego)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnTecladoCompartido)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnTurnos))))
-                    .addComponent(jScrollPane1))
+                                .addComponent(btnTurnos)))
+                        .addGap(7, 7, 7)))
                 .addContainerGap(28, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -117,17 +121,17 @@ public class JIFParametrosAdministrador extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jlConfiguracionParametros, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlDificultad)
                     .addComponent(jcbDificultad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlModalidadJuego)
-                    .addComponent(btnTurnos)
-                    .addComponent(btnTecladoCompartido))
-                .addGap(68, 68, 68)
+                    .addComponent(btnTecladoCompartido)
+                    .addComponent(btnTurnos))
+                .addGap(18, 18, 18)
                 .addComponent(jbtnGuardarConfiguracion)
-                .addGap(62, 62, 62))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         pack();

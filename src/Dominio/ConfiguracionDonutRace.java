@@ -12,7 +12,7 @@ package Dominio;
  */
 public class ConfiguracionDonutRace extends ConfiguracionGeneral{
     
-    private int obstaculosFijos;
+    private Dificultad obstaculosFijos;
     private int obstaculosLanzados;
     private double velocidadBarcos;
 /**
@@ -21,7 +21,7 @@ public class ConfiguracionDonutRace extends ConfiguracionGeneral{
  */
     @Override
     public void nivelFacil() {
-        this.obstaculosFijos = 7;
+        this.obstaculosFijos = Dificultad.FACIL;
         this.obstaculosLanzados = 5;
         this.velocidadBarcos = 1.5;
     }
@@ -32,7 +32,7 @@ public class ConfiguracionDonutRace extends ConfiguracionGeneral{
  */  
     @Override
     public void nivelNormal() {
-        this.obstaculosFijos = 15;
+        this.obstaculosFijos = Dificultad.NORMAL;
         this.obstaculosLanzados = 7;
         this.velocidadBarcos = 2.0;
     }
@@ -43,17 +43,17 @@ public class ConfiguracionDonutRace extends ConfiguracionGeneral{
  */
     @Override
     public void nivelDificil() {
-        this.obstaculosFijos = 20;
+        this.obstaculosFijos = Dificultad.DIFICIL;
         this.obstaculosLanzados = 10;
         this.velocidadBarcos = 3.0;
     }
 
     /**
-     * Obtiene la cantidad de obstáculos fijos configurados.
+     * Obtiene la dificultad de obstáculos fijos configurados.
      * 
-     * @return Retorna un número entero con los obstáculos fijos.
+     * @return un enum con la dificultad
      */
-    public int getObstaculosFijos() {
+    public Dificultad getObstaculosFijos() {
         return obstaculosFijos;
     }
 
