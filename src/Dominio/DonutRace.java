@@ -66,6 +66,8 @@ public class DonutRace  {
     private MotorColision motorColision;
     
     private ConfiguracionDonutRace configuracionDonut;
+    
+    private final DonutRaceHUD donutRaceHUD;
  
     /** Obstáculos activos presentes en el escenario. */
     private ArrayList <Obstaculo> obstaculos;
@@ -101,6 +103,7 @@ public class DonutRace  {
  
         this.obstaculos = new ArrayList<>();
         this.obstaculosLanzados = new ArrayList<>();
+        this.donutRaceHUD = new DonutRaceHUD(barcoJugador1, barcoJugador2);
         this.motorColision = new MotorColision();
  
         iniciarJuego();
@@ -259,6 +262,8 @@ public class DonutRace  {
         for (ObstaculoLanzado lanzado: obstaculosLanzados) {
             lanzado.dibujar(g);
         }
+        
+        this.donutRaceHUD.dibujar(g);
     } // dibujar
  
     /**

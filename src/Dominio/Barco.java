@@ -45,6 +45,9 @@ public class Barco extends ObjetoMovil {
    /**Cantidad de obstáculos lanzados que puede lanzar un barco.*/
    private int municionObstaculosLanzados = 0;
    
+   /**Cantidad total inicial de obstáculos que puede lanzar el barco. A su vez, es un elemento esencial para la HUD de DonutRace*/
+   private int municionTotalObstaculosLanzados = 0;
+   
    /** Dirección horizontal actual: -1 (izquierda), 0 (quieto) o 1 (derecha). */
    private double dirX = 0;
  
@@ -100,6 +103,7 @@ public class Barco extends ObjetoMovil {
         this.velocidadEmbarcacion = velocidadEmbarcacion;
         this.velocidadOriginal = velocidadEmbarcacion;
         this.municionObstaculosLanzados = municionObstaculosLanzados;
+        this.municionTotalObstaculosLanzados = municionObstaculosLanzados;
         this.radio = 15;
  
         this.imagenBarcos = new ArrayList<>();
@@ -142,6 +146,14 @@ public class Barco extends ObjetoMovil {
      */
     public int getMunicionObstaculosLanzados() {
         return municionObstaculosLanzados;
+    }
+
+    /**
+     * Obtiene la cantidad total inicial de obstáculos lanzados puede lanzar un barco.
+     * @return Retorna la {@link municionTotalObstaculosLanzados} asociada al barco.
+     */
+    public int getMunicionTotalObstaculosLanzados() {
+        return municionTotalObstaculosLanzados;
     }
 
     /**
@@ -188,10 +200,18 @@ public class Barco extends ObjetoMovil {
  
     /**
      * Método que retorna la velocidad original de los barcos para utilizarse en la clase DonutRace.
-     * @return Retorna {@link velocidadOriginal} donde sea necesitado.
+     * @return Retorna {@link velocidadOriginal} correspondiente al barco.
      */
     public double getVelocidadOriginal(){
         return velocidadOriginal;
+    }
+
+    /**
+     * Método que retorna la velocidad actual de los barcos para utilizarse en la clase DonutRace.
+     * @return Retorna {@link velocidadEmbarcacion} correspondiente al barco.
+     */
+    public double getVelocidadEmbarcacion() {
+        return velocidadEmbarcacion;
     }
     
     /**
@@ -208,7 +228,7 @@ public class Barco extends ObjetoMovil {
     @Override
     public void accionChoque(Colisionable otro) {
  
-        if(otro instanceof Obstaculo){
+        if(otro instanceof Obstaculo || otro instanceof ObstaculoLanzado){
             aplicarReduccionVelocidad();
         }else if ( otro instanceof Meta) {
  
