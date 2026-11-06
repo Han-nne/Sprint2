@@ -34,15 +34,15 @@ public class Torneo {
                 (ConfiguracionDonutRace) configuraciones.get(0));
         break;
     case 1:
-        juegoActual = new GroggyRing(//tripulacion1, tripulacion2,
-                /*(ConfiguracionGroggyRing) configuraciones.get(1)*/);
+        juegoActual = new GroggyRing(tripulacion1, tripulacion2,
+                (ConfiguracionGroggyRing) configuraciones.get(1));
         break;
 //    case 2:
 //        juegoActual = new Juego3(tripulacion1, tripulacion2,
 //                (ConfiguracionJuego3) configuraciones.get(2));
 //        break;
-//    default:
-//        throw new IllegalArgumentException("Juego inexistente: " + indice);
+    default:
+        throw new IllegalArgumentException("Juego inexistente: " + indice);
 }
     }
 

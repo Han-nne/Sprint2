@@ -74,7 +74,7 @@ public class DonutRaceHUD {
         double velocidadBarco1 = Math.round(barco1.getVelocidadEmbarcacion() * 10.0) / 10.0;
         String velocidadBarco1String = String.valueOf(velocidadBarco1).replace('.', ',');
         
-        String barco1HUD = "Mun: " + barco1.getMunicionObstaculosLanzados()+ "/" + barco1.getMunicionTotalObstaculosLanzados()
+        String barco1HUD = "Mun: " + barco1.getMunicionObstaculoLanzados()+ "/" + barco1.getMunicionTotalObstaculosLanzados()
                 + "  |  Vel: " + velocidadBarco1String + "x";
         g.setColor(new Color(0,0,0,120));
         g.fillRoundRect(12, posYHUD, 175, 22, 8, 8);
@@ -84,7 +84,7 @@ public class DonutRaceHUD {
         double velocidadBarco2 = Math.round(barco2.getVelocidadEmbarcacion() * 10.0) / 10.0;
         String velocidadBarco2String = String.valueOf(velocidadBarco2).replace('.', ',');
         
-        String barco2HUD = "Mun: " + barco2.getMunicionObstaculosLanzados()+ "/" + barco2.getMunicionTotalObstaculosLanzados()
+        String barco2HUD = "Mun: " + barco2.getMunicionObstaculoLanzados()+ "/" + barco2.getMunicionTotalObstaculosLanzados()
                 + "  |  Vel: " + velocidadBarco2String + "x";
         int posXBarco2HUD = 1280 - 12 - 175;
         g.setColor(new Color(0,0,0,120));

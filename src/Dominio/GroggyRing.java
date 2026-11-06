@@ -13,8 +13,13 @@ import java.awt.Graphics;
 public class GroggyRing implements Juego{
     
    private  Casilla zonaJuego[][];
+   private JugadorBola bolaJugador1;
+   private JugadorBola bolaJugador2;
 
-    public GroggyRing() {
+    public GroggyRing( Tripulacion tripulacion1 , Tripulacion tripulacion2  , ConfiguracionGroggyRing configuracion) {
+          this.bolaJugador1= new JugadorBola();
+          this.bolaJugador2= new JugadorBola();
+           
            this.zonaJuego=new Casilla[5][10];
            crearZonaJuego(0, 0);
     }
@@ -51,6 +56,7 @@ public class GroggyRing implements Juego{
                 this.zonaJuego[i][j].dibujar(g);
             } // for j
         } // for i
+        
     }
 
     @Override
