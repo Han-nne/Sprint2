@@ -7,6 +7,8 @@ package Dominio;
 
 import static Dominio.ColorBarco.AZUL;
 import static Dominio.ColorBarco.ROJO;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_A;
@@ -54,6 +56,18 @@ public class DonutRace implements Juego{
  
     /** Barco del jugador 2 (rojo), controlado con las flechas. */
     private Barco barcoJugador2;
+    
+/**Bandera que determina si el juego concluyó o sigue en curso.*/
+    private boolean juegoTerminado = false;
+    
+    /**Bandera booleana que determina si se debe avanzar en el torneo.
+     * <li> false = DonutRace sigue dibujandose.
+     * <li> true = DonutRace deja de dibujarse y se avanza en el torneo.
+     */
+    private boolean DonutRaceListoParaAvanzar = false;
+    
+    /**Mensaje a visualizar cuando se detemine el ganador.*/
+    private String mensajeGanador = "";
     
     /** Pista de la carrera. */
     private Pista pista;
@@ -271,6 +285,23 @@ public class DonutRace implements Juego{
         }
         
         this.donutRaceHUD.dibujar(g);
+        if(juegoTerminado){
+            
+            g.setColor(new Color(0,0,0,180));
+            g.fillRoundRect(340, 260, 600, 150, 16, 16);
+            
+            g.setColor(Color.YELLOW);
+            g.setFont(new Font("Segoe UI", Font.BOLD, 26));
+            g.drawString("!!CARRERA FINALIZADA!!", 480, 310);
+            
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Segoe UI", Font.BOLD, 24));
+            g.drawString(mensajeGanador, 400, 360);
+            
+            g.setColor(Color.LIGHT_GRAY);
+            g.setFont(new Font("Segoe UI", Font.ITALIC, 14));
+            g.drawString("Presione una tecla para continuar con el torneo...", 450, 385);
+        }
     } // dibujar
  
     /**
@@ -280,6 +311,7 @@ public class DonutRace implements Juego{
      */
     @Override
     public void actualizar(){
+        if(juegoTerminado) return;
         barcoJugador1.actualizar();
         barcoJugador2.actualizar();
         
@@ -361,6 +393,10 @@ public class DonutRace implements Juego{
     @Override
    public void procesarTeclaPresionada(int e) {
  
+       if(juegoTerminado){
+           DonutRaceListoParaAvanzar = true;
+           return;
+       }
         switch (e) {
             case VK_W: barcoJugador1.moverAdelante(); break;
             case VK_S: barcoJugador1.moverAtras(); break;
@@ -402,10 +438,45 @@ public class DonutRace implements Juego{
     @Override
     public boolean haTerminado() {
       
-        return true;
-      
-    }
-    
-    
+        if(juegoTerminado){
+            return true;
+        }
+        boolean jugador1CruzoMeta = barcoJugador1.isCondicionVictoria();
+        boolean jugador2CruzoMeta = barcoJugador2.isCondicionVictoria();
+        
+        if(jugador1CruzoMeta || jugador2CruzoMeta){
+            determinarGanador(jugador1CruzoMeta, jugador2CruzoMeta);
+            juegoTerminado = true;
+            return true;
+        }
+        return false;
+    } //haTerminado
  
+    private void determinarGanador(boolean jugador1CruzoMeta, boolean jugador2CruzoMeta){
+        String jugador1 = barcoJugador1.getTripulacion().getNombreTripulacion();
+        String jugador2 = barcoJugador2.getTripulacion().getNombreTripulacion();
+        
+        if(jugador1CruzoMeta && !jugador2CruzoMeta){
+            mensajeGanador = "Ganador: " + jugador1 + "!!";
+        }else if (!jugador1CruzoMeta && jugador2CruzoMeta){
+            mensajeGanador = "Ganador: " + jugador2 + "!!";
+        }else{
+            int colisionesJugador1 = barcoJugador1.getObstaculosColisionados();
+            int colisionesJugador2 = barcoJugador2.getObstaculosColisionados();
+            
+            if(colisionesJugador1 < colisionesJugador2){
+                mensajeGanador = "!!Empate en meta!! Ganador por menos choques: " + jugador1;
+            }else if(colisionesJugador2 < colisionesJugador1){
+                mensajeGanador = "!!Empate en meta!! Ganador por menos choques: " + jugador2;
+            }else{
+                mensajeGanador = "!!Empate absoluto!!";
+            }
+        }
+        
+    } //determinarGanador
+
+    @Override
+    public boolean listoParaAvanzar() {
+        return DonutRaceListoParaAvanzar;
+    }
 } //fin clase 

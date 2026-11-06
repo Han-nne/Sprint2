@@ -56,7 +56,9 @@ public class Torneo {
 
     public void actualizarJuego() {
         juegoActual.actualizar();
-        if (juegoActual.haTerminado()) {
+       if (juegoActual.haTerminado());
+        
+        if(juegoActual.listoParaAvanzar()){
             try {
                 siguienteJuego();
             } catch (IOException ex) {

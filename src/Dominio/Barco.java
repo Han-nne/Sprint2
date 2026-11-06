@@ -59,6 +59,9 @@ public class Barco extends ObjetoMovil {
 
     /** Indica si el barco ha cumplido la condición de victoria. */
     private boolean condicionVictoria = false;
+    
+    /**Indica cuantos obstáculos ha colisionado durante la carrera/*/
+    private int obstaculosColiosionados = 0;
 
     /** Efecto de ralentización que controla la velocidad actual del barco. */
     private final EfectoRalentizacion ralentizacion;
@@ -144,6 +147,18 @@ public class Barco extends ObjetoMovil {
     }
 
     /**
+     * Obtiene la cantidad de obstáculos colisionados de un barco.
+     * @return Retorna los obstáculos colisionados correspondientes al barco.
+     */
+    public int getObstaculosColisionados() {
+        return obstaculosColiosionados;
+    }
+
+    /**Incrementa en uno la cantidad de obstáculos colisionados.*/
+    public void incrementarObstaculosColisionados(){
+        this.obstaculosColiosionados++;
+    }
+    /**
      * Consume una unidad de munición para lanzar un obstáculo.
      *
      * @return {@code true} si había munición y se consumió una unidad;
@@ -197,9 +212,10 @@ public class Barco extends ObjetoMovil {
     public void accionChoque(Colisionable otro) {
 
         if (otro instanceof Obstaculo || otro instanceof ObstaculoLanzado) {
+            incrementarObstaculosColisionados();
             this.ralentizacion.aplicar();
         } else if (otro instanceof Meta) {
-
+            condicionVictoria = true;
         } else {
             double velocidad = ralentizacion.getVelocidadActual();
             this.posX -= dirX * velocidad;

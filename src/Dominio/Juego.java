@@ -16,4 +16,5 @@ public interface Juego {
     void procesarTeclaPresionada(int e);
     void procesarTeclaLiberada(int e);
     boolean haTerminado();   
+    boolean listoParaAvanzar();
 }

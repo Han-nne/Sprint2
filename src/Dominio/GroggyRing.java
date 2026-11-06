@@ -158,4 +158,9 @@ public class GroggyRing implements Juego {
     public JugadorBola getGanador() {
         return ganador;
     }
+
+    @Override
+    public boolean listoParaAvanzar() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
