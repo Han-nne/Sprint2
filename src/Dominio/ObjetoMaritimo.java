@@ -95,4 +95,36 @@ public void limitarA(Pista pista) {
     public double getY() {
         return this.posY;
     }
+
+    public double getPosX() {
+        return posX;
+    }
+
+    public void setPosX(double posX) {
+        this.posX = posX;
+    }
+
+    public double getPosY() {
+        return posY;
+    }
+
+    public void setPosY(double posY) {
+        this.posY = posY;
+    }
+
+    public double getRadio() {
+        return radio;
+    }
+
+    public void setRadio(double radio) {
+        this.radio = radio;
+    }
+
+    public BufferedImage getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(BufferedImage imagen) {
+        this.imagen = imagen;
+    }
 }

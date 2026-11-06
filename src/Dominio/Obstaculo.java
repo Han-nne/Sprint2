@@ -110,5 +110,4 @@ public class Obstaculo extends ObjetoMaritimo{
       return radio;
     }
     
-    
 } //fin clase

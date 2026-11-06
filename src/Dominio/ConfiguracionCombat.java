@@ -66,5 +66,13 @@ public class ConfiguracionCombat extends ConfiguracionGeneral {
     public boolean isTecladoCompartido() {
         return tecladoCompartido;
     }
-    
+
+    public void setValorInicialBarra(int valorInicialBarra) {
+        this.valorInicialBarra = valorInicialBarra;
+    }
+
+    public void setTecladoCompartido(boolean tecladoCompartido) {
+        this.tecladoCompartido = tecladoCompartido;
+    }
+
 } // fin de clase

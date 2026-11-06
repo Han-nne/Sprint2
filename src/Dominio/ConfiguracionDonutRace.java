@@ -74,5 +74,16 @@ public class ConfiguracionDonutRace extends ConfiguracionGeneral{
     public double getVelocidadBarcos() {
         return velocidadBarcos;
     }
-    
+
+    public void setObstaculosFijos(Dificultad obstaculosFijos) {
+        this.obstaculosFijos = obstaculosFijos;
+    }
+
+    public void setObstaculosLanzados(int obstaculosLanzados) {
+        this.obstaculosLanzados = obstaculosLanzados;
+    }
+
+    public void setVelocidadBarcos(double velocidadBarcos) {
+        this.velocidadBarcos = velocidadBarcos;
+    }
 } // fin de la clase

@@ -144,4 +144,36 @@ public class ObstaculoLanzado extends ObjetoMaritimo{
             }
         }
     } // mover
+
+    public boolean isEsLanzado() {
+        return esLanzado;
+    }
+
+    public void setEsLanzado(boolean esLanzado) {
+        this.esLanzado = esLanzado;
+    }
+
+    public double getVelocidadObstaculo() {
+        return velocidadObstaculo;
+    }
+
+    public void setVelocidadObstaculo(double velocidadObstaculo) {
+        this.velocidadObstaculo = velocidadObstaculo;
+    }
+
+    public int getDireccionY() {
+        return direccionY;
+    }
+
+    public void setDireccionY(int direccionY) {
+        this.direccionY = direccionY;
+    }
+
+    public int getDireccionX() {
+        return direccionX;
+    }
+
+    public void setDireccionX(int direccionX) {
+        this.direccionX = direccionX;
+    }
 } // fin clase

@@ -67,7 +67,7 @@ public class Barco extends ObjetoMovil {
      * Sprites del barco según su dirección. Índices: 0 = arriba, 1 = derecha,
      * 2 = abajo, 3 = izquierda.
      */
-    private List<BufferedImage> imagenBarcos;
+    private  List<BufferedImage> imagenBarcos;
 
     /**
      * Construye un barco con la tripulación, velocidad, posición, munición y
@@ -347,5 +347,37 @@ public class Barco extends ObjetoMovil {
     @Override
     public double getRadioY() {
         return radio;
+    }
+
+    public double getDirX() {
+        return dirX;
+    }
+
+    public void setDirX(double dirX) {
+        this.dirX = dirX;
+    }
+
+    public double getDirY() {
+        return dirY;
+    }
+
+    public void setDirY(double dirY) {
+        this.dirY = dirY;
+    }
+
+    public Direccion getUltimaDireccion() {
+        return ultimaDireccion;
+    }
+
+    public void setUltimaDireccion(Direccion ultimaDireccion) {
+        this.ultimaDireccion = ultimaDireccion;
+    }
+
+    public List<BufferedImage> getImagenBarcos() {
+        return imagenBarcos;
+    }
+
+    public void setImagenBarcos(List<BufferedImage> imagenBarcos) {
+        this.imagenBarcos = imagenBarcos;
     }
 } // fin clase

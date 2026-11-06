@@ -121,4 +121,12 @@ public class DibujarBandera {
             g.drawImage(this.tripulacion2.getBandera(), xBandera2, margen, tamannoBandera, tamannoBandera, null);
         }
     }
+
+    public Tripulacion getTripulacion1() {
+        return tripulacion1;
+    }
+
+    public Tripulacion getTripulacion2() {
+        return tripulacion2;
+    }
 }

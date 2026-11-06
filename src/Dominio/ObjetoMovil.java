@@ -49,5 +49,5 @@ public abstract class ObjetoMovil extends ObjetoMaritimo{
      * Mueve el objeto hacia la derecha.
      */
       public abstract void moverDerecha();
- 
+
 }

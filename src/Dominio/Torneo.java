@@ -26,7 +26,7 @@ public class Torneo {
         iniciarJuego(0);
     }
 
-    public void iniciarJuego(int indice) throws IOException {
+    private void iniciarJuego(int indice) throws IOException {
         this.indiceJuego = indice;
         switch (indice) {
     case 0:
@@ -71,4 +71,22 @@ public class Torneo {
 
     public void procesarTeclaPresionada(int e) { juegoActual.procesarTeclaPresionada(e); }
     public void procesarTeclaLiberada(int e)   { juegoActual.procesarTeclaLiberada(e); }
+
+    public Juego getJuegoActual() {
+        return juegoActual;
+    }
+
+    public void setJuegoActual(Juego juegoActual) {
+        this.juegoActual = juegoActual;
+    }
+
+    public int getIndiceJuego() {
+        return indiceJuego;
+    }
+
+    public void setIndiceJuego(int indiceJuego) {
+        this.indiceJuego = indiceJuego;
+    }
+    
+    
 }

@@ -64,7 +64,7 @@ public class ConfiguracionGeneral {
                 nivelFacil();
                 break;
         }
- 
+        
     }
     
 } // fin de clase

@@ -92,5 +92,13 @@ public class DonutRaceHUD {
         g.setColor(Color.CYAN);
         g.drawString(barco2HUD, posXBarco2HUD + 8, posYHUD + 15);
     } //dibujar
+
+    public Barco getBarco1() {
+        return barco1;
+    }
+
+    public Barco getBarco2() {
+        return barco2;
+    }
     
 } // fin clase

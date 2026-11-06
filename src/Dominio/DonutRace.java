@@ -1,4 +1,4 @@
-/*
+  /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -256,10 +256,10 @@ public class DonutRace implements Juego{
     @Override
     public void dibujar(Graphics g) {
        g.drawImage( this.imagen, 0 , 0 , 1280, 720 , null);
-       pista.dibujar(g);
        isla.dibujar(g);
        meta.dibujar(g);
        salida.dibujar(g);
+       pista.dibujar(g);
        barcoJugador1.dibujar(g);
        barcoJugador2.dibujar(g);
         for (Obstaculo obstaculo : obstaculos) {
@@ -402,8 +402,10 @@ public class DonutRace implements Juego{
     @Override
     public boolean haTerminado() {
       
-        return false;
+        return true;
       
     }
+    
+    
  
 } //fin clase 

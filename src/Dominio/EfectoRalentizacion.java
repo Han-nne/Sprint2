@@ -115,4 +115,17 @@ public class EfectoRalentizacion {
     public void setDistanciaRecorrida(double distanciaRecorrida) {
         this.distanciaRecorrida = distanciaRecorrida;
     }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public static double getFACTOR_VELOCIDAD() {
+        return FACTOR_VELOCIDAD;
+    }
+
+    public static double getDISTANCIA_RECUPERACION() {
+        return DISTANCIA_RECUPERACION;
+    }
+    
 }

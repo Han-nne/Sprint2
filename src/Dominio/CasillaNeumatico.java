@@ -4,21 +4,23 @@
  */
 package Dominio;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
-/**
- *
- * @author johan
- */
 public class CasillaNeumatico extends Casilla {
+
+    private JugadorBola dueno;   // Esta casilla pertenece a una bola en especifico 
 
     public CasillaNeumatico(float posX, float posY) {
         super(posX, posY);
     }
 
+    public JugadorBola getDueno() { return dueno; }
+    public void setDueno(JugadorBola dueno) { this.dueno = dueno; }
+
     @Override
     public void dibujar(Graphics g) {
-        g.fillOval( (int)this.posX, (int)this.posY, 128, 128);
+        g.setColor(Color.BLACK);
+        g.fillOval((int) this.posX, (int) this.posY, 128, 128);
     }
-    
 }
