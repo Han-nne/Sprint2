@@ -6,7 +6,7 @@ package Dominio;
 
 import java.awt.Graphics;
 import java.io.IOException;
-import utility.TileSetManager;
+import utility.TileSetManagerDonutRace;
 
 /**
  * La clase {@code ObstaculoLanzado} representa un obstáculo lanzado (móvil 
@@ -64,7 +64,7 @@ public class ObstaculoLanzado extends ObjetoMaritimo{
         this.direccionY = direccionY;
         this.velocidadObstaculo = velocidadObstaculo;
         
-        this.imagen= TileSetManager.cargarImagenDonutRace();
+        this.imagen= TileSetManagerDonutRace.cargarImagenDonutRace();
         this.imagen=this.imagen.getSubimage( 150 , 380, 25, 25);
     } //Constructor
 

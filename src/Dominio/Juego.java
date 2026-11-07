@@ -11,10 +11,9 @@ import java.awt.Graphics;
  * @author johan
  */
 public interface Juego {
-     void actualizar();
+    void actualizar();
     void dibujar(Graphics g);
     void procesarTeclaPresionada(int e);
     void procesarTeclaLiberada(int e);
-    boolean haTerminado();   
-    boolean listoParaAvanzar();
+    boolean haTerminado();  
 }

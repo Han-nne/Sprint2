@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage;
  */
 public class JugadorBola {
     
-    public static final int TAM = 128;   // mismo tamaño que las casillas
+    public static final int TAM = Casilla.TAM;
      
     private int anotaciones;
      

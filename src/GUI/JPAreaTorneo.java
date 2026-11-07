@@ -13,6 +13,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -66,7 +68,11 @@ public class JPAreaTorneo extends JPanel implements KeyListener {
         
         this.torneo= new Torneo(tripulacion1, tripulacion2 , configuraciones);
         timer = new Timer(16, e -> {
-            this.torneo.actualizarJuego();
+            try {
+                this.torneo.actualizarJuego();
+            } catch (IOException ex) {
+                Logger.getLogger(JPAreaTorneo.class.getName()).log(Level.SEVERE, null, ex);
+            }
             repaint();
         });
         

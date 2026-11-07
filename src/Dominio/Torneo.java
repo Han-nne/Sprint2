@@ -38,8 +38,8 @@ public class Torneo {
                 (ConfiguracionGroggyRing) configuraciones.get(1));
         break;
 //    case 2:
-//        juegoActual = new Juego3(tripulacion1, tripulacion2,
-//                (ConfiguracionJuego3) configuraciones.get(2));
+//        juegoActual = new Combat(tripulacion1, tripulacion2,
+//                (ConfiguracionCombat) configuraciones.get(2));
 //        break;
     default:
         throw new IllegalArgumentException("Juego inexistente: " + indice);
@@ -54,18 +54,16 @@ public class Torneo {
         // Aqui poner resultado final del torneo 
     }
 
-    public void actualizarJuego() {
+    public void actualizarJuego() throws IOException {
         juegoActual.actualizar();
-       if (juegoActual.haTerminado());
-        
-        if(juegoActual.listoParaAvanzar()){
+           juegoActual.actualizar();
+        if (juegoActual.haTerminado()) {
             try {
                 siguienteJuego();
             } catch (IOException ex) {
             }
         }
     }
-
     public void dibujar(Graphics g) {
         juegoActual.dibujar(g);
         dibujarBandera.dibujar(g);
