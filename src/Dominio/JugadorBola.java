@@ -24,7 +24,8 @@ public class JugadorBola {
     private Tripulacion tripulacion;
     private BufferedImage imagen;
 
-    public JugadorBola(Tripulacion tripulacion) {
+    public JugadorBola(Tripulacion tripulacion , BufferedImage imagen ) {
+        this.imagen = imagen;
         this.tripulacion = tripulacion;
     }
     
