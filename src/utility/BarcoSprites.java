@@ -20,7 +20,7 @@ import java.util.List;
  * </p>
  *
  * @author johan
- * @see TileSetManager
+ * @see TileSetManagerDonutRace
  * @see ColorBarco
  * @see Direccion
  */
@@ -29,9 +29,9 @@ public class BarcoSprites {
     /**
      * Carga los cuatro sprites de un barco del color indicado.
      * <p>
-     * Recorta del tileset de {@link TileSetManager#cargarImagenDonutRace()} una
-     * subimagen de {@link TileSetManager#TILESIZEBARCO} por
-     * {@link TileSetManager#TILESIZEBARCO} píxeles por cada dirección. La fila
+     * Recorta del tileset de {@link TileSetManagerDonutRace#cargarImagenDonutRace()} una
+     * subimagen de {@link TileSetManagerDonutRace#TILESIZEBARCO} por
+     * {@link TileSetManagerDonutRace#TILESIZEBARCO} píxeles por cada dirección. La fila
      * del tileset depende del color: los barcos {@link ColorBarco#AZUL} usan una
      * fila y los demás colores usan otra.
      * </p>
@@ -42,13 +42,13 @@ public class BarcoSprites {
      * @throws IOException si ocurre un error al cargar la imagen del tileset
      */
     public static List<BufferedImage> cargar(ColorBarco color) throws IOException {
-        BufferedImage tile = TileSetManager.cargarImagenDonutRace();
-        int y = (color == ColorBarco.AZUL) ? (TileSetManager.TILESIZEBARCO * 7) - 30 : TileSetManager.TILESIZEBARCO * 9;
+        BufferedImage tile = TileSetManagerDonutRace.cargarImagenDonutRace();
+        int y = (color == ColorBarco.AZUL) ? (TileSetManagerDonutRace.TILESIZEBARCO * 7) - 30 : TileSetManagerDonutRace.TILESIZEBARCO * 9;
 
         List<BufferedImage> sprites = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            int x = (TileSetManager.TILESIZEBARCO * i) + (10 * (i + 1));
-            sprites.add(tile.getSubimage(x, y, TileSetManager.TILESIZEBARCO, TileSetManager.TILESIZEBARCO));
+            int x = (TileSetManagerDonutRace.TILESIZEBARCO * i) + (10 * (i + 1));
+            sprites.add(tile.getSubimage(x, y, TileSetManagerDonutRace.TILESIZEBARCO, TileSetManagerDonutRace.TILESIZEBARCO));
         }
         return sprites;
     }

@@ -17,12 +17,9 @@ import javax.imageio.ImageIO;
  * reutilizan la misma imagen sin volver a leer el archivo (carga perezosa).
  * <p>
  * Todos sus miembros son estáticos, por lo que no necesita ser instanciada.
- * La carga no está sincronizada, así que no es segura para uso concurrente
- * desde varios hilos.
- *
  * @author johan
  */
-public class TileSetManager {
+public class TileSetManagerDonutRace {
 
     /**
      * Imagen del tileset de la carrera de donas ({@code tilesheet_DonutRace.png}).
@@ -61,7 +58,7 @@ public class TileSetManager {
      */
      public static BufferedImage cargarImagenDonutRace() throws IOException{
         if(TILESETDONUTRACE == null){
-            TILESETDONUTRACE = ImageIO.read(TileSetManager.class.getResourceAsStream("/assets/tilesheet_DonutRace.png"));
+            TILESETDONUTRACE = ImageIO.read(TileSetManagerDonutRace.class.getResourceAsStream("/assets/tilesheet_DonutRace.png"));
         }
         return TILESETDONUTRACE;
     } //cargarImagenIsla
@@ -81,7 +78,7 @@ public class TileSetManager {
      */
     public static BufferedImage cargarImagenMar() throws IOException{
          if(TILESETMAR == null){
-            TILESETMAR = ImageIO.read(TileSetManager.class.getResourceAsStream("/assets/Mar.png"));
+            TILESETMAR = ImageIO.read(TileSetManagerDonutRace.class.getResourceAsStream("/assets/Mar.png"));
         }
         return TILESETMAR;
     }

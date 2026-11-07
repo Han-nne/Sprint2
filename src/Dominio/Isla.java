@@ -6,7 +6,7 @@ package Dominio;
  
 import java.awt.Graphics;
 import java.io.IOException;
-import static utility.TileSetManager.cargarImagenDonutRace;
+import static utility.TileSetManagerDonutRace.cargarImagenDonutRace;
  
 /**
  * La clase {@code Isla} representa la isla central del escenario, un obstáculo

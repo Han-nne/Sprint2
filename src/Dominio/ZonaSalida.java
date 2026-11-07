@@ -6,7 +6,7 @@ package Dominio;
  
 import java.awt.Graphics;
 import java.io.IOException;
-import static utility.TileSetManager.cargarImagenDonutRace;
+import utility.TileSetManagerDonutRace;
  
 /**
  * La clase {@code ZonaSalida} representa la zona de salida de la carrera, el área
@@ -38,7 +38,7 @@ public class ZonaSalida extends ObjetoMaritimo implements Colisionable{
      */
     public ZonaSalida(int posX, int posY) throws IOException {
         super(posX, posY);
-        this.imagen= cargarImagenDonutRace();
+        this.imagen= TileSetManagerDonutRace.cargarImagenDonutRace();
         this.imagen=this.imagen.getSubimage( 320,10,40,190);
     }
  

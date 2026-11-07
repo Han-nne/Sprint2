@@ -7,7 +7,7 @@ package Dominio;
 import java.awt.Graphics;
 import java.io.IOException;
 import static java.lang.Math.sqrt;
-import static utility.TileSetManager.cargarImagenDonutRace;
+import static utility.TileSetManagerDonutRace.cargarImagenDonutRace;
 
 /**
  * La clase {@code Pista} representa el área elíptica del escenario dentro de la

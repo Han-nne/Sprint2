@@ -24,7 +24,7 @@ import static java.awt.event.KeyEvent.VK_W;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import utility.TileSetManager;
+import utility.TileSetManagerDonutRace;
 
 /**
  * La clase {@code DonutRace} es la clase principal de la lógica del juego: crea
@@ -107,7 +107,7 @@ public class DonutRace implements Juego{
     public DonutRace( Tripulacion tripulacion1 , Tripulacion tripulacion2 , ConfiguracionDonutRace configuracionDonutRace ) throws IOException {
          
         this.configuracionDonut = configuracionDonutRace;
-        this.imagen = TileSetManager.cargarImagenMar();
+        this.imagen = TileSetManagerDonutRace.cargarImagenMar();
         
          
         this.pista = new Pista(635, 357);
@@ -475,7 +475,6 @@ public class DonutRace implements Juego{
         
     } //determinarGanador
 
-    @Override
     public boolean listoParaAvanzar() {
         return DonutRaceListoParaAvanzar;
     }

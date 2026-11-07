@@ -4,139 +4,347 @@
  */
 package Dominio;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import utility.TileSetManagerGroggyRing;
 
+/**
+ * Minijuego por turnos "Groggy Ring" para dos jugadores.
+ * <p>
+ * Cada jugador controla una bola sobre un tablero de {@value #FILAS} filas por
+ * {@value #COLUMNAS} columnas. En los extremos de la fila central hay un
+ * neumático por jugador; una bola anota un punto al llegar al neumático del
+ * rival. Los jugadores se alternan el turno después de cada movimiento válido.
+ * Gana quien primero alcance la puntuación de victoria configurada.
+ * </p>
+ * <p>
+ * Controles: jugador 1 con W/A/S/D y jugador 2 con las flechas del teclado.
+ * </p>
+ *
+ * @see Juego
+ * @see JugadorBola
+ * @see Casilla
+ * @see ConfiguracionGroggyRing
+ */
 public class GroggyRing implements Juego {
 
-    private static final int TAM = JugadorBola.TAM;   // 128
-    private static final int FILAS = 5;
-    private static final int COLUMNAS = 10;
-    
-    private final int puntuacionVictoria ;
+    /** Tamaño en píxeles de cada casilla. */
+    private static final int TAM = Casilla.TAM;
 
-    private Casilla zonaJuego[][];
-    private JugadorBola bolaJugador1;
-    private JugadorBola bolaJugador2;
+    /** Número de filas del tablero. */
+    private static final int FILAS = 9;
 
-    private JugadorBola turnoActual;   // a quién le toca
-    private JugadorBola ganador;       // null mientras nadie gane
+    /** Número de columnas del tablero. */
+    private static final int COLUMNAS = 16;
+
+    /** Fila central del tablero, donde están los neumáticos y las posiciones iniciales. */
+    private static final int FILA_CENTRO = FILAS / 2;
+
+    /** Duración (en ciclos de actualización) de la pausa que muestra el marcador tras un punto. */
+    private static final int CICLOS_PAUSA = 90;
+
+    /** Imagen de fondo del juego. */
+    private final BufferedImage imagen;
+
+    /** Coordenada X de la esquina superior izquierda del tablero en pantalla. */
+    private static final int ORIGEN_X = 130;
+
+    /** Coordenada Y de la esquina superior izquierda del tablero en pantalla. */
+    private static final int ORIGEN_Y = 80;
+
+    /** Matriz de casillas que forman el tablero (indexada por [fila][columna]). */
+    private final Casilla[][] zonaJuego;
+
+    /** Bola controlada por el jugador 1 (lado izquierdo, teclas W/A/S/D). */
+    private final JugadorBola bolaJugador1;
+
+    /** Bola controlada por el jugador 2 (lado derecho, teclas de flechas). */
+    private final JugadorBola bolaJugador2;
+
+    /** Cantidad de puntos necesarios para ganar el juego. */
+    private final int puntuacionVictoria;
+
+    /** Bola a la que le corresponde mover en el turno actual. */
+    private JugadorBola turnoActual;
+
+    /** Bola que hizo el último punto. */
+    private JugadorBola anotador;
+
+    /** Bola ganadora del juego; es {@code null} hasta que alguien gane. */
+    private JugadorBola ganador;
+
+    /** Ciclos restantes de pausa; mayor que 0 mientras se muestra el marcador. */
+    private int pausa = 0;
+
+    /** Indica si el juego ya finalizó. */
     private boolean terminado = false;
 
-    public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionGroggyRing configuracion) {
-       this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
-       this.bolaJugador1 = new JugadorBola(tripulacion1);
-       this.bolaJugador2 = new JugadorBola(tripulacion2);
-       this.zonaJuego = new Casilla[FILAS][COLUMNAS];
-       iniciarJuego();
+    /**
+     * Crea una nueva partida de Groggy Ring.
+     *
+     * @param tripulacion1  tripulación que controla al jugador 1
+     * @param tripulacion2  tripulación que controla al jugador 2
+     * @param configuracion configuración de la partida (incluye la puntuación de victoria)
+     * @throws IOException si ocurre un error al cargar la imagen de fondo
+     */
+    public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2,
+            ConfiguracionGroggyRing configuracion) throws IOException {
+        this.imagen = TileSetManagerGroggyRing.cargarImagenFondoGroggyRing();
+        this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
+        this.bolaJugador1 = new JugadorBola(tripulacion1);
+        this.bolaJugador2 = new JugadorBola(tripulacion2);
+        this.zonaJuego = new Casilla[FILAS][COLUMNAS];
+        iniciarJuego();
     }
 
-   private void iniciarJuego() {
-       crearZonaJuego(0, 0);
-      reiniciarPosiciones();
-      turnoActual = bolaJugador1;
-}
-   
-   private void reiniciarPosiciones() {
-       liberar(bolaJugador1);
-      liberar(bolaJugador2);
-      colocar(bolaJugador1, 2, 1);
-      colocar(bolaJugador2, 2, COLUMNAS - 2);
-}
-   
-   private void liberar(JugadorBola bola) {
-       Casilla actual = zonaJuego[bola.getFila()][bola.getColumna()];
-       if (actual.getJugadorBola() == bola) {
-          actual.setJugadorBola(null);
-       }
-}
+    /**
+     * Inicializa el tablero, coloca las bolas en sus posiciones iniciales
+     * y asigna el primer turno al jugador 1.
+     */
+    private void iniciarJuego() throws IOException {
+        crearZonaJuego();
+        reiniciarPosiciones();
+        turnoActual = bolaJugador1;
+    }
 
-    public void crearZonaJuego(int dx, int dy) {
-        for (int i = 0; i < zonaJuego.length; i++) {
-            for (int j = 0; j < zonaJuego[i].length; j++) {
-                if (i == 2 && (j == 0 || j == COLUMNAS - 1)) {
-                    CasillaNeumatico neumatico = new CasillaNeumatico(dx + j * TAM, dy + i * TAM);
+    /**
+     * Crea todas las casillas del tablero. Las casillas extremas de la fila
+     * central son neumáticos (cada uno pertenece a un jugador); el resto son
+     * casillas de campo. Las casillas se crean en coordenadas locales y
+     * {@link #dibujar(Graphics)} se encarga de desplazarlas.
+     */
+    private void crearZonaJuego() throws IOException {
+        for (int i = 0; i < FILAS; i++) {
+            for (int j = 0; j < COLUMNAS; j++) {
+                if (i == FILA_CENTRO && (j == 0 || j == COLUMNAS - 1)) {
+                    CasillaNeumatico neumatico = new CasillaNeumatico(j * TAM, i * TAM);
                     neumatico.setDueno(j == 0 ? bolaJugador1 : bolaJugador2);
                     zonaJuego[i][j] = neumatico;
                 } else {
-                    zonaJuego[i][j] = new CasillaCampo(dx + j * TAM, dy + i * TAM);
+                    zonaJuego[i][j] = new CasillaCampo(j * TAM, i * TAM);
                 }
             }
         }
     }
 
-    /** Pone una bola en una casilla y lo registra en la casilla. */
+    /**
+     * Devuelve ambas bolas a sus posiciones iniciales en la fila central:
+     * el jugador 1 en la columna 1 y el jugador 2 en la penúltima columna.
+     */
+    private void reiniciarPosiciones() {
+        liberar(bolaJugador1);
+        liberar(bolaJugador2);
+        colocar(bolaJugador1, FILA_CENTRO, 1);
+        colocar(bolaJugador2, FILA_CENTRO, COLUMNAS - 2);
+    }
+
+    /**
+     * Libera la casilla que ocupa actualmente la bola, siempre que la casilla
+     * efectivamente la contenga.
+     *
+     * @param bola bola cuya casilla actual se desea liberar
+     */
+    private void liberar(JugadorBola bola) {
+        Casilla actual = zonaJuego[bola.getFila()][bola.getColumna()];
+        if (actual.getJugadorBola() == bola) {
+            actual.setJugadorBola(null);
+        }
+    }
+
+    /**
+     * Coloca una bola en la posición indicada, actualizando tanto la bola
+     * como la casilla destino.
+     *
+     * @param bola    bola a colocar
+     * @param fila    fila de destino
+     * @param columna columna de destino
+     */
     private void colocar(JugadorBola bola, int fila, int columna) {
         bola.setPosicion(fila, columna);
         zonaJuego[fila][columna].setJugadorBola(bola);
     }
 
-  private void intentarMover(JugadorBola bola, int dFila, int dCol) {
-    if (terminado || bola != turnoActual) {
-        return;
+    /**
+     * Obtiene la bola rival de la bola dada.
+     *
+     * @param bola bola de referencia
+     * @return la bola del otro jugador
+     */
+    private JugadorBola rivalDe(JugadorBola bola) {
+        return (bola == bolaJugador1) ? bolaJugador2 : bolaJugador1;
     }
 
-    int nuevaFila = bola.getFila() + dFila;
-    int nuevaCol = bola.getColumna() + dCol;
-
-    if (nuevaFila < 0 || nuevaFila >= FILAS || nuevaCol < 0 || nuevaCol >= COLUMNAS) {
-        return;
-    }
-
-    Casilla destino = zonaJuego[nuevaFila][nuevaCol];
-
-    if (destino.getJugadorBola() != null) {
-        return;
-    }
-
-    zonaJuego[bola.getFila()][bola.getColumna()].setJugadorBola(null);
-    colocar(bola, nuevaFila, nuevaCol);
-
-    JugadorBola rival = (bola == bolaJugador1) ? bolaJugador2 : bolaJugador1;
-
-    if (destino instanceof CasillaNeumatico
-            && ((CasillaNeumatico) destino).getDueno() != bola) {
-
-        bola.sumarAnotacion();
-
-        if (bola.getAnotaciones() >= puntuacionVictoria) {
-            ganador = bola;
-            terminado = true;
-        } else {
-            reiniciarPosiciones();
-            turnoActual = rival;   // empieza quien recibió la anotación
+    /**
+     * Intenta mover una bola una casilla en la dirección indicada.
+     * <p>
+     * El movimiento se ignora si el juego terminó, si hay una pausa activa,
+     * si no es el turno de la bola, si el destino está fuera del tablero o si
+     * la casilla destino está ocupada. Si la bola llega al neumático del rival,
+     * se anota un punto y se inicia la pausa del marcador (y, si se alcanza la
+     * puntuación de victoria, se define el ganador). En caso contrario, el
+     * turno pasa al rival.
+     * </p>
+     *
+     * @param bola  bola que se intenta mover
+     * @param dFila desplazamiento en filas (-1, 0 o 1)
+     * @param dCol  desplazamiento en columnas (-1, 0 o 1)
+     */
+    private void intentarMover(JugadorBola bola, int dFila, int dCol) {
+        if (terminado || pausa > 0 || bola != turnoActual) {
+            return;
         }
-        return;
+
+        int nuevaFila = bola.getFila() + dFila;
+        int nuevaCol = bola.getColumna() + dCol;
+
+        if (nuevaFila < 0 || nuevaFila >= FILAS || nuevaCol < 0 || nuevaCol >= COLUMNAS) {
+            return;
+        }
+
+        Casilla destino = zonaJuego[nuevaFila][nuevaCol];
+        if (destino.getJugadorBola() != null) {
+            return;
+        }
+
+        zonaJuego[bola.getFila()][bola.getColumna()].setJugadorBola(null);
+        colocar(bola, nuevaFila, nuevaCol);
+
+        if (destino instanceof CasillaNeumatico
+                && ((CasillaNeumatico) destino).getDueno() != bola) {
+
+            bola.sumarAnotacion();
+            anotador = bola;
+            pausa = CICLOS_PAUSA;
+            if (bola.getAnotaciones() >= puntuacionVictoria) {
+                ganador = bola;   // el juego acaba cuando termine la pausa
+            }
+            return;
+        }
+
+        turnoActual = rivalDe(bola);
     }
 
-    turnoActual = rival;
-}
-  
+    /**
+     * Actualiza el estado del juego en cada ciclo. Mientras hay una pausa
+     * activa la va decrementando; al terminar, finaliza el juego si hay un
+     * ganador, o reinicia las posiciones y cede el turno a quien recibió el
+     * punto.
+     */
     @Override
     public void actualizar() {
-        // juego por turnos 
+        if (pausa > 0) {
+            pausa--;
+            if (pausa == 0) {
+                if (ganador != null) {
+                    terminado = true;
+                } else {
+                    reiniciarPosiciones();
+                    turnoActual = rivalDe(anotador);   // empieza quien recibió el punto
+                }
+            }
+        }
     }
 
+    /**
+     * Dibuja el fondo, el tablero, las bolas y, si hay una pausa activa, el
+     * marcador. El contexto gráfico se traslada al origen del tablero y se
+     * restaura al finalizar.
+     *
+     * @param g contexto gráfico sobre el cual dibujar
+     */
     @Override
     public void dibujar(Graphics g) {
-        for (int i = 0; i < zonaJuego.length; i++) {
-            for (int j = 0; j < zonaJuego[i].length; j++) {
+        g.drawImage( this.imagen, 0 , 0 , 1280, 720 , null);
+        g.translate(ORIGEN_X, ORIGEN_Y);   // el tablero empieza aquí
+        for (int i = 0; i < FILAS; i++) {
+            for (int j = 0; j < COLUMNAS; j++) {
                 zonaJuego[i][j].dibujar(g);
             }
         }
         bolaJugador1.dibujar(g);
         bolaJugador2.dibujar(g);
+
+        if (pausa > 0) {
+            dibujarMarcador(g);
+        }
+
+        g.translate(-ORIGEN_X, -ORIGEN_Y); // restaurar para lo que se dibuje después (banderas)
     }
 
+    /**
+     * Dibuja el cuadro del marcador centrado sobre el tablero, con el mensaje
+     * del punto (o de victoria) y la puntuación de ambos jugadores.
+     *
+     * @param g contexto gráfico (ya trasladado al origen del tablero)
+     */
+    private void dibujarMarcador(Graphics g) {
+        int anchoTablero = COLUMNAS * TAM;
+        int altoTablero = FILAS * TAM;
+        int anchoCaja = 420;
+        int altoCaja = 160;
+        int x = (anchoTablero - anchoCaja) / 2;
+        int y = (altoTablero - altoCaja) / 2;
+
+        g.setColor(new Color(0, 0, 0, 180));
+        g.fillRoundRect(x, y, anchoCaja, altoCaja, 30, 30);
+
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 28));
+        String titulo = (ganador != null)
+                ? "¡" + nombre(anotador) + " gana el juego!"
+                : "¡Punto para " + nombre(anotador) + "!";
+        centrarTexto(g, titulo, anchoTablero / 2, y + 55);
+
+        g.setFont(new Font("Arial", Font.BOLD, 56));
+        centrarTexto(g, bolaJugador1.getAnotaciones() + "  -  " + bolaJugador2.getAnotaciones(),
+                anchoTablero / 2, y + 125);
+    }
+
+    /**
+     * Dibuja un texto centrado horizontalmente respecto a una coordenada X.
+     *
+     * @param g       contexto gráfico
+     * @param texto   texto a dibujar
+     * @param centroX coordenada X sobre la cual se centra el texto
+     * @param baseY   coordenada Y de la línea base del texto
+     */
+    private void centrarTexto(Graphics g, String texto, int centroX, int baseY) {
+        FontMetrics fm = g.getFontMetrics();
+        g.drawString(texto, centroX - fm.stringWidth(texto) / 2, baseY);
+    }
+
+    /**
+     * Obtiene el nombre de la tripulación asociada a una bola.
+     *
+     * @param bola bola de la cual se quiere el nombre de su tripulación
+     * @return nombre de la tripulación de la bola
+     */
+    private String nombre(JugadorBola bola) {
+
+        return (bola == bolaJugador1) ? this.bolaJugador1.getTripulacion().getNombreTripulacion() : this.bolaJugador2.getTripulacion().getNombreTripulacion();
+    }
+
+    /**
+     * Procesa una tecla presionada y mueve la bola correspondiente.
+     * <ul>
+     *   <li>Jugador 1: W (arriba), S (abajo), A (izquierda), D (derecha).</li>
+     *   <li>Jugador 2: flechas arriba, abajo, izquierda y derecha.</li>
+     * </ul>
+     *
+     * @param e código de la tecla presionada (constante de {@link KeyEvent})
+     */
     @Override
     public void procesarTeclaPresionada(int e) {
         switch (e) {
-            // Jugador 1: WASD
             case KeyEvent.VK_W: intentarMover(bolaJugador1, -1, 0); break;
             case KeyEvent.VK_S: intentarMover(bolaJugador1, 1, 0);  break;
             case KeyEvent.VK_A: intentarMover(bolaJugador1, 0, -1); break;
             case KeyEvent.VK_D: intentarMover(bolaJugador1, 0, 1);  break;
-            // Jugador 2: flechas
             case KeyEvent.VK_UP:    intentarMover(bolaJugador2, -1, 0); break;
             case KeyEvent.VK_DOWN:  intentarMover(bolaJugador2, 1, 0);  break;
             case KeyEvent.VK_LEFT:  intentarMover(bolaJugador2, 0, -1); break;
@@ -145,22 +353,27 @@ public class GroggyRing implements Juego {
         }
     }
 
+    /**
+     * Procesa una tecla liberada. Este juego no reacciona a la liberación de teclas.
+     *
+     * @param e código de la tecla liberada
+     */
     @Override
-    public void procesarTeclaLiberada(int e) {
-        // no se usa en este juego
-    }
+    public void procesarTeclaLiberada(int e) { }
 
+    /**
+     * Indica si el juego ha terminado.
+     *
+     * @return {@code true} si ya hay un ganador y terminó la pausa final;
+     *         {@code false} en caso contrario
+     */
     @Override
-    public boolean haTerminado() {
-        return terminado;
-    }
+    public boolean haTerminado() { return terminado; }
 
-    public JugadorBola getGanador() {
-        return ganador;
-    }
-
-    @Override
-    public boolean listoParaAvanzar() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    /**
+     * Obtiene la bola ganadora del juego.
+     *
+     * @return la bola ganadora, o {@code null} si todavía nadie ha ganado
+     */
+    public JugadorBola getGanador() { return ganador; }
 }
