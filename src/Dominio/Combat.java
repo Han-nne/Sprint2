@@ -96,6 +96,10 @@ public class Combat {
         controlesJugador2.add(KeyEvent.VK_RIGHT);
         controlesJugador2.add(KeyEvent.VK_LEFT);
 
+        
+        
+        
+        
     }
 
     //getters y setters

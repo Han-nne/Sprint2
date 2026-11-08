@@ -11,7 +11,6 @@ package Dominio;
  * @author Keithy Carrillo
  */
 public class ConfiguracionCombat extends ConfiguracionGeneral {
-    private int tiempoRonda;
     private int valorInicialBarra;
     private boolean tecladoCompartido;
 
@@ -23,7 +22,6 @@ public class ConfiguracionCombat extends ConfiguracionGeneral {
     */
     @Override
     public void nivelFacil() {
-        this.tiempoRonda = 60;
         this.valorInicialBarra = 100;
         this.tecladoCompartido = true;
     }
@@ -35,7 +33,6 @@ public class ConfiguracionCombat extends ConfiguracionGeneral {
     */
     @Override
     public void nivelNormal() {
-        this.tiempoRonda = 45;
         this.valorInicialBarra = 100;
         this.tecladoCompartido = true;
     }
@@ -47,22 +44,8 @@ public class ConfiguracionCombat extends ConfiguracionGeneral {
     */
     @Override
     public void nivelDificil() {
-        this.tiempoRonda = 30;
         this.valorInicialBarra = 100;
         this.tecladoCompartido = true;
-    }
-
-    /**
-     * Obtiene el tiempo de la ronda configurado.
-     * 
-     * @return Retorna un número entero con el valor del tiempo de la ronda.
-     */
-    public int getTiempoRonda() {
-        return tiempoRonda;
-    }
-    
-    public void setTiempoRonda(int tiempoRonda) {    
-        this.tiempoRonda = tiempoRonda;
     }
 
     /**

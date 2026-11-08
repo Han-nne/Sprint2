@@ -14,17 +14,19 @@ import java.util.Random;
 public class CombatJugador {
     
     private int barraPoder;
+    private int valorInicialBarra;
     private boolean primerIntento;
-    private int longituSecuencia;
+    private int longitudSecuencia;
     private ArrayList<Integer> secuenciaActual;
     private ArrayList<Integer> teclasPermitidas;
     private int indiceProgreso;
     private Random generadorAleatorio;
 
-    public CombatJugador(int barraPoder, boolean primerIntento, int secuencia, ArrayList<Integer> secuenciaActual, ArrayList<Integer> teclasPermitidas, int indiceProgreso, Random generadorAleatorio) {
-        this.barraPoder = barraPoder;
+    public CombatJugador(int valorInicialBarra, ArrayList<Integer> teclasPermitidas, int longitudSecuencia) {
+        this.valorInicialBarra = valorInicialBarra;
+        this.barraPoder = valorInicialBarra;
         this.primerIntento = true;
-        this.longituSecuencia = secuencia;
+        this.longitudSecuencia = longitudSecuencia;
         this.secuenciaActual = new ArrayList<>();
         this.teclasPermitidas = teclasPermitidas;
         this.indiceProgreso = 0;
@@ -49,12 +51,12 @@ public class CombatJugador {
         this.primerIntento = primerIntento;
     }
 
-    public int getLongituSecuencia() {
-        return longituSecuencia;
+    public int getLongitudSecuencia() {
+        return longitudSecuencia;
     }
 
-    public void setLongituSecuencia(int longituSecuencia) {
-        this.longituSecuencia = longituSecuencia;
+    public void setLongitudSecuencia(int longitudSecuencia) {
+        this.longitudSecuencia = longitudSecuencia;
     }
 
     public ArrayList<Integer> getSecuenciaActual() {
@@ -88,12 +90,18 @@ public class CombatJugador {
     public void setGeneradorAleatorio(Random generadorAleatorio) {
         this.generadorAleatorio = generadorAleatorio;
     }
-    
-    
+
+    public int getValorInicialBarra() {
+        return valorInicialBarra;
+    }
+
+    public void setValorInicialBarra(int valorInicialBarra) {
+        this.valorInicialBarra = valorInicialBarra;
+    }
 
     private void generarNuevaSecuencia() {
         getSecuenciaActual().clear();
-        for (int i = 0; i < getLongituSecuencia(); i++) {
+        for (int i = 0; i < getLongitudSecuencia(); i++) {
             
             int indiceAleatorio = getGeneradorAleatorio().nextInt(getTeclasPermitidas().size());
             
@@ -130,7 +138,7 @@ public class CombatJugador {
 
     private void aciertoSecuencia(){
         if (isPrimerIntento()) {
-            setBarraPoder(100);
+            setBarraPoder(getValorInicialBarra());
             setPrimerIntento(false);
         } else {
             setBarraPoder(getBarraPoder() + 5);
