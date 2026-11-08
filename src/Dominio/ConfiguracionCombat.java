@@ -11,7 +11,6 @@ package Dominio;
  * @author Keithy Carrillo
  */
 public class ConfiguracionCombat extends ConfiguracionGeneral {
-    
     private int valorInicialBarra;
     private boolean tecladoCompartido;
 
@@ -23,7 +22,7 @@ public class ConfiguracionCombat extends ConfiguracionGeneral {
     */
     @Override
     public void nivelFacil() {
-        this.valorInicialBarra = 50;
+        this.valorInicialBarra = 100;
         this.tecladoCompartido = true;
     }
 
@@ -34,7 +33,7 @@ public class ConfiguracionCombat extends ConfiguracionGeneral {
     */
     @Override
     public void nivelNormal() {
-        this.valorInicialBarra = 75;
+        this.valorInicialBarra = 100;
         this.tecladoCompartido = true;
     }
 
