@@ -4,6 +4,9 @@
  */
 package Dominio;
 
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import javax.swing.Timer;
@@ -23,7 +26,7 @@ public class Combat {
     private int tiempoRestante;
     private boolean partidaTerminada;
     private String mensajeResultado;
-    private Timer temporiador;
+    private Timer temporizador;
     
 
     public Combat(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionCombat configuracionCombat) {
@@ -44,12 +47,84 @@ public class Combat {
         controlesJugador2.add(KeyEvent.VK_RIGHT);
         controlesJugador2.add(KeyEvent.VK_LEFT);
 
+        int valorInicial = getConfiguracionCombat().getValorInicialBarra();
+        int longitudSecuencia = 4;
         
+        this.jugador1 = new CombatJugador(valorInicial, controlesJugador1, longitudSecuencia);
+        this.jugador2 = new CombatJugador(valorInicial, controlesJugador2, longitudSecuencia);
         
+        this.tiempoRestante = 45;
+        this.partidaTerminada = false;
+        this.mensajeResultado = "";
         
+        if (getTemporizador() != null) {
+            getTemporizador().stop();
+        }
+        
+        setTemporizador(new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!isPartidaTerminada()) {
+                    setTiempoRestante(getTiempoRestante() - 1);
+                    if (getTiempoRestante() <= 0) {
+                        setTiempoRestante(0);
+                        getTemporizador().stop();
+                        finalizarRondaPorJugador();
+                    }
+                }
+            }
+        }));
+         getTemporizador().start();
+    }
+             
+    public void actualizar(){
         
     }
-
+    
+    public void procesarTeclaSeleccionada(int keyCode){
+        if (isPartidaTerminada()) {
+            return;
+        }
+        
+        if (getConfiguracionCombat().isTecladoCompartido()) {
+            if (getJugador1().perteneceTeclaJugador(keyCode)) {
+                getJugador1().procesarIntento(keyCode);
+            } else if (getJugador2().perteneceTeclaJugador(keyCode)) {
+                getJugador2().procesarIntento(keyCode);
+            }
+        }
+    }
+    
+    public void procesarTeclaLiberada(int keyCode){
+        
+    }
+    
+    public void finalizarRondaPorJugador(){
+        setPartidaTerminada(true);
+        
+        if (getTemporizador() != null) {
+            getTemporizador().stop();
+        }
+        
+        int poderJugador1 = getJugador1().getBarraPoder();
+        int poderJugador2 = getJugador2().getBarraPoder();
+        
+        if (poderJugador1 > poderJugador2) {
+            setMensajeResultado("El ganador es " + getTripulacion1().getNombreTripulacion());
+        } else if (poderJugador2 > poderJugador1) {
+            setMensajeResultado("El ganador es " + getTripulacion2().getNombreTripulacion());
+        } else {
+            setMensajeResultado("Empataron con " + poderJugador1 + " puntos");
+        }
+    }
+    
+    public void dibujar(Graphics g){
+        getHud().dibujar(g, getJugador1(), getJugador2(), getTripulacion1().getNombreTripulacion(), getTripulacion2().getNombreTripulacion(), 
+                getTiempoRestante(), isPartidaTerminada(), getMensajeResultado());
+    }
+    
+    
+    
     //getters y setters
     public Tripulacion getTripulacion1() {
         return tripulacion1;
@@ -123,12 +198,12 @@ public class Combat {
         this.mensajeResultado = mensajeResultado;
     }
 
-    public Timer getTemporiador() {
-        return temporiador;
+    public Timer getTemporizador() {
+        return temporizador;
     }
 
-    public void setTemporiador(Timer temporiador) {
-        this.temporiador = temporiador;
+    public void setTemporizador(Timer temporizador) {
+        this.temporizador = temporizador;
     }
     
     
