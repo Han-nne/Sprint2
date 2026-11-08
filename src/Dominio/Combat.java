@@ -25,58 +25,6 @@ public class Combat {
     private String mensajeResultado;
     private Timer temporiador;
     
-//
-//    public void actualizar() {
-//        // El tiempo es manejado de manera independiente y precisa por el Timer de Swing
-//    }
-//
-//    public void procesarTeclaPresionada(int keyCode) {
-//        if (isPartidaTerminada()) {
-//            return;
-//        }
-//
-//        // Reconoce las teclas de cada jugador sin interferencias entre ellos
-//        if (getJugador1().perteneceTeclaAJugador(keyCode)) {
-//            getJugador1().procesarIntentoTecla(keyCode);
-//        } else if (getJugador2().perteneceTeclaAJugador(keyCode)) {
-//            getJugador2().procesarIntentoTecla(keyCode);
-//        }
-//    }
-//
-//    public void procesarTeclaLiberada(int keyCode) {
-//        // Requerido por la estructura del gestor de eventos del Torneo
-//    }
-//
-//    private void finalizarRondaDeterminandoGanador() {
-//        setPartidaTerminada(true);
-//        if (getTemporizadorSwing() != null) {
-//            getTemporizadorSwing().stop();
-//        }
-//
-//        int poderJ1 = getJugador1().getBarraPoder();
-//        int poderJ2 = getJugador2().getBarraPoder();
-//
-//        if (poderJ1 > poderJ2) {
-//            setMensajeResultado("¡Ganador: " + getTripulacion1().getNombreTripulacion() + "!");
-//        } else if (poderJ2 > poderJ1) {
-//            setMensajeResultado("¡Ganador: " + getTripulacion2().getNombreTripulacion() + "!");
-//        } else {
-//            setMensajeResultado("¡Empate con " + poderJ1 + " puntos de poder!");
-//        }
-//    }
-//
-//    public void dibujar(Graphics g) {
-//        getHud().dibujar(
-//            g,
-//            getJugador1(),
-//            getJugador2(),
-//            getTripulacion1().getNombreTripulacion(),
-//            getTripulacion2().getNombreTripulacion(),
-//            getTiempoRestante(),
-//            isPartidaTerminada(),
-//            getMensajeResultado()
-//        );
-//    }
 
     public Combat(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionCombat configuracionCombat) {
         this.tripulacion1 = tripulacion1;
