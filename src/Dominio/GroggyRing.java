@@ -84,10 +84,11 @@ public class GroggyRing implements Juego {
     /** Indica si el juego ya finalizó. */
     private boolean terminado = false;
 
-    public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionGroggyRing configuracion) {
+    public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionGroggyRing configuracion) throws IOException {
        this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
-       this.bolaJugador1 = new JugadorBola(tripulacion1);
-       this.bolaJugador2 = new JugadorBola(tripulacion2);
+       this.imagen = TileSetManagerGroggyRing.cargarImagenFondoGroggyRing();
+       this.bolaJugador1 = new JugadorBola(tripulacion1 , TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(144, 0 , TAM, TAM));
+       this.bolaJugador2 = new JugadorBola(tripulacion2 , TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(216, 0 , TAM, TAM));
        this.zonaJuego = new Casilla[FILAS][COLUMNAS];
        iniciarJuego();
     }
