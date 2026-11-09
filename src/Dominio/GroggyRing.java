@@ -96,8 +96,8 @@ public class GroggyRing implements Juego {
             ConfiguracionGroggyRing configuracion) throws IOException {
         this.imagen = TileSetManagerGroggyRing.cargarImagenFondoGroggyRing();
         this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
-        this.bolaJugador1 = new JugadorBola(tripulacion1 , (TileSetManagerGroggyRing.cargarImagenGroggyRing()).getSubimage( 144, 0 , TAM, TAM));
-        this.bolaJugador2 = new JugadorBola(tripulacion2 ,  (TileSetManagerGroggyRing.cargarImagenGroggyRing()).getSubimage( 216, 0 , TAM, TAM));
+        this.bolaJugador1 = new JugadorBola(tripulacion1);
+        this.bolaJugador2 = new JugadorBola(tripulacion2);
         this.zonaJuego = new Casilla[FILAS][COLUMNAS];
         iniciarJuego();
     }
