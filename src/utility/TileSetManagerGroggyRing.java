@@ -56,7 +56,7 @@ public class TileSetManagerGroggyRing {
      */
   public static BufferedImage cargarImagenFondoGroggyRing() throws IOException{
         if(TILESETFONDO == null){
-            TILESETFONDO = ImageIO.read(TileSetManagerGroggyRing.class.getResourceAsStream("/assets/fondoGroggyRing.jfif"));
+            TILESETFONDO =  ImageIO.read(TileSetManagerGroggyRing.class.getResourceAsStream("/assets/fondoGroggyRing.png"));
         }
         return TILESETFONDO;
     } //cargarImageFondo
