@@ -34,7 +34,7 @@ public class Torneo {
                 (ConfiguracionDonutRace) configuraciones.get(0));
         break;
     case 1:
-        juegoActual = new GroggyRing(tripulacion1, tripulacion2,
+        juegoActual = new GroggyRino(tripulacion1, tripulacion2,
                 (ConfiguracionGroggyRing) configuraciones.get(1));
         break;
 //    case 2:
