@@ -23,6 +23,7 @@ import static java.awt.event.KeyEvent.VK_UP;
 import static java.awt.event.KeyEvent.VK_W;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import utility.TileSetManagerDonutRace;
 
@@ -52,10 +53,10 @@ public class DonutRace implements Juego{
     private final BufferedImage imagen;
  
     /** Barco del jugador 1 (azul), controlado con W, A, S, D. */
-    private Barco barcoJugador1;
+    private final Barco barcoJugador1;
  
     /** Barco del jugador 2 (rojo), controlado con las flechas. */
-    private Barco barcoJugador2;
+    private final Barco barcoJugador2;
     
 /**Bandera que determina si el juego concluyó o sigue en curso.*/
     private boolean juegoTerminado = false;
@@ -70,29 +71,29 @@ public class DonutRace implements Juego{
     private String mensajeGanador = "";
     
     /** Pista de la carrera. */
-    private Pista pista;
+    private final Pista pista;
  
     /** Meta de la carrera. */
-    private Meta meta;
+    private final Meta meta;
  
     /** Zona de salida de los barcos. */
-    private ZonaSalida salida;
+    private final ZonaSalida salida;
  
     /** Isla fija del escenario. */
-    private Isla isla;
+    private final Isla isla;
  
     /** Motor encargado de detectar y resolver las colisiones entre objetos. */
-    private MotorColision motorColision;
+    private final MotorColision motorColision;
     
-    private ConfiguracionDonutRace configuracionDonut;
+    private final ConfiguracionDonutRace configuracionDonut;
     
     private final DonutRaceHUD donutRaceHUD;
  
     /** Obstáculos activos presentes en el escenario. */
-    private ArrayList <Obstaculo> obstaculos;
+    private final ArrayList <Obstaculo> obstaculos;
  
     /** Obstáculos lanzados activos presentes en el escenario. */
-    private ArrayList <ObstaculoLanzado> obstaculosLanzados;
+    private final ArrayList <ObstaculoLanzado> obstaculosLanzados;
     
     /**
      * Construye una partida con las dos tripulaciones indicadas. Crea los barcos
@@ -136,20 +137,8 @@ public class DonutRace implements Juego{
      * @throws IOException si ocurre un error al cargar la imagen de los obstáculos
      */
    private void iniciarJuego() throws IOException{
-        switch (configuracionDonut.getObstaculosFijos()) {
-            case FACIL:
-                dificultadObstaculosFacil();
-                break;
-            case NORMAL:
-                dificultadObstaculosNormal();
-                break;
-            case DIFICIL:
-                dificultadObstaculosDificil();
-                break;
-            default:
-                break;
-        }
-         this.registrarObjetosColisionable();
+       obstaculos.addAll(GeneradorObstaculo.generar(configuracionDonut.getObstaculosFijos()));
+       registrarObjetosColisionable();
     }
  
     /**
@@ -157,7 +146,7 @@ public class DonutRace implements Juego{
      * la isla y todos los obstáculos y obstáculos lanzados actuales, para que participen en la
      * detección de colisiones.
      */
-    public void registrarObjetosColisionable(){
+    private void registrarObjetosColisionable(){
         this.motorColision.registrarObjeto(barcoJugador1);
         this.motorColision.registrarObjeto(barcoJugador2);
         this.motorColision.registrarObjeto(meta);
@@ -190,75 +179,6 @@ public class DonutRace implements Juego{
      */
     public void removeObstaculo(Obstaculo ob){
         this.obstaculos.remove(ob);
-    }
- 
-    /**
-     * Dificultad Fácil: agrega 7 obstáculos en posiciones fijas. Es una
-     * dificultad que usa {@link #iniciarJuego()}.
-     *
-     * @throws java.io.IOException si ocurre un error al cargar la imagen de los obstáculos
-     */
-    public void dificultadObstaculosFacil() throws IOException{
-        AddObstaculos(new Obstaculo(200, 150));
-        AddObstaculos(new Obstaculo(273, 570));
-        AddObstaculos(new Obstaculo(430, 350));
-        AddObstaculos(new Obstaculo(700, 130));
-        AddObstaculos(new Obstaculo(900, 150));
-        AddObstaculos(new Obstaculo(1000, 80));
-        AddObstaculos(new Obstaculo(1000, 325));
-    }
- 
-    /**
-     * Dificultad Normal: agrega 15 obstáculos en posiciones fijas. Es una
-     * dificultad que usa {@link #iniciarJuego()}.
-     *
-     * @throws java.io.IOException si ocurre un error al cargar la imagen de los obstáculos
-     */
-    public void dificultadObstaculosNormal() throws IOException{
-        AddObstaculos(new Obstaculo(115, 350));
-        AddObstaculos(new Obstaculo(200, 150));
-        AddObstaculos(new Obstaculo(273, 570));
-        AddObstaculos(new Obstaculo(326, 130));
-        AddObstaculos(new Obstaculo(450, 450));
-        AddObstaculos(new Obstaculo(532, 80));
-        AddObstaculos(new Obstaculo(590, 390));
-        AddObstaculos(new Obstaculo(674, 170));
-        AddObstaculos(new Obstaculo(793, 300));
-        AddObstaculos(new Obstaculo(800, 450));
-        AddObstaculos(new Obstaculo(838, 680));
-        AddObstaculos(new Obstaculo(887, 530));
-        AddObstaculos(new Obstaculo(900, 150));
-        AddObstaculos(new Obstaculo(1000, 80));
-        AddObstaculos(new Obstaculo(1100, 325));
-    }
- 
-    /**
-     * Dificultad Difícil: agrega 20 obstáculos en posiciones fijas. Es una
-     * dificultad que usa {@link #iniciarJuego()}.
-     *
-     * @throws java.io.IOException si ocurre un error al cargar la imagen de los obstáculos
-     */
-    public void dificultadObstaculosDificil() throws IOException{
-        AddObstaculos(new Obstaculo(115, 350));
-        AddObstaculos(new Obstaculo(150, 500));
-        AddObstaculos(new Obstaculo(200, 150));
-        AddObstaculos(new Obstaculo(273, 570));
-        AddObstaculos(new Obstaculo(326, 130));
-        AddObstaculos(new Obstaculo(380, 280));
-        AddObstaculos(new Obstaculo(450, 450));
-        AddObstaculos(new Obstaculo(532, 80));
-        AddObstaculos(new Obstaculo(590, 390));
-        AddObstaculos(new Obstaculo(674, 170));
-        AddObstaculos(new Obstaculo(720, 600));
-        AddObstaculos(new Obstaculo(793, 300));
-        AddObstaculos(new Obstaculo(800, 450));
-        AddObstaculos(new Obstaculo(838, 680));
-        AddObstaculos(new Obstaculo(887, 530));
-        AddObstaculos(new Obstaculo(900, 150));
-        AddObstaculos(new Obstaculo(950, 250));
-        AddObstaculos(new Obstaculo(1000, 80));
-        AddObstaculos(new Obstaculo(1100, 325));
-        AddObstaculos(new Obstaculo(1150, 500));
     }
  
     /**
@@ -350,39 +270,17 @@ public class DonutRace implements Juego{
      * es añadido al ArrayList de Obstaculo.
      * @param barco barco que lanzó el obstáculo
      */
-    private void lanzarObstaculos(Barco barco){
-        if(!barco.lanzar()){
-            return;
-        }
-        
-        try {
-            int dirY = barco.getDireccionDisparoY();
-            int dirX = barco.getDireccionDisparoX();
-            double velocidadLanzamiento = barco.getVelocidadOriginal() * 2.0;
-            
-            
-            double posX = barco.getX() + 12;
-            double posY = barco.getY() + 12;
-            
-            if (dirX != 0 && dirY == 0){
-                posX = barco.getX() + (dirX < 0  ?  -25 : 55);
-                posY = barco.getY() + 12;
-            } else if (dirX == 0 && dirY != 0){
-                posX = barco.getX() + 12;
-                posY = barco.getY() + (dirY < 0  ?  -25 : 55);
-            }
-                
-            
-            ObstaculoLanzado obstaculoLanzado = new ObstaculoLanzado(posX, posY, dirX, dirY, velocidadLanzamiento);
-            this.obstaculosLanzados.add(obstaculoLanzado);
-            this.motorColision.registrarObjeto(obstaculoLanzado);
-        } catch (IOException e) {
-            
-        }
-    } // lanzarObstaculos
-    
-    
-    
+    private void lanzarObstaculos(Barco barco) {
+    if (!barco.lanzar()) return;
+    try {
+        ObstaculoLanzado lanzado = LanzadorObstaculo.crear(barco);
+        obstaculosLanzados.add(lanzado);
+        motorColision.registrarObjeto(lanzado);
+    } catch (IOException e) {
+        throw new UncheckedIOException(e); 
+    }
+}
+
    /**
     * Procesa una tecla presionada y pone en movimiento el barco correspondiente o lanza un obstáculo:
     * W, A, S, D, R (disparo) para el jugador 1 y las flechas direccionales, CONTROL (Disparo) para el jugador 2. 
