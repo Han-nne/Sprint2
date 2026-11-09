@@ -84,22 +84,12 @@ public class GroggyRing implements Juego {
     /** Indica si el juego ya finalizó. */
     private boolean terminado = false;
 
-    /**
-     * Crea una nueva partida de Groggy Ring.
-     *
-     * @param tripulacion1  tripulación que controla al jugador 1
-     * @param tripulacion2  tripulación que controla al jugador 2
-     * @param configuracion configuración de la partida (incluye la puntuación de victoria)
-     * @throws IOException si ocurre un error al cargar la imagen de fondo
-     */
-    public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2,
-            ConfiguracionGroggyRing configuracion) throws IOException {
-        this.imagen = TileSetManagerGroggyRing.cargarImagenFondoGroggyRing();
-        this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
-        this.bolaJugador1 = new JugadorBola(tripulacion1 , (TileSetManagerGroggyRing.cargarImagenGroggyRing()).getSubimage( 144, 0 , TAM, TAM));
-        this.bolaJugador2 = new JugadorBola(tripulacion2 ,  (TileSetManagerGroggyRing.cargarImagenGroggyRing()).getSubimage( 216, 0 , TAM, TAM));
-        this.zonaJuego = new Casilla[FILAS][COLUMNAS];
-        iniciarJuego();
+    public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionGroggyRing configuracion) {
+       this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
+       this.bolaJugador1 = new JugadorBola(tripulacion1);
+       this.bolaJugador2 = new JugadorBola(tripulacion2);
+       this.zonaJuego = new Casilla[FILAS][COLUMNAS];
+       iniciarJuego();
     }
 
     /**
