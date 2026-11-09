@@ -31,7 +31,7 @@ import utility.TileSetManagerGroggyRing;
  * @see Casilla
  * @see ConfiguracionGroggyRing
  */
-public class GroggyRino implements Juego {
+public class GroggyRing implements Juego {
 
     /** Tamaño en píxeles de cada casilla. */
     private static final int TAM = Casilla.TAM;
@@ -84,7 +84,7 @@ public class GroggyRino implements Juego {
     /** Indica si el juego ya finalizó. */
     private boolean terminado = false;
 
-    public GroggyRino(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionGroggyRing configuracion) throws IOException {
+    public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionGroggyRing configuracion) throws IOException {
        this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
        this.imagen = TileSetManagerGroggyRing.cargarImagenFondoGroggyRing();
        this.bolaJugador1 = new JugadorBola(tripulacion1 , TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(144, 0 , TAM, TAM));
