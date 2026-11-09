@@ -15,28 +15,29 @@ import javax.swing.Timer;
  *
  * @author Keithy Carrillo
  */
-public class Combat {
+public class Combat implements Juego {
     
-    private Tripulacion tripulacion1;
-    private Tripulacion tripulacion2;
-    private ConfiguracionCombat configuracionCombat;
-    private CombatJugador jugador1;
-    private CombatJugador jugador2;
-    private CombatHUD hud;
-    private int tiempoRestante;
-    private boolean partidaTerminada;
-    private String mensajeResultado;
-    private Timer temporizador;
-    
+    public Tripulacion tripulacion1;
+    public Tripulacion tripulacion2;
+    public ConfiguracionCombat configuracionCombat;
+    public CombatJugador jugador1;
+    public CombatJugador jugador2;
+    public CombatHUD hud;
+    public int tiempoRestante;
+    public boolean partidaTerminada;
+    public String mensajeResultado;
+    public Timer temporizador;
 
+    
     public Combat(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionCombat configuracionCombat) {
         this.tripulacion1 = tripulacion1;
         this.tripulacion2 = tripulacion2;
         this.configuracionCombat = configuracionCombat;
-        iniciarMinijuego();
+        this.hud = new CombatHUD();
     }
 
-    private void iniciarMinijuego() {
+    
+    public void iniciarJuego() {
         ArrayList<Integer> controlesJugador1 = new ArrayList<>();
         controlesJugador1.add(KeyEvent.VK_W);
         controlesJugador1.add(KeyEvent.VK_A);
@@ -76,12 +77,14 @@ public class Combat {
         }));
          getTemporizador().start();
     }
-             
+    
+    @Override
     public void actualizar(){
         
     }
-    
-    public void procesarTeclaSeleccionada(int keyCode){
+  
+    @Override
+    public void procesarTeclaPresionada(int keyCode){
         if (isPartidaTerminada()) {
             return;
         }
@@ -95,9 +98,12 @@ public class Combat {
         }
     }
     
+    
+    @Override
     public void procesarTeclaLiberada(int keyCode){
         
     }
+    
     
     public void finalizarRondaPorJugador(){
         setPartidaTerminada(true);
@@ -118,11 +124,12 @@ public class Combat {
         }
     }
     
+    
+    @Override
     public void dibujar(Graphics g){
         getHud().dibujar(g, getJugador1(), getJugador2(), getTripulacion1().getNombreTripulacion(), getTripulacion2().getNombreTripulacion(), 
                 getTiempoRestante(), isPartidaTerminada(), getMensajeResultado());
     }
-    
     
     
     //getters y setters
@@ -204,7 +211,16 @@ public class Combat {
 
     public void setTemporizador(Timer temporizador) {
         this.temporizador = temporizador;
+    }   
+
+    @Override
+    public boolean haTerminado() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-    
+
+    @Override
+    public boolean listoParaAvanzar() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
 }

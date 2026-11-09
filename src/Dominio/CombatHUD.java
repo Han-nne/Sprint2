@@ -20,7 +20,7 @@ public class CombatHUD {
     private Font fuenteTexto;
     private Font fuenteTeclas;
 
-    public CombatHUD(Font fuenteTitulo, Font fuenteTexto, Font fuenteTeclas) {
+    public CombatHUD() {
         this.fuenteTitulo = new Font("Arial", Font.BOLD, 28);
         this.fuenteTexto = new Font("Arial", Font.BOLD, 20);
         this.fuenteTeclas = new Font("Monospaced", Font.BOLD, 24);
@@ -107,7 +107,9 @@ public class CombatHUD {
             }
             
             g.fillRoundRect(posX, startY, 55, 55, 10, 10);
-            g.drawString(obtenerSimboloTecla(secuencia.get(i)), posX + 19, startY + 36);
+            g.setColor(Color.BLACK);
+            g.drawRoundRect(posX, startY, 55, 55, 10, 10);
+            g.drawString(obtenerSimboloTecla(secuencia.get(i)), posX + 19, startY + 36); 
             
         } // fin de for
     }
