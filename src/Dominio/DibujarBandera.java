@@ -10,27 +10,11 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 
 /**
- * Clase encargada de dibujar sobre un panel las banderas y los nombres de dos
- * tripulaciones enfrentadas.
- * <p>
- * La primera tripulación se dibuja en la esquina superior izquierda y la
- * segunda en la esquina superior derecha. Cada una se muestra dentro de una
- * caja semitransparente con bordes redondeados que contiene la bandera y el
- * nombre de la tripulación.
- * <p>
- * Las tripulaciones se reciben al construir el objeto, por lo que cada
- * instancia queda asociada a un par de tripulaciones y puede redibujarse con
- * {@link #dibujar(Graphics)} las veces que sea necesario (por ejemplo, desde
- * {@code paintComponent}).
- * <p>
- * La posición de los elementos del lado derecho se calcula suponiendo un
- * ancho de panel fijo de 1280 píxeles.
- *
- * @author Keithy Carrillo
- * @see Tripulacion
+ * Dibuja en la parte superior de un panel las banderas y los nombres de dos
+ * tripulaciones: la primera a la izquierda y la segunda a la derecha.
  */
 public class DibujarBandera {
-
+ 
     /**
      * Tripulación que se dibuja en el lado izquierdo del panel.
      */
@@ -87,7 +71,7 @@ public class DibujarBandera {
 
         g.setFont(new Font("Segoe UI", Font.BOLD, 14));
         FontMetrics fm = g.getFontMetrics();
-       
+
         String nombre1 = this.tripulacion1.getNombreTripulacion();
         int anchoTexto1 = fm.stringWidth(nombre1);
         int anchoCaja1 = tamannoBandera + anchoTexto1 + 25;
@@ -101,7 +85,7 @@ public class DibujarBandera {
 
         g.setColor(Color.WHITE);
         g.drawString(nombre1, margen + tamannoBandera + 10, margen + (tamannoBandera / 2) + 5);
-     
+
         String nombre2 = this.tripulacion2.getNombreTripulacion();
         int anchoTexto2 = fm.stringWidth(nombre2);
         int anchoCaja2 = tamannoBandera + anchoTexto2 + 25;
@@ -110,7 +94,6 @@ public class DibujarBandera {
         int xTexto2 = xBandera2 - anchoTexto2 - 10;
         int xCaja2 = xTexto2 - 10;
 
-        
         g.setColor(new Color(0, 0, 0, 140));
         g.fillRoundRect(xCaja2, margen - 5, anchoCaja2, tamannoBandera + 10, 12, 12);
 

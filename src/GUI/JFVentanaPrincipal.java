@@ -6,6 +6,7 @@ package GUI;
 
 import Dominio.ConfiguracionGeneral;
 import Dominio.Tripulacion;
+import Negocios.TripulacionNegocios;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,11 @@ import javax.swing.JOptionPane;
  * dentro del cual se abren las ventanas internas del programa y es quien guarda
  * el estado compartido: las tripulaciones registradas y la configuración de los
  * minijuegos.
+ * <p>
+ * Al iniciar, carga las tripulaciones guardadas en el archivo de texto
+ * mediante {@link TripulacionNegocios}, de modo que se conservan entre
+ * ejecuciones del programa.
+ * </p>
  * <p>
  * Desde su menú permite:
  * </p>
@@ -34,16 +40,22 @@ import javax.swing.JOptionPane;
  * @see JIFRegistroTripulacion
  * @see JIFParametrosAdministrador
  * @see JIFVentanaTorneo
+ * @see TripulacionNegocios
  */
 public class JFVentanaPrincipal extends javax.swing.JFrame {
     
-    /** Registro de eventos y errores de esta ventana. */ 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JFVentanaPrincipal.class.getName());
+/** Registro de eventos y errores de esta ventana. */
+        /**
+     * Capa de negocio usada para leer las tripulaciones guardadas en el
+     * archivo de texto. Se usa en {@link #cargarTripulaciones()}.
+     */
+    private TripulacionNegocios tripulacionNegocios;
     
       /**
-     * Lista de tripulaciones registradas. Se llena mediante
-     * {@link #agregarTripulacion(Dominio.Tripulacion)}, que impide que haya dos
-     * tripulaciones con el mismo nombre.
+     * Lista de tripulaciones registradas en memoria. Se llena al iniciar la
+     * ventana con las tripulaciones guardadas en el archivo
+     * ({@link #cargarTripulaciones()}) y se mantiene al día con las nuevas
+     * mediante {@link #agregarTripulacion(Dominio.Tripulacion)}.
      */
     private List <Tripulacion> tripulaciones;
     
@@ -55,16 +67,19 @@ public class JFVentanaPrincipal extends javax.swing.JFrame {
      */
     
     private List <ConfiguracionGeneral> configuraciones;
-
+ 
     
      /**
-     * Construye la ventana principal: inicializa las listas de tripulaciones y
-     * configuraciones, crea los componentes gráficos y maximiza la ventana.
+     * Construye la ventana principal: crea los componentes gráficos, carga las
+     * tripulaciones guardadas en el archivo, inicializa la lista de
+     * configuraciones y maximiza la ventana.
      */
     public JFVentanaPrincipal() {
-       this.tripulaciones = new ArrayList<>();
-       this.configuraciones = new ArrayList<>();
-        initComponents();
+         this.tripulacionNegocios = new TripulacionNegocios();
+         this.tripulaciones = new ArrayList<>();
+         this.configuraciones = new ArrayList<>();
+         initComponents();
+        cargarTripulaciones();
     }
 
     /**
@@ -146,35 +161,41 @@ public class JFVentanaPrincipal extends javax.swing.JFrame {
     private void mniCerrarProgramaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniCerrarProgramaActionPerformed
         dispose();
     }//GEN-LAST:event_mniCerrarProgramaActionPerformed
-     /**
+    
+      /**
      * Maneja la opción de menú "Registrar tripulaciones": crea una ventana
      * {@link JIFRegistroTripulacion}, la agrega al escritorio y la hace visible.
      *
      * @param evt evento de acción generado al seleccionar "Registrar tripulaciones"
      */
     private void mniRegistroTripulacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniRegistroTripulacionActionPerformed
-
-                JIFRegistroTripulacion ji = new JIFRegistroTripulacion(this); 
-                dtpContenedorPrincipal.add(ji);
-                ji.setVisible(true);
+                JIFRegistroTripulacion jInternalRegistrarTripulacion = new JIFRegistroTripulacion(this); 
+                dtpContenedorPrincipal.add(jInternalRegistrarTripulacion);
+                jInternalRegistrarTripulacion.setVisible(true);
     }//GEN-LAST:event_mniRegistroTripulacionActionPerformed
 
-  /**
-     * Agrega una tripulación a la lista de tripulaciones registradas.
+    /**
+     * Agrega una tripulación a la lista de tripulaciones en memoria.
+     * <p>
+     * Este método no guarda nada en el archivo; el guardado lo hace
+     * {@link TripulacionNegocios#registrarTripulacion(Dominio.Tripulacion)}.
+     * Se usa para mantener la lista al día después de registrar una tripulación
+     * nueva.
+     * </p>
      * 
-     * @param tripulacionNueva tripulación que se desea registrar
+     * @param tripulacionNueva tripulación que se desea agregar a la lista
      */
   public void agregarTripulacion( Tripulacion tripulacionNueva ) {
      this.tripulaciones.add(tripulacionNueva);
   }
   
   /**
-   * <p>
-     * Valida que no exista otra tripulación con el mismo nombre, si
-     * el nombre ya existe, muestra un mensaje de error y no agrega la tripulación.
-     * </p>
-   * @param nombreTripulacion 
-   * @return 
+   * Indica si ya existe una tripulación con el nombre dado en la lista en
+   * memoria. La comparación no distingue entre mayúsculas y minúsculas.
+   *
+   * @param nombreTripulacion nombre que se desea buscar
+   * @return {@code true} si ya hay una tripulación con ese nombre;
+   *         {@code false} en caso contrario
    */
       
   public boolean existeTripulacion(String nombreTripulacion){
@@ -185,7 +206,21 @@ public class JFVentanaPrincipal extends javax.swing.JFrame {
        }
       return false;
   }
-
+    
+    /**
+     * Carga en {@link #tripulaciones} las tripulaciones guardadas en el archivo
+     * de texto. Si el archivo todavía no existe, la lista queda vacía. Si
+     * ocurre un error de lectura, lo registra en el log, avisa al usuario y la
+     * lista queda vacía.
+     */
+    private void cargarTripulaciones() {
+        try {
+            this.tripulaciones = this.tripulacionNegocios.listarTripulaciones();
+        } catch (IOException ex) {
+            this.tripulaciones = new ArrayList<>();
+            JOptionPane.showMessageDialog(this, "No se pudieron cargar las tripulaciones guardadas.");
+        }
+    }
     /**
      * Maneja la opción de menú "Parámetros de Juego": crea una ventana
      * {@link JIFParametrosAdministrador} que recibe esta ventana como referencia,
