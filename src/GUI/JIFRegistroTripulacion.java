@@ -5,8 +5,7 @@
 package GUI;
 
 import Dominio.Tripulacion;
-import java.awt.HeadlessException;
-import java.awt.image.BufferedImage;
+import Negocios.TripulacionNegocios;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -36,7 +35,13 @@ public class JIFRegistroTripulacion extends javax.swing.JInternalFrame {
      * Ventana principal que valida y guarda las tripulaciones. Se usa en
      * {@link #jbtnRegistrarActionPerformed(java.awt.event.ActionEvent)}.
      */
-    private JFVentanaPrincipal ventanaPrincipal;
+    private final JFVentanaPrincipal ventanaPrincipal;
+    
+     /**
+     * Capa de negocio que valida y guarda las tripulaciones. Se usa en
+     * {@link #jbtnRegistrarActionPerformed(java.awt.event.ActionEvent)}.
+     */
+    private TripulacionNegocios tripulacionNegocios;
     
      /**
      * Construye la ventana de registro de tripulaciones.
@@ -46,6 +51,7 @@ public class JIFRegistroTripulacion extends javax.swing.JInternalFrame {
      */
     public JIFRegistroTripulacion( JFVentanaPrincipal ventanaPrincipal ) {
         this.ventanaPrincipal = ventanaPrincipal;
+        this.tripulacionNegocios = new TripulacionNegocios();
         initComponents();
         setClosable(true);
     }
@@ -113,51 +119,70 @@ public class JIFRegistroTripulacion extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
+      /**
      * Maneja el clic en el botón "Registrar".
      * <p>
      * Toma el nombre escrito en {@link #jtfNombreTripulacion} (sin espacios al
      * inicio ni al final) y verifica que no esté vacío ni esté en uso mediante
-     * {@link JFVentanaPrincipal#existeTripulacion(String)}. Si es válido:
+     * {@link TripulacionNegocios#existeTripulacion(String)}. Si es válido:
      * </p>
      * <ol>
-     *   <li>Pide la bandera con {@link #seleccionarImagen()}, repitiendo la
-     *       selección hasta obtener una imagen válida.</li>
-     *   <li>Crea la {@link Tripulacion} y la envía a {@link #ventanaPrincipal}.</li>
+     *   <li>Pide la bandera con {@link #seleccionarImagen()}. Si el usuario
+     *       cancela o elige un archivo inválido, se le pregunta si desea
+     *       intentar de nuevo; si responde que no, se cancela el registro.</li>
+     *   <li>Crea la {@link Tripulacion} y la guarda con
+     *       {@link TripulacionNegocios#registrarTripulacion(Dominio.Tripulacion)}.</li>
      *   <li>Muestra un mensaje de confirmación y cierra esta ventana.</li>
      * </ol>
      * <p>
      * Si el nombre no es válido, muestra un mensaje de error y la ventana queda
-     * abierta para que el usuario corrija el nombre.
+     * abierta para que el usuario corrija el nombre. Si ocurre un error al
+     * leer o escribir el archivo, se informa al usuario y no se cierra la
+     * ventana.
      * </p>
      *
      * @param evt evento de acción generado al hacer clic en "Registrar"
      */
     private void jbtnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnRegistrarActionPerformed
-        String nombreTripulacion = jtfNombreTripulacion.getText().trim();
-        BufferedImage bandera = null;
-        
-        if (!nombreTripulacion.isEmpty() ) {
-            if ( !this.ventanaPrincipal.existeTripulacion(nombreTripulacion)) {
-                
-            
-            JOptionPane.showMessageDialog(rootPane, "Ingrese su bandera");
-            
-            while (bandera == null) {                
-                 bandera = seleccionarImagen();
+           String nombre = jtfNombreTripulacion.getText().trim();
+ 
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Error: El nombre no puede estar vacío");
+            return;
+        }
+ 
+        try {
+            if (tripulacionNegocios.existeTripulacion(nombre)) {
+                JOptionPane.showMessageDialog(this, "Error: Nombre en uso");
+                return;
             }
-            
-            Tripulacion jugador = new Tripulacion(nombreTripulacion, bandera);
-   
-            this.ventanaPrincipal.agregarTripulacion(jugador );
-            JOptionPane.showMessageDialog(this, "¡Tripulacion agregada con éxito!");
-            this.dispose(); 
-            
-            }else{
-                 JOptionPane.showMessageDialog(rootPane, " Error : Nombre en uso"); 
+ 
+            JOptionPane.showMessageDialog(this, "Ingrese su bandera");
+            String bandera = null;
+            while (bandera == null) {
+                bandera = seleccionarImagen();
+                if (bandera == null) {
+                    int op = JOptionPane.showConfirmDialog(this,
+                            "No se seleccionó una bandera válida. ¿Intentar de nuevo?",
+                            "Bandera", JOptionPane.YES_NO_OPTION);
+                    if (op != JOptionPane.YES_OPTION) {
+                        return; // cancela el registro
+                    }
+                }
             }
-          } else {
-            JOptionPane.showMessageDialog(rootPane, " Error : El nombre no puede estar vacio");
+ 
+            Tripulacion tripulacion = new Tripulacion(nombre, bandera);
+ 
+            // false = otra tripulación tomó el nombre mientras tanto
+            if (!tripulacionNegocios.registrarTripulacion(tripulacion)) {
+                JOptionPane.showMessageDialog(this, "Error: Nombre en uso");
+                return;
+            }
+            ventanaPrincipal.agregarTripulacion(tripulacion);
+            JOptionPane.showMessageDialog(this, "¡Tripulación agregada con éxito!");
+            this.dispose();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo guardar la tripulación: " + ex.getMessage());
         }
     }//GEN-LAST:event_jbtnRegistrarActionPerformed
 
@@ -165,36 +190,36 @@ public class JIFRegistroTripulacion extends javax.swing.JInternalFrame {
      * Abre un selector de archivos para que el usuario elija una imagen (JPG,
      * JPEG o PNG) que se usará como bandera de la tripulación.
      * <p>
-     * Si el usuario cancela, el archivo no es una imagen válida o ocurre un error
-     * de lectura, muestra un mensaje cuando corresponde y devuelve {@code null}.
+     * Comprueba con {@link ImageIO#read(java.io.File)} que el archivo sea
+     * realmente una imagen. Si el usuario cancela, el archivo no es una imagen
+     * válida o ocurre un error de lectura, devuelve {@code null}.
      * </p>
      *
-     * @return la imagen seleccionada, o {@code null} si no se obtuvo ninguna
+     * @return la ruta absoluta de la imagen seleccionada, o {@code null} si no
+     *         se obtuvo ninguna
      */
-    private BufferedImage seleccionarImagen() {
-
-         JFileChooser fileChooser = new JFileChooser();
-         FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos de Imagen (JPG, PNG)", "jpg", "png", "jpeg");
-         fileChooser.setFileFilter(filtro);
-         int resultado = fileChooser.showOpenDialog(this);
-
-         if (resultado == JFileChooser.APPROVE_OPTION) {
-                 File archivo = fileChooser.getSelectedFile();
-                 try {
-                        BufferedImage imagen = ImageIO.read(archivo);
-                       if (imagen != null) {
-                                   return imagen;
-                        } else {
-                                  JOptionPane.showMessageDialog(this, 
-                                  "El archivo seleccionado no es una bandera valida." );
-                        }
-                } catch (HeadlessException | IOException e) {
-                         JOptionPane.showMessageDialog(this, 
-                         "Ocurrió un error al cargar su bandera: ");
-        }//try
-    }//if
-    return null; 
-}//final filechoser
+    private String seleccionarImagen() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter(
+                "Archivos de Imagen (JPG, PNG)", "jpg", "png", "jpeg"));
+ 
+        if (fileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return null; // el usuario canceló
+        }
+ 
+        File archivo = fileChooser.getSelectedFile();
+        try {
+            // ImageIO.read devuelve null si el archivo no es una imagen soportada
+            if (ImageIO.read(archivo) == null) {
+                JOptionPane.showMessageDialog(this, "El archivo seleccionado no es una imagen válida.");
+                return null;
+            }
+            return archivo.getAbsolutePath();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al leer la imagen.");
+            return null;
+        }
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel JPAreaRegistro;
