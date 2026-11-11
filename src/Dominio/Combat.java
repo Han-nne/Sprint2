@@ -17,23 +17,24 @@ import javax.swing.Timer;
  */
 public class Combat implements Juego {
     
-    public Tripulacion tripulacion1;
-    public Tripulacion tripulacion2;
-    public ConfiguracionCombat configuracionCombat;
-    public CombatJugador jugador1;
-    public CombatJugador jugador2;
-    public CombatHUD hud;
-    public int tiempoRestante;
-    public boolean partidaTerminada;
-    public String mensajeResultado;
-    public Timer temporizador;
+    private Tripulacion tripulacion1;
+    private Tripulacion tripulacion2;
+    private ConfiguracionCombat configuracionCombat;
+    private CombatJugador jugadorCombat1;
+    private CombatJugador jugadorCombat2;
+    private CombatHUD hudCombat;
+    private int tiempoRestanteCombat;
+    private boolean partidaTerminadaCombat;
+    private String mensajeResultado;
+    private Timer temporizadorCombat;
 
     
     public Combat(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionCombat configuracionCombat) {
         this.tripulacion1 = tripulacion1;
         this.tripulacion2 = tripulacion2;
         this.configuracionCombat = configuracionCombat;
-        this.hud = new CombatHUD();
+        this.hudCombat = new CombatHUD();
+        iniciarJuego();
     }
 
     
@@ -51,31 +52,31 @@ public class Combat implements Juego {
         int valorInicial = getConfiguracionCombat().getValorInicialBarra();
         int longitudSecuencia = 4;
         
-        this.jugador1 = new CombatJugador(valorInicial, controlesJugador1, longitudSecuencia);
-        this.jugador2 = new CombatJugador(valorInicial, controlesJugador2, longitudSecuencia);
+        this.jugadorCombat1 = new CombatJugador(valorInicial, controlesJugador1, longitudSecuencia);
+        this.jugadorCombat2 = new CombatJugador(valorInicial, controlesJugador2, longitudSecuencia);
         
-        this.tiempoRestante = 45;
-        this.partidaTerminada = false;
+        this.tiempoRestanteCombat = 45;
+        this.partidaTerminadaCombat = false;
         this.mensajeResultado = "";
         
-        if (getTemporizador() != null) {
-            getTemporizador().stop();
+        if (getTemporizadorCombat() != null) {
+            getTemporizadorCombat().stop();
         }
         
-        setTemporizador(new Timer(1000, new ActionListener() {
+        setTemporizadorCombat(new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!isPartidaTerminada()) {
-                    setTiempoRestante(getTiempoRestante() - 1);
-                    if (getTiempoRestante() <= 0) {
-                        setTiempoRestante(0);
-                        getTemporizador().stop();
+                if (!isPartidaTerminadaCombat()) {
+                    setTiempoRestanteCombat(getTiempoRestanteCombat() - 1);
+                    if (getTiempoRestanteCombat() <= 0) {
+                        setTiempoRestanteCombat(0);
+                        getTemporizadorCombat().stop();
                         finalizarRondaPorJugador();
                     }
                 }
             }
         }));
-         getTemporizador().start();
+         getTemporizadorCombat().start();
     }
     
     @Override
@@ -85,15 +86,15 @@ public class Combat implements Juego {
   
     @Override
     public void procesarTeclaPresionada(int keyCode){
-        if (isPartidaTerminada()) {
+        if (isPartidaTerminadaCombat()) {
             return;
         }
         
         if (getConfiguracionCombat().isTecladoCompartido()) {
-            if (getJugador1().perteneceTeclaJugador(keyCode)) {
-                getJugador1().procesarIntento(keyCode);
-            } else if (getJugador2().perteneceTeclaJugador(keyCode)) {
-                getJugador2().procesarIntento(keyCode);
+            if (getJugadorCombat1().perteneceTeclaJugador(keyCode)) {
+                getJugadorCombat1().procesarIntento(keyCode);
+            } else if (getJugadorCombat2().perteneceTeclaJugador(keyCode)) {
+                getJugadorCombat2().procesarIntento(keyCode);
             }
         }
     }
@@ -106,14 +107,14 @@ public class Combat implements Juego {
     
     
     public void finalizarRondaPorJugador(){
-        setPartidaTerminada(true);
+        setPartidaTerminadaCombat(true);
         
-        if (getTemporizador() != null) {
-            getTemporizador().stop();
+        if (getTemporizadorCombat() != null) {
+            getTemporizadorCombat().stop();
         }
         
-        int poderJugador1 = getJugador1().getBarraPoder();
-        int poderJugador2 = getJugador2().getBarraPoder();
+        int poderJugador1 = getJugadorCombat1().getBarraPoder();
+        int poderJugador2 = getJugadorCombat2().getBarraPoder();
         
         if (poderJugador1 > poderJugador2) {
             setMensajeResultado("El ganador es " + getTripulacion1().getNombreTripulacion());
@@ -127,8 +128,8 @@ public class Combat implements Juego {
     
     @Override
     public void dibujar(Graphics g){
-        getHud().dibujar(g, getJugador1(), getJugador2(), getTripulacion1().getNombreTripulacion(), getTripulacion2().getNombreTripulacion(), 
-                getTiempoRestante(), isPartidaTerminada(), getMensajeResultado());
+        getHudCombat().dibujar(g, getJugadorCombat1(), getJugadorCombat2(), getTripulacion1().getNombreTripulacion(), getTripulacion2().getNombreTripulacion(), 
+                getTiempoRestanteCombat(), isPartidaTerminadaCombat(), getMensajeResultado());
     }
     
     
@@ -157,44 +158,44 @@ public class Combat implements Juego {
         this.configuracionCombat = configuracionCombat;
     }
 
-    public CombatJugador getJugador1() {
-        return jugador1;
+    public CombatJugador getJugadorCombat1() {
+        return jugadorCombat1;
     }
 
-    public void setJugador1(CombatJugador jugador1) {
-        this.jugador1 = jugador1;
+    public void setJugadorCombat1(CombatJugador jugadorCombat1) {
+        this.jugadorCombat1 = jugadorCombat1;
     }
 
-    public CombatJugador getJugador2() {
-        return jugador2;
+    public CombatJugador getJugadorCombat2() {
+        return jugadorCombat2;
     }
 
-    public void setJugador2(CombatJugador jugador2) {
-        this.jugador2 = jugador2;
+    public void setJugadorCombat2(CombatJugador jugadorCombat2) {
+        this.jugadorCombat2 = jugadorCombat2;
     }
 
-    public CombatHUD getHud() {
-        return hud;
+    public CombatHUD getHudCombat() {
+        return hudCombat;
     }
 
-    public void setHud(CombatHUD hud) {
-        this.hud = hud;
+    public void setHudCombat(CombatHUD hudCombat) {
+        this.hudCombat = hudCombat;
     }
 
-    public int getTiempoRestante() {
-        return tiempoRestante;
+    public int getTiempoRestanteCombat() {
+        return tiempoRestanteCombat;
     }
 
-    public void setTiempoRestante(int tiempoRestante) {
-        this.tiempoRestante = tiempoRestante;
+    public void setTiempoRestanteCombat(int tiempoRestanteCombat) {
+        this.tiempoRestanteCombat = tiempoRestanteCombat;
     }
 
-    public boolean isPartidaTerminada() {
-        return partidaTerminada;
+    public boolean isPartidaTerminadaCombat() {
+        return partidaTerminadaCombat;
     }
 
-    public void setPartidaTerminada(boolean partidaTerminada) {
-        this.partidaTerminada = partidaTerminada;
+    public void setPartidaTerminadaCombat(boolean partidaTerminadaCombat) {
+        this.partidaTerminadaCombat = partidaTerminadaCombat;
     }
 
     public String getMensajeResultado() {
@@ -205,20 +206,21 @@ public class Combat implements Juego {
         this.mensajeResultado = mensajeResultado;
     }
 
-    public Timer getTemporizador() {
-        return temporizador;
+    public Timer getTemporizadorCombat() {
+        return temporizadorCombat;
     }
 
-    public void setTemporizador(Timer temporizador) {
-        this.temporizador = temporizador;
+    public void setTemporizadorCombat(Timer temporizadorCombat) {
+        this.temporizadorCombat = temporizadorCombat;
     }   
+    
 
     @Override
     public boolean haTerminado() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return isPartidaTerminadaCombat();
     }
 
-    @Override
+    
     public boolean listoParaAvanzar() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }

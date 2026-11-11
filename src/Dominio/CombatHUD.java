@@ -53,41 +53,45 @@ public class CombatHUD {
     
     public void dibujar(Graphics g, CombatJugador jugador1, CombatJugador jugador2, String nombreJugador1, String nombreJugador2, int tiempoRestante, boolean terminado, String mensajeGanador){
         g.setColor(new Color(28, 33, 43));
-        g.fillRect(0, 0, 1000, 700);
+        g.fillRect(0, 0, 2000, 1200);
         
         g.setFont(getFuenteTitulo());
         g.setColor(Color.WHITE);
         g.drawString("Tiempo restante: " + tiempoRestante + "segundos", 350, 60);
         
-        dibujarPanelJugador(g, jugador1, nombreJugador1 + "(W, A, D)", 80, 140, new Color(0, 180, 255));
-        dibujarPanelJugador(g, jugador2, nombreJugador2 + "(←, ↑, →)", 560, 140, new Color(255, 115, 0));
+        dibujarPanelJugador(g, jugador1, nombreJugador1 + "(W, A, D)", 20, 95, 80, 510, new Color(0, 180, 255));
+        dibujarPanelJugador(g, jugador2, nombreJugador2 + "(←, ↑, →)", 930, 95, 930, 510, new Color(255, 115, 0));
         
         if (terminado) {
-            g.setColor(new Color(0, 0, 0, 200));
-            g.fillRoundRect(180, 380, 620, 110, 15, 15);
+            g.setColor(new Color(0, 0, 0, 210));
+            g.fillRoundRect(330, 250, 620, 130, 15, 15);
             g.setColor(Color.YELLOW);
             g.setFont(getFuenteTitulo());
-            g.drawString(mensajeGanador, 220, 445);
+            g.drawString(mensajeGanador, 370, 305);
+            
+            g.setColor(Color.WHITE);
+            g.setFont(getFuenteTexto());
+            g.drawString("Presione cualquier tecla para continuar", 410, 350);
         }
     }
     
     
-    private void dibujarPanelJugador(Graphics g, CombatJugador jugador, String titulo, int x, int y, Color colorBarra){
-        g.setFont(getFuenteTexto());
-        g.setColor(colorBarra);
-        g.drawString(titulo, x, y);
-        
+    private void dibujarPanelJugador(Graphics g, CombatJugador jugador, String titulo, int x, int y, int par3, int par4, Color colorBarra){
         g.setColor(Color.DARK_GRAY);
-        g.fillRect(x, y + 20, 320, 30);
+        g.fillRect(x, y, 300, 26);
         
         g.setColor(colorBarra);
-        int anchoRelleno = Math.min(320, jugador.getBarraPoder() * 2);
-        g.fillRect(x, y + 20, anchoRelleno, 30);
+        int anchoRelleno = Math.min(300, jugador.getBarraPoder() * 3);
+        g.fillRect(x, y, anchoRelleno, 26);
         
         g.setColor(Color.WHITE);
-        g.drawRect(x, y + 20, 320, 30);
-        g.drawString("Barra de Poder: " + jugador.getBarraPoder() + "puntos", x, y + 75);
+        g.drawRect(x, y, 300, 26);
         
+        g.setFont(getFuenteTexto());
+        g.drawString("Barra de Poder: " + jugador.getBarraPoder() + "puntos", x, y + 48);
+        
+        g.setColor(colorBarra);
+    
         dibujarSecuenciaTeclas(g, jugador.getSecuenciaActual(), jugador.getIndiceProgreso(), x, y + 115);
         
     }
