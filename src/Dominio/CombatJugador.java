@@ -141,7 +141,7 @@ public class CombatJugador {
             setBarraPoder(getValorInicialBarra());
             setPrimerIntento(false);
         } else {
-            setBarraPoder(getBarraPoder() + 5);
+            setBarraPoder(Math.min(getValorInicialBarra(), getBarraPoder() + 5));
         }
         
     }

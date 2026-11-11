@@ -37,10 +37,10 @@ public class Torneo {
         juegoActual = new GroggyRing(tripulacion1, tripulacion2,
                 (ConfiguracionGroggyRing) configuraciones.get(1));
         break;
-//    case 2:
-//        juegoActual = new Combat(tripulacion1, tripulacion2,
-//                (ConfiguracionCombat) configuraciones.get(2));
-//        break;
+    case 2:
+        juegoActual = new Combat(tripulacion1, tripulacion2,
+                (ConfiguracionCombat) configuraciones.get(2));
+        break;
     default:
         throw new IllegalArgumentException("Juego inexistente: " + indice);
 }
