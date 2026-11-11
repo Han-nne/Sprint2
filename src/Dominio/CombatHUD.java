@@ -57,7 +57,7 @@ public class CombatHUD {
         
         g.setFont(getFuenteTitulo());
         g.setColor(Color.WHITE);
-        g.drawString("Tiempo restante: " + tiempoRestante + "segundos", 350, 60);
+        g.drawString("Tiempo restante: " + tiempoRestante + " segundos", 350, 60);
         
         dibujarPanelJugador(g, jugador1, nombreJugador1 + "(W, A, D)", 20, 95, 80, 510, new Color(0, 180, 255));
         dibujarPanelJugador(g, jugador2, nombreJugador2 + "(←, ↑, →)", 930, 95, 930, 510, new Color(255, 115, 0));
@@ -88,7 +88,7 @@ public class CombatHUD {
         g.drawRect(x, y, 300, 26);
         
         g.setFont(getFuenteTexto());
-        g.drawString("Barra de Poder: " + jugador.getBarraPoder() + "puntos", x, y + 48);
+        g.drawString("Barra de Poder: " + jugador.getBarraPoder() + " puntos", x, y + 48);
         
         g.setColor(colorBarra);
     
