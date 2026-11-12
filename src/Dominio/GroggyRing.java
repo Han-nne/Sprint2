@@ -205,7 +205,8 @@ public class GroggyRing implements Juego {
             return;
         }
 
-        int nuevaFila = bola.getFila() + dFila;
+        int pasos = 1 + bola.getCasillasExtra();
+        int nuevaFila = bola.getFila() + (dFila * pasos);
         int nuevaCol = bola.getColumna() + dCol;
 
         if (nuevaFila < 0 || nuevaFila >= FILAS || nuevaCol < 0 || nuevaCol >= COLUMNAS) {
@@ -220,6 +221,8 @@ public class GroggyRing implements Juego {
         zonaJuego[bola.getFila()][bola.getColumna()].setJugadorBola(null);
         colocar(bola, nuevaFila, nuevaCol);
 
+        bola.setCasillasExtra(0);
+        
         if (destino instanceof CasillaNeumatico
                 && ((CasillaNeumatico) destino).getDueno() != bola) {
 
@@ -232,11 +235,18 @@ public class GroggyRing implements Juego {
             return;
         }
 
-        turnoActual = rivalDe(bola);
+        JugadorBola siguienteTurno = rivalDe(bola);
+        if(siguienteTurno.isTurnoOmitido()){
+            siguienteTurno.setTurnoOmitido(false);
+            turnoActual = bola;
+        } else{
+            turnoActual = siguienteTurno;
+        }
+        
     }
 
     /**
-     * Extrae y remueve una carta del mazo, y se le agrega al mazo personal del jugador.
+     * Extrae una carta del mazo, y se le agrega al mazo personal del jugador.
      * @param jugador jugador que robó la carta.
      */
     private void robarCarta(JugadorBola jugador) throws IOException{
@@ -246,27 +256,19 @@ public class GroggyRing implements Juego {
     }
     
     /**
-     * Se detecta la posición del rival, le quita el turno (excepto que tenga el escudo activo)
-     * y descarta la carta.
-     * @param atacante jugador que lanzó la carta de ataque.
-     * @param rival jugador que recibirá los efectos de la carta lanzada.
+     * Permite al jugador usar una carta de su mazo personal.
+     * 
+     * @param jugador el jugador que usa la carta.
+     * @param carta la carta específica que desea jugar.
      */
-    private void usarCartaAtaque(JugadorBola atacante, JugadorBola rival){
-        int filaRival = rival.getFila();
-        int colRival = rival.getColumna();
+    public void usarCarta(JugadorBola jugador, Carta carta){
+        if(terminado || pausa > 0 || jugador !=turnoActual) return;
         
-        if(rival.isEscudoActivo()){
-            rival.setEscudoActivo(false);
-        }else {
-            rival.setTurnoOmitido(true);
-        }
+        JugadorBola rival = rivalDe(jugador);
+        carta.aplicarEfecto(jugador, rival, this);
+        jugador.usarCartaEnMazoPersonal(carta);
     }
     
-    /**
-     * Se establece una protección de daño al jugador.
-     * @param jugador jugador que lanzó la carta de defensa.
-     */
-    private void usarCartaDefensa(JugadorBola jugador){ jugador.setEscudoActivo(true);}
     
     /**
      * Actualiza el estado del juego en cada ciclo. Mientras hay una pausa
