@@ -56,7 +56,6 @@ public class Torneo {
 
     public void actualizarJuego() throws IOException {
         juegoActual.actualizar();
-           juegoActual.actualizar();
         if (juegoActual.haTerminado()) {
             try {
                 siguienteJuego();
