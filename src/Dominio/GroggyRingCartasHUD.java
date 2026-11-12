@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Clase encargada de renderizar todos los elementos visuales de interfaz  (HUD)
- * de GroggyRing: barras de vida, mazo central y las manos de 5 cartas 
+ * de GroggyRing: mazo central y las cartas almacenadas en el mazo personal
  * de cada jugador en la parte inferior de la pantalla.
  * 
  * @author emmanuelarce
@@ -52,7 +52,9 @@ public class GroggyRingCartasHUD {
     public void dibujar(Graphics g){
         if(jugador1 == null || jugador2 == null || mazo == null) return;
         
-        
+        dibujarPanelJugador(g, 130, 660, jugador1, true);
+        dibujarMazoCentral(g, 590, 660);
+        dibujarPanelJugador(g, 810, 660, jugador2, true);
     }
     
     /**
@@ -74,19 +76,19 @@ public class GroggyRingCartasHUD {
                 ? jugador.getTripulacion().getNombreTripulacion()
                 : (esJugador1 ? "Jugador 1 ": "Jugador 2");
         
-        g.drawString(nombreTripulacion + " | HP: " + jugador.getVida() + "/100", x + 10, y - 15);
+        g.drawString(nombreTripulacion + " | Mazo personal: ", x + 10, y - 15);
         
-        List<Carta> mano = jugador.getMano();
+        List<Carta> mazoPersonal = jugador.getMazoPersonal();
         int cartaAncho = 60;
         int cartaAlto = 45;
         int separacion = 8;
         
-        for (int i = 0; i < mano.size(); i++) {
+        for (int i = 0; i < mazoPersonal.size(); i++) {
             int cartaX = x + (i * cartaAncho + separacion);
             int cartaY = y + 5;
             
-            //Fondo de la carta según su tipo (Rojo, Azul, Verde, respectivamente)
-            Carta carta  = mano.get(i);
+            //Fondo de la carta según su tipo (Rojo, Azul, Verde)
+            Carta carta  = mazoPersonal.get(i);
             switch (carta.getTipo()){
                 case ATAQUE: g.setColor(new Color(200,50,50,200)); break;
                 case DEFENSA: g.setColor(new Color(50,150,200,200)); break;
@@ -103,7 +105,6 @@ public class GroggyRingCartasHUD {
             
             String nombreCorto = carta.getNombre().split(" ")[0];
             g.drawString(nombreCorto, cartaX + 5, cartaY + 22);
-            g.drawString("Val: " + carta.getValorEfecto(), cartaX + 5, cartaY + 36);
                
         }
     } // dibujarPanelJugador

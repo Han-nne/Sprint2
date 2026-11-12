@@ -65,6 +65,9 @@ public class GroggyRing implements Juego {
 
     /** Bola controlada por el jugador 2 (lado derecho, teclas de flechas). */
     private final JugadorBola bolaJugador2;
+    
+    /**Mazo central de GroggyRing*/
+    private final Mazo mazo;
 
     /** Cantidad de puntos necesarios para ganar el juego. */
     private final int puntuacionVictoria;
@@ -87,6 +90,9 @@ public class GroggyRing implements Juego {
     /**Dibuja la imagen de la pelota del jugador correspondient*/
     private GroggyRingHUD hud;
     
+    /**HUD especializado en las cartas y el mazo.*/
+    private GroggyRingCartasHUD cartasHUD;
+    
 
     public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionGroggyRing configuracion) throws IOException {
        this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
@@ -94,6 +100,10 @@ public class GroggyRing implements Juego {
        this.bolaJugador1 = new JugadorBola(tripulacion1 , TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(144, 0 , TAM, TAM));
        this.bolaJugador2 = new JugadorBola(tripulacion2 , TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(216, 0 , TAM, TAM));
        this.hud = new GroggyRingHUD(bolaJugador1, bolaJugador2);
+       
+       this.mazo = new Mazo();
+       this.cartasHUD = new GroggyRingCartasHUD(bolaJugador1, bolaJugador2, mazo);
+       
        this.zonaJuego = new Casilla[FILAS][COLUMNAS];
        iniciarJuego();
     }
@@ -226,6 +236,39 @@ public class GroggyRing implements Juego {
     }
 
     /**
+     * Extrae y remueve una carta del mazo, y se le agrega al mazo personal del jugador.
+     * @param jugador jugador que robó la carta.
+     */
+    private void robarCarta(JugadorBola jugador){
+        if(terminado || pausa > 0 || jugador != turnoActual) return;
+        Carta cartaRobada = mazo.robarCarta();
+        jugador.guardarCartaEnMazoPersonal(cartaRobada);
+    }
+    
+    /**
+     * Se detecta la posición del rival, le quita el turno (excepto que tenga el escudo activo)
+     * y descarta la carta.
+     * @param atacante jugador que lanzó la carta de ataque.
+     * @param rival jugador que recibirá los efectos de la carta lanzada.
+     */
+    private void usarCartaAtaque(JugadorBola atacante, JugadorBola rival){
+        int filaRival = rival.getFila();
+        int colRival = rival.getColumna();
+        
+        if(rival.isEscudoActivo()){
+            rival.setEscudoActivo(false);
+        }else {
+            rival.setTurnoOmitido(true);
+        }
+    }
+    
+    /**
+     * Se establece una protección de daño al jugador.
+     * @param jugador jugador que lanzó la carta de defensa.
+     */
+    private void usarCartaDefensa(JugadorBola jugador){ jugador.setEscudoActivo(true);}
+    
+    /**
      * Actualiza el estado del juego en cada ciclo. Mientras hay una pausa
      * activa la va decrementando; al terminar, finaliza el juego si hay un
      * ganador, o reinicia las posiciones y cede el turno a quien recibió el
@@ -271,6 +314,7 @@ public class GroggyRing implements Juego {
 
         g.translate(-ORIGEN_X, -ORIGEN_Y); // restaurar para lo que se dibuje después (banderas)
         this.hud.dibujar(g);
+        this.cartasHUD.dibujar(g);
     }
 
     /**

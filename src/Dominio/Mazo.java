@@ -49,15 +49,15 @@ public class Mazo {
         cartas.clear();
         
         for (int i = 0; i < 20; i++) {
-            cartas.add(new Carta("Ataque Rápido", CartaTipo.ATAQUE, "Resta 15 de vida al rival.", 15));
+            cartas.add(new Carta("Ataque Rápido", CartaTipo.ATAQUE, "Ataca al rival y le roba su próximo turno."));
         }
         
         for (int i = 0; i < 16; i++) {
-            cartas.add(new Carta("Escudo Protecto", CartaTipo.DEFENSA, "Anula el daño del siguiente ataque.", 1));
+            cartas.add(new Carta("Escudo Protector", CartaTipo.DEFENSA, "Evita el efecto de una carta de ataque enemiga."));
         }
         
         for (int i = 0; i < 16; i++) {
-            cartas.add(new Carta("Impulso Extra", CartaTipo.DESPLAZAMIENTO, "Suma una casilla de movimiento.", 1));
+            cartas.add(new Carta("Paso Veloz", CartaTipo.DESPLAZAMIENTO, "Permite moverse 2 casillas adicionales."));
         }
         Collections.shuffle(cartas);
     }

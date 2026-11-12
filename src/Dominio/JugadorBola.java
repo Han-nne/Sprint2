@@ -16,11 +16,14 @@ import java.util.List;
  */
 public class JugadorBola {
     
-    /**Valor de vida inicial del jugador.*/
-    private int vida = 100;
-    
     /**Lista de la mano de cartas del jugador.*/
-    private List<Carta> mano = new ArrayList<>();
+    private List<Carta> mazoPersonal = new ArrayList<>();
+    
+    /**bandera para protegerse de un ataque.*/
+    private boolean escudoActivo = false;
+    
+    /**Bandera del efecto de un ataque recibido.*/
+    private boolean turnoOmitido = false;
     
     public static final int TAM = Casilla.TAM;
      
@@ -38,51 +41,56 @@ public class JugadorBola {
     }
     
     /**
-     * Se obtiene la vida actual del jugador.
-     * @return La vida correspondiente al jugador.
-     */
-    public int getVida(){
-        return vida;
-    }
-    
-    /**
-     * Actualiza la vida actual del jugador.
-     */
-    public void setVida(){
-        this.vida = Math.max(0, vida);
-    }
-    
-    /**
-     * Disminuye la vida del jugador según la cantidad recibida.
-     * @param cantidad valor que se le restará a la vida del jugador.
-     */
-    public void restarVida(int cantidad){
-       this.vida = Math.max(0, vida - cantidad);
-    }
-    
-    /**
      * Se obtiene la mano de cartas del jugador.
      * @return La mano correspondiente al jugador.
      */
-    public List<Carta> getMano(){
-        return mano;
+    public List<Carta> getMazoPersonal(){
+        return mazoPersonal;
     }
     
     /**
-     * Agrega una carta al mano si se encuetra dentro del límite de cinco cartas.
-     * @param carta carta correspondiente a la mano.
+     * Agrega una carta al mazo personal si se encuetra dentro del límite de cinco cartas.
+     * @param carta carta correspondiente al mazo personal.
      */
-    public void agregarCarta(Carta carta){
-        if(mano.size() < 5) mano.add(carta);
+    public void guardarCartaEnMazoPersonal(Carta carta){
+        if(mazoPersonal.size() < 5) mazoPersonal.add(carta);
     }
     
     /**
-     * Elimina una carta de la mano.
-     * @param carta carta correspondiente a la mano.
+     * Elimina una carta del mazo personal.
+     * @param carta carta correspondiente al mazo personal.
      */
-    public void removerCarta(Carta carta){
-        mano.remove(carta);
+    public void usarCartaEnMazoPersonal(Carta carta){
+        mazoPersonal.remove(carta);
     }
+
+    /** Se obtiene si el jugador está protegido por una carta.
+     * 
+     * @return {@code true} Si la protección está activada.
+     * <p>
+     * {@code false} Si la protección está desactivada.
+     */
+    public boolean isEscudoActivo() { return escudoActivo;}
+
+    /**
+     * Establece una protección al jugador.
+     * @param escudoActivo bandera a modificar para proteger o desproteger el jugador correspondiente.
+     */
+    public void setEscudoActivo(boolean escudoActivo) { this.escudoActivo = escudoActivo;}
+
+    /**Se obtiene si el jugador ha sido afectado por la carta de ataque.
+     * 
+     * @return {@code true} Si fue atacado.
+     * <p>
+     * {@code false} Si no fue atacado.
+     */
+    public boolean isTurnoOmitido() { return turnoOmitido;}
+
+    /**
+     * Establece una afectación por ataque al jugador.
+     * @param turnoOmitido bandera a modificar para omitir o permitir el turno del jugador correspondiente.
+     */
+    public void setTurnoOmitido(boolean turnoOmitido) { this.turnoOmitido = turnoOmitido;}
     
     public int getAnotaciones() { 
         return anotaciones; 

@@ -27,9 +27,6 @@ public class Carta {
     /**Descripción breve del efecto de la carta.*/
     private final String descripcion;
     
-    /**Valor numérico asociado al efecto de la carta (ej. 15 de daño, 1 casilla extra). */
-    private final int valorEfecto;
-
     
     /**
      *  Construye una carta con sus atributos principales.
@@ -37,13 +34,11 @@ public class Carta {
      * @param nombre nombre identificativo de la carta.
      * @param tipo categoría a la que pertenece {@link CartaTipo}.
      * @param descripcion explicación del efecto.
-     * @param valorEfecto magnitud numérica del efecto.
      */
-    public Carta(String nombre, CartaTipo tipo, String descripcion, int valorEfecto) {
+    public Carta(String nombre, CartaTipo tipo, String descripcion) {
         this.nombre = nombre;
         this.tipo = tipo;
         this.descripcion = descripcion;
-        this.valorEfecto = valorEfecto;
     }
 
     /**
@@ -58,26 +53,14 @@ public class Carta {
      * Se obtiene el tipo de carta (Ataque, Defensa, Desplazamiento).
      * @return tipo de la carta correspondiente.
      */
-    public CartaTipo getTipo() {
-        return tipo;
-    }
+    public CartaTipo getTipo() {return tipo;}
 
     /**
      * Se obtiene la descripción textual de la carta.
      * @return información de la carta correspondiente.
      */
-    public String getDescripcion() {
-        return descripcion;
-    }
+    public String getDescripcion() {return descripcion;}
 
-    /**
-     * Se obtiene el valor numérico del efecto de la carta.
-     * @return valor de efecto del tipo de carta correspondiente.
-     */
-    public int getValorEfecto() {
-        return valorEfecto;
-    }
     
     
-    
-}
+} // fin clase
