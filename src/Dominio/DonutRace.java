@@ -65,7 +65,7 @@ public class DonutRace implements Juego{
      * <li> false = DonutRace sigue dibujandose.
      * <li> true = DonutRace deja de dibujarse y se avanza en el torneo.
      */
-    private boolean DonutRaceListoParaAvanzar = false;
+    private boolean listoParaAvanzar = false;
     
     /**Mensaje a visualizar cuando se detemine el ganador.*/
     private String mensajeGanador = "";
@@ -204,24 +204,8 @@ public class DonutRace implements Juego{
             lanzado.dibujar(g);
         }
         
-        this.donutRaceHUD.dibujar(g);
-        if(juegoTerminado){
-            
-            g.setColor(new Color(0,0,0,180));
-            g.fillRoundRect(340, 260, 600, 150, 16, 16);
-            
-            g.setColor(Color.YELLOW);
-            g.setFont(new Font("Segoe UI", Font.BOLD, 26));
-            g.drawString("!!CARRERA FINALIZADA!!", 480, 310);
-            
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Segoe UI", Font.BOLD, 24));
-            g.drawString(mensajeGanador, 400, 360);
-            
-            g.setColor(Color.LIGHT_GRAY);
-            g.setFont(new Font("Segoe UI", Font.ITALIC, 14));
-            g.drawString("Presione una tecla para continuar con el torneo...", 450, 385);
-        }
+        this.donutRaceHUD.dibujar(g, juegoTerminado, mensajeGanador);
+        
     } // dibujar
  
     /**
@@ -292,7 +276,7 @@ public class DonutRace implements Juego{
    public void procesarTeclaPresionada(int e) {
  
        if(juegoTerminado){
-           DonutRaceListoParaAvanzar = true;
+           if(e == KeyEvent.VK_SPACE) listoParaAvanzar = true;
            return;
        }
         switch (e) {
@@ -333,23 +317,33 @@ public class DonutRace implements Juego{
         } //switch
     } //procesarTeclaLiberada
 
+   /**
+    * Determina si el juego ya tiene un ganador para avanzar con el torneo.
+    * @return Retorna true para avanzar con el torneo o false para mantenerse en el juego en curso.
+    */
     @Override
     public boolean haTerminado() {
       
-        if(juegoTerminado){
-            return true;
+        if(!juegoTerminado){
+             boolean jugador1CruzoMeta = barcoJugador1.isCondicionVictoria();
+             boolean jugador2CruzoMeta = barcoJugador2.isCondicionVictoria();
+             
+             if(jugador1CruzoMeta || jugador2CruzoMeta){
+                determinarGanador(jugador1CruzoMeta, jugador2CruzoMeta);
+                juegoTerminado = true;
+            }
         }
-        boolean jugador1CruzoMeta = barcoJugador1.isCondicionVictoria();
-        boolean jugador2CruzoMeta = barcoJugador2.isCondicionVictoria();
-        
-        if(jugador1CruzoMeta || jugador2CruzoMeta){
-            determinarGanador(jugador1CruzoMeta, jugador2CruzoMeta);
-            juegoTerminado = true;
-            return true;
-        }
-        return false;
+       
+        return juegoTerminado && listoParaAvanzar;
     } //haTerminado
  
+    /**
+     * Procesa los barcos que cruzaron la meta para determinar el ganador.
+     * <p>
+     * En caso de empate, se determina por la menor cantidad de obstáculos colisionados.
+     * @param jugador1CruzoMeta Indica si el barco correspondiente cruzó o no la meta.
+     * @param jugador2CruzoMeta Indica si el barco correspondiente cruzó o no la meta.
+     */
     private void determinarGanador(boolean jugador1CruzoMeta, boolean jugador2CruzoMeta){
         String jugador1 = barcoJugador1.getTripulacion().getNombreTripulacion();
         String jugador2 = barcoJugador2.getTripulacion().getNombreTripulacion();
@@ -373,7 +367,4 @@ public class DonutRace implements Juego{
         
     } //determinarGanador
 
-    public boolean listoParaAvanzar() {
-        return DonutRaceListoParaAvanzar;
-    }
 } //fin clase 

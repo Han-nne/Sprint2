@@ -61,8 +61,10 @@ public class DonutRaceHUD {
      * 
      * @param g contexto gráfico sobre el cual se realiza el renderizado,
      *           obtenido desde el método {@code paintComponent} o el orquestador.
+     * @param juegoTerminado bandera para dibujar la pantalla de fin de carrera.
+     * @param mensajeGanador nombre del ganador de la carrera.
      */
-    public void dibujar(Graphics g){
+    public void dibujar(Graphics g, boolean juegoTerminado, String mensajeGanador){
         if(this.barco1 == null || this.barco2 == null){
             return;
         }
@@ -91,6 +93,26 @@ public class DonutRaceHUD {
         g.fillRoundRect(posXBarco2HUD, posYHUD, 150, 22, 8, 8);
         g.setColor(Color.CYAN);
         g.drawString(barco2HUD, posXBarco2HUD + 8, posYHUD + 15);
+        
+        
+        if(juegoTerminado){
+            
+            g.setColor(new Color(0,0,0,180));
+            g.fillRoundRect(340, 260, 600, 150, 16, 16);
+            
+            g.setColor(Color.YELLOW);
+            g.setFont(new Font("Segoe UI", Font.BOLD, 26));
+            g.drawString("!!CARRERA FINALIZADA!!", 480, 310);
+            
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Segoe UI", Font.BOLD, 24));
+            g.drawString(mensajeGanador, 400, 360);
+            
+            g.setColor(Color.LIGHT_GRAY);
+            g.setFont(new Font("Segoe UI", Font.ITALIC, 14));
+            g.drawString("Presione [BARRA ESPACIADORA] para continuar con el torneo...", 450, 385);
+        }
+        
     } //dibujar
 
     public Barco getBarco1() {
