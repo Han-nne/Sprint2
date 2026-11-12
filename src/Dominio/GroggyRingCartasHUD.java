@@ -4,13 +4,9 @@
  */
 package Dominio;
 
-import static Dominio.CartaTipo.ATAQUE;
-import static Dominio.CartaTipo.DEFENSA;
-import static Dominio.CartaTipo.DESPLAZAMIENTO;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.List;
 
 /**
  * Clase encargada de renderizar todos los elementos visuales de interfaz  (HUD)
@@ -54,11 +50,11 @@ public class GroggyRingCartasHUD {
         
         dibujarPanelJugador(g, 130, 660, jugador1, true);
         dibujarMazoCentral(g, 590, 660);
-        dibujarPanelJugador(g, 810, 660, jugador2, true);
+        dibujarPanelJugador(g, 810, 660, jugador2, false);
     }
     
     /**
-     * Dibuja el panel de un jugador: su vida y las 5 cartas en su mano.
+     * Dibuja el panel de un jugador: un cuadro semitransparente y las 5 cartas en su mano.
      * 
      * @param g contexto gráfico en el que se dibuja 
      * @param x ubicación horizontal de la información en pantalla
@@ -78,33 +74,16 @@ public class GroggyRingCartasHUD {
         
         g.drawString(nombreTripulacion + " | Mazo personal: ", x + 10, y - 15);
         
-        List<Carta> mazoPersonal = jugador.getMazoPersonal();
         int cartaAncho = 60;
         int cartaAlto = 45;
         int separacion = 8;
         
-        for (int i = 0; i < mazoPersonal.size(); i++) {
+        for (int i = 0; i < 5; i++) {
             int cartaX = x + (i * cartaAncho + separacion);
             int cartaY = y + 5;
             
-            //Fondo de la carta según su tipo (Rojo, Azul, Verde)
-            Carta carta  = mazoPersonal.get(i);
-            switch (carta.getTipo()){
-                case ATAQUE: g.setColor(new Color(200,50,50,200)); break;
-                case DEFENSA: g.setColor(new Color(50,150,200,200)); break;
-                case DESPLAZAMIENTO: g.setColor(new Color(50,180,80,200)); break;
-            }
-            g.fillRoundRect(cartaX, cartaY, cartaAncho, cartaAlto, 6, 6);
-            
-            //Borde y texto abreviado de la carta
-            g.setColor(Color.BLACK);
+            g.setColor(new Color(255,255,255, 40));
             g.drawRoundRect(cartaX, cartaY, cartaAncho, cartaAlto, 6, 6);
-            
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Segoe UI", Font.BOLD, 10));
-            
-            String nombreCorto = carta.getNombre().split(" ")[0];
-            g.drawString(nombreCorto, cartaX + 5, cartaY + 22);
                
         }
     } // dibujarPanelJugador

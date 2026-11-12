@@ -239,7 +239,7 @@ public class GroggyRing implements Juego {
      * Extrae y remueve una carta del mazo, y se le agrega al mazo personal del jugador.
      * @param jugador jugador que robó la carta.
      */
-    private void robarCarta(JugadorBola jugador){
+    private void robarCarta(JugadorBola jugador) throws IOException{
         if(terminado || pausa > 0 || jugador != turnoActual) return;
         Carta cartaRobada = mazo.robarCarta();
         jugador.guardarCartaEnMazoPersonal(cartaRobada);
@@ -411,6 +411,10 @@ public class GroggyRing implements Juego {
     @Override
     public boolean haTerminado() { return terminado; }
 
+    public void procesarClic(int x, int y){
+        
+    }
+    
     /**
      * Obtiene la bola ganadora del juego.
      *

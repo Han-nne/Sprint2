@@ -4,6 +4,9 @@
  */
 package Dominio;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
 /**
  *  Representa una carta individual en Groggy Ring.
  * <p>
@@ -16,29 +19,27 @@ package Dominio;
  * @see CartaTipo
  * @see GroggyRing
  */
-public class Carta {
+public abstract class Carta {
     
     /**Nombre identificativo de la carta. */
     private final String nombre;
     
-    /**Categoría a la que pertenece la carta (Ataque, Defensa, Desplazamiento).*/
-    private final CartaTipo tipo;
-    
     /**Descripción breve del efecto de la carta.*/
     private final String descripcion;
     
+    /**base abstracta de la imagen de la carta.*/
+    protected BufferedImage imagen;
     
     /**
      *  Construye una carta con sus atributos principales.
      * 
      * @param nombre nombre identificativo de la carta.
-     * @param tipo categoría a la que pertenece {@link CartaTipo}.
      * @param descripcion explicación del efecto.
      */
-    public Carta(String nombre, CartaTipo tipo, String descripcion) {
+    public Carta(String nombre, String descripcion, BufferedImage imagen) {
         this.nombre = nombre;
-        this.tipo = tipo;
         this.descripcion = descripcion;
+        this.imagen = imagen;
     }
 
     /**
@@ -50,17 +51,34 @@ public class Carta {
     }
 
     /**
-     * Se obtiene el tipo de carta (Ataque, Defensa, Desplazamiento).
-     * @return tipo de la carta correspondiente.
-     */
-    public CartaTipo getTipo() {return tipo;}
-
-    /**
      * Se obtiene la descripción textual de la carta.
      * @return información de la carta correspondiente.
      */
     public String getDescripcion() {return descripcion;}
 
+    /**
+     * Se obtiene la imagen de la carta según su tipo.
+     * @return La imagen de la carta correspondiente.
+     */
+    public BufferedImage getImagen(){ return imagen; }
     
+    /**
+     * Establece una imagen al tipo de carta correspondiente.
+     * @param imagen imagen sacada del tile-set.
+     */
+    public void setImagen(BufferedImage imagen){ this.imagen = imagen; }
     
+    /**
+     * Método abstracto para aplicar el efecto específico de cada carta sobre los jugadores.
+     * @param usuario Jugador que utiliza la carta.
+     * @param rival Jugador opuesto.
+     * @param juego Instancia actual de GroggyRing para consultas del tablero.
+     */
+    public abstract void aplicarEfecto(JugadorBola usuario, JugadorBola rival, GroggyRing juego);
+    
+    public void dibujar(Graphics g, int x, int y, int ancho, int alto){
+        if(imagen == null){
+            g.drawImage(imagen, x, y, ancho, alto, null);
+        }
+    }
 } // fin clase

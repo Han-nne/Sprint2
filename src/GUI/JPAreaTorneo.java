@@ -11,6 +11,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,7 +39,7 @@ import javax.swing.Timer;
  * @see Torneo
  * @see JIFVentanaTorneo
  */
-public class JPAreaTorneo extends JPanel implements KeyListener {
+public class JPAreaTorneo extends JPanel implements KeyListener, MouseListener{
 
     /** Lógica del torneo: administra los minijuegos, sus estados y el dibujo. */
     private Torneo torneo ;
@@ -65,6 +67,7 @@ public class JPAreaTorneo extends JPanel implements KeyListener {
        
         this.setPreferredSize(new Dimension(1280, 720));
         this.addKeyListener(this);
+        this.addMouseListener(this);
         
         this.torneo= new Torneo(tripulacion1, tripulacion2 , configuraciones);
         timer = new Timer(16, e -> {
@@ -126,4 +129,21 @@ public class JPAreaTorneo extends JPanel implements KeyListener {
     public void keyReleased(KeyEvent e) {
         torneo.procesarTeclaLiberada(e.getKeyCode());
     }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        torneo.procesarClic(e.getX(), e.getY());
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {}
+
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
 } //fin clase

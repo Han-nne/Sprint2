@@ -71,6 +71,12 @@ public class Torneo {
     public void procesarTeclaPresionada(int e) { juegoActual.procesarTeclaPresionada(e); }
     public void procesarTeclaLiberada(int e)   { juegoActual.procesarTeclaLiberada(e); }
 
+    public void procesarClic(int x, int y){ 
+        if(juegoActual instanceof  GroggyRing){
+            ((GroggyRing)juegoActual).procesarClic(x, y);
+        }
+    }
+    
     public Juego getJuegoActual() {
         return juegoActual;
     }

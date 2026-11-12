@@ -25,6 +25,11 @@ public class JugadorBola {
     /**Bandera del efecto de un ataque recibido.*/
     private boolean turnoOmitido = false;
     
+    /**Indica la cantidad de casillas extra que se puede mover el jugador 
+     * por la carta de desplazamiento.
+     */
+    private int casillasExtra = 0;
+    
     public static final int TAM = Casilla.TAM;
      
     private int anotaciones;
@@ -91,6 +96,22 @@ public class JugadorBola {
      * @param turnoOmitido bandera a modificar para omitir o permitir el turno del jugador correspondiente.
      */
     public void setTurnoOmitido(boolean turnoOmitido) { this.turnoOmitido = turnoOmitido;}
+
+    /**
+     * Se obtiene cuántas casillas extra puede moverse el jugador (efecto de cartaDesplazamiento).
+     * @return número de casillas extra a moverse.
+     */
+    public int getCasillasExtra() {
+        return casillasExtra;
+    }
+
+    /**
+     * Establece cuántas casillas extra se puede mover el jugador (efecto de cartaDesplazamiento).
+     * @param casillasExtra número de casillas extra a moverse.
+     */
+    public void setCasillasExtra(int casillasExtra) {
+        this.casillasExtra = casillasExtra;
+    }
     
     public int getAnotaciones() { 
         return anotaciones; 

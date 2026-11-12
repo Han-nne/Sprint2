@@ -4,9 +4,11 @@
  */
 package Dominio;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import utility.GroggyRingCartas;
 
 /**
  * Representa el mazo central de cartas en Groggy Ring.
@@ -30,7 +32,7 @@ public class Mazo {
      * Contruye un mazo nuevo, lo inicializa con 52 cartas
      * y aplica un barajado aleatorio inicial.
      */
-    public Mazo(){
+    public Mazo() throws IOException{
         this.cartas = new ArrayList<>();
         inicializarYBarajar();
     }
@@ -45,19 +47,19 @@ public class Mazo {
      * </ul>
      * y aplica {@link Collections#shuffle} para desordenarlas.
      */
-    public void inicializarYBarajar(){
+    public void inicializarYBarajar() throws IOException{
         cartas.clear();
         
         for (int i = 0; i < 20; i++) {
-            cartas.add(new Carta("Ataque Rápido", CartaTipo.ATAQUE, "Ataca al rival y le roba su próximo turno."));
+            cartas.add(new CartaAtaque("Ataque Rápido", "Quita un turno al rival", GroggyRingCartas.cargarSpriteAtaque()));
         }
         
         for (int i = 0; i < 16; i++) {
-            cartas.add(new Carta("Escudo Protector", CartaTipo.DEFENSA, "Evita el efecto de una carta de ataque enemiga."));
+            cartas.add(new CartaDefensa("Escudo Protector", "Anula el daño un turno", GroggyRingCartas.cargarSpriteDefensa()));
         }
         
         for (int i = 0; i < 16; i++) {
-            cartas.add(new Carta("Paso Veloz", CartaTipo.DESPLAZAMIENTO, "Permite moverse 2 casillas adicionales."));
+            cartas.add(new CartaDesplazamiento("Paso Veloz", "Moverte dos casillas extra", GroggyRingCartas.cargarSpriteDesplazamiento()));
         }
         Collections.shuffle(cartas);
     }
@@ -71,7 +73,7 @@ public class Mazo {
      * 
      * @return  La primera {@link Carta} disponible para robar.
      */
-    public Carta robarCarta(){
+    public Carta robarCarta() throws IOException{
         if(cartas.isEmpty()) inicializarYBarajar();
         return cartas.remove(0);
     }
