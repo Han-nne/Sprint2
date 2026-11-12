@@ -4,6 +4,9 @@
  */
 package Dominio;
 
+import static Dominio.CartaTipo.ATAQUE;
+import static Dominio.CartaTipo.DEFENSA;
+import static Dominio.CartaTipo.DESPLAZAMIENTO;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -19,7 +22,7 @@ import java.util.List;
  * @see Carta
  * @see Mazo
  */
-public class GroggyRingHUD {
+public class GroggyRingCartasHUD {
     
     /** Datos del jugador 1*/
     private final JugadorBola jugador1;
@@ -36,7 +39,7 @@ public class GroggyRingHUD {
      * @param jugador2 bola y datos del jugador 2.
      * @param mazo mazo central del juego.
      */
-    public GroggyRingHUD(JugadorBola jugador1, JugadorBola jugador2, Mazo mazo) {
+    public GroggyRingCartasHUD(JugadorBola jugador1, JugadorBola jugador2, Mazo mazo) {
         this.jugador1 = jugador1;
         this.jugador2 = jugador2;
         this.mazo = mazo;

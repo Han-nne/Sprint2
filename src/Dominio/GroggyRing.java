@@ -83,12 +83,17 @@ public class GroggyRing implements Juego {
 
     /** Indica si el juego ya finalizó. */
     private boolean terminado = false;
+    
+    /**Dibuja la imagen de la pelota del jugador correspondient*/
+    private GroggyRingHUD hud;
+    
 
     public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionGroggyRing configuracion) throws IOException {
        this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
        this.imagen = TileSetManagerGroggyRing.cargarImagenFondoGroggyRing();
        this.bolaJugador1 = new JugadorBola(tripulacion1 , TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(144, 0 , TAM, TAM));
        this.bolaJugador2 = new JugadorBola(tripulacion2 , TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(216, 0 , TAM, TAM));
+       this.hud = new GroggyRingHUD(bolaJugador1, bolaJugador2);
        this.zonaJuego = new Casilla[FILAS][COLUMNAS];
        iniciarJuego();
     }
@@ -265,6 +270,7 @@ public class GroggyRing implements Juego {
         }
 
         g.translate(-ORIGEN_X, -ORIGEN_Y); // restaurar para lo que se dibuje después (banderas)
+        this.hud.dibujar(g);
     }
 
     /**
