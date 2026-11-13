@@ -40,11 +40,11 @@ public class GroggyRingCartas {
     
     public static BufferedImage cargarSpriteDefensa() throws IOException{
         BufferedImage sheet = cargarImagenCartas();
-        return sheet.getSubimage(ANCHOCARTA, 0, ANCHOCARTA, ALTOCARTA);
+        return sheet.getSubimage(ANCHOCARTA + 2, 0, ANCHOCARTA, ALTOCARTA);
     }
     
     public static BufferedImage cargarSpriteDesplazamiento() throws IOException{
         BufferedImage sheet = cargarImagenCartas();
-        return sheet.getSubimage(ANCHOCARTA* 2, 0, ANCHOCARTA, ALTOCARTA);
+        return sheet.getSubimage(ANCHOCARTA* 2 + 3, 0, ANCHOCARTA, ALTOCARTA);
     }
 } // fin clase

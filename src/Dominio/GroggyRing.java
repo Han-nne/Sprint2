@@ -11,6 +11,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 import utility.TileSetManagerGroggyRing;
 
 /**
@@ -32,7 +33,37 @@ import utility.TileSetManagerGroggyRing;
  * @see ConfiguracionGroggyRing
  */
 public class GroggyRing implements Juego {
-
+    
+    /**Ubicación horzontal del panel del jugador 1.*/
+    private static final int PANEL_J1_X = 130;
+    
+    /**Ubicación horizontal del panel del jugador 2.*/
+    private static final int PANEL_J2_X = 810;
+    
+    /**Ubicación vertical del panel de cartas .*/
+    private static final int PANEL_CARTAS_Y = 665;
+    
+    /**Ubicación horizontal del panel del mazo central.*/
+    private static final int MAZO_CENTRAR_X = 590;
+    
+    /**Ubicación vertical del panel del mazo central.*/
+    private static final int MAZO_CENTRAL_Y = 635;
+    
+    /**Ancho del mazo central.*/
+    private static final int MAZO_ANCHO = 100;
+    
+    /**Alto del mazo central.*/
+    private static final int MAZO_ALTO = 75;
+    
+    /**Dimensión vertical de las cartas del juego.*/
+    private static final int CARTAS_ALTO = 60;
+    
+    /**Dimensión horizontal de las cartas del juego.*/
+    private static final int CARTAS_ANCHO = 45;
+    
+    /**Espacio entre cada carta del mazo personal de cada jugador.*/
+    private static final int CARTAS_SEPARACION = 8;
+    
     /** Tamaño en píxeles de cada casilla. */
     private static final int TAM = Casilla.TAM;
 
@@ -116,6 +147,11 @@ public class GroggyRing implements Juego {
         crearZonaJuego();
         reiniciarPosiciones();
         turnoActual = bolaJugador1;
+        
+        for (int i = 0; i < 5; i++) {
+            bolaJugador1.guardarCartaEnMazoPersonal(mazo.robarCarta());
+            bolaJugador2.guardarCartaEnMazoPersonal(mazo.robarCarta());
+        }
     }
 
     /**
@@ -207,7 +243,7 @@ public class GroggyRing implements Juego {
 
         int pasos = 1 + bola.getCasillasExtra();
         int nuevaFila = bola.getFila() + (dFila * pasos);
-        int nuevaCol = bola.getColumna() + dCol;
+        int nuevaCol = bola.getColumna() + (dCol * pasos);
 
         if (nuevaFila < 0 || nuevaFila >= FILAS || nuevaCol < 0 || nuevaCol >= COLUMNAS) {
             return;
@@ -251,6 +287,9 @@ public class GroggyRing implements Juego {
      */
     private void robarCarta(JugadorBola jugador) throws IOException{
         if(terminado || pausa > 0 || jugador != turnoActual) return;
+        
+        if(jugador.getMazoPersonal().size() >= 5) return;
+        
         Carta cartaRobada = mazo.robarCarta();
         jugador.guardarCartaEnMazoPersonal(cartaRobada);
     }
@@ -317,6 +356,7 @@ public class GroggyRing implements Juego {
         g.translate(-ORIGEN_X, -ORIGEN_Y); // restaurar para lo que se dibuje después (banderas)
         this.hud.dibujar(g);
         this.cartasHUD.dibujar(g);
+        this.dibujarCartasJugadores(g);
     }
 
     /**
@@ -348,6 +388,44 @@ public class GroggyRing implements Juego {
                 anchoTablero / 2, y + 125);
     }
 
+    /**
+     * Dibuja las cartas que cada jugador tiene almacenado en su mazo personal.
+     * 
+     * @param g contexto gráfico en el que se dibuja.
+     */
+    public void dibujarCartasJugadores(Graphics g){
+        
+        int anchoPanelCartas = 340;
+        int anchoTotalCartas = (5 * CARTAS_ANCHO) + (4 * CARTAS_SEPARACION);
+        int margenPanelX = (anchoPanelCartas - anchoTotalCartas) / 2;
+        
+        List<Carta> manoJugador1 = bolaJugador1.getMazoPersonal();
+        for (int i = 0; i < manoJugador1.size(); i++) {
+            int cartaX = PANEL_J1_X + margenPanelX + (i * (CARTAS_ANCHO + CARTAS_SEPARACION));
+            manoJugador1.get(i).dibujar(g, cartaX, PANEL_CARTAS_Y, CARTAS_ANCHO, CARTAS_ALTO);
+        }
+        
+        List<Carta> manoJugador2 = bolaJugador2.getMazoPersonal();
+        for (int i = 0; i < manoJugador2.size(); i++) {
+            int cartaX = PANEL_J2_X + margenPanelX + (i * (CARTAS_ANCHO + CARTAS_SEPARACION));
+            manoJugador2.get(i).dibujar(g, cartaX, PANEL_CARTAS_Y, CARTAS_ANCHO, CARTAS_ALTO);
+        }
+        
+        g.setColor(new Color(0,0,0,160));
+        int anchoSombra = anchoTotalCartas + 6;
+        int altoSombra = CARTAS_ALTO + 6;
+        int sombraY = PANEL_CARTAS_Y - 3;
+        
+        if(turnoActual == bolaJugador1){
+            int sombraX = PANEL_J2_X + margenPanelX - 3;
+            g.fillRoundRect(sombraX, sombraY, anchoSombra, altoSombra, 8, 8);
+        }else{
+            int sombraX = PANEL_J1_X + margenPanelX - 3;
+            g.fillRoundRect(sombraX, sombraY, anchoSombra, altoSombra, 8, 8);
+        }
+        
+    }
+    
     /**
      * Dibuja un texto centrado horizontalmente respecto a una coordenada X.
      *
@@ -413,8 +491,56 @@ public class GroggyRing implements Juego {
     @Override
     public boolean haTerminado() { return terminado; }
 
-    public void procesarClic(int x, int y){
+    /**
+     * Procesa un clic del ratón según las coordenada (x,y) de la pantalla.
+     * Detecta si se hizo clic en el mazo central para robar una carta, o sobre
+     * una carta del mazo personal del jugador en turno para usarla.
+     * 
+     * @param x coordenada X del clic en el panel.
+     * @param y coordenada Y del clic en el panel.
+     * @throws IOException En caso que el clic esté fuera de la pantalla.
+     */
+    public void procesarClic(int x, int y) throws IOException{
         
+        if(terminado || pausa > 0) return;
+        
+        if(estaDentro(x, y, MAZO_CENTRAR_X, MAZO_CENTRAL_Y, MAZO_ANCHO, MAZO_ALTO)){
+            robarCarta(turnoActual);
+            return;
+        }
+        
+        int anchoPanel = 340;
+        int anchoTotalPanel = (5 * CARTAS_ANCHO) + (4 * CARTAS_SEPARACION);
+        int margenX = (anchoPanel - anchoTotalPanel) / 2;
+        
+        int baseX = (turnoActual == bolaJugador1)? PANEL_J1_X : PANEL_J2_X;
+        List<Carta> mazoPersonal = turnoActual.getMazoPersonal();
+        
+        for (int i = 0; i < mazoPersonal.size(); i++) {
+            int cartaX = baseX + margenX + (i * (CARTAS_ANCHO + CARTAS_SEPARACION));
+            
+            if(estaDentro(x, y, cartaX, PANEL_CARTAS_Y, CARTAS_ANCHO, CARTAS_ALTO)){
+                Carta cartaSeleccionada = mazoPersonal.get(i);
+                usarCarta(turnoActual, cartaSeleccionada);
+                return;
+            }
+        }
+    } //procesarClic
+    
+    /**
+     * Método auxiliar para detectar la hitbox de cada carta o mazo personal.
+     * 
+     * @param clicX ubicación horizontal del clic en pantalla.
+     * @param clicY ubicación vertical del clic en pantalla.
+     * @param rectX ubicación horizontal del panel correspondiente.
+     * @param rectY ubicación vertical del panel correspondiente.
+     * @param ancho dimensión horizontal de las cartas del mazo personal.
+     * @param alto dimensión vertical de las cartas del mazo personal.
+     * @return 
+     */
+    private boolean estaDentro(int clicX, int clicY, int rectX, int rectY, int ancho, int alto){
+        return clicX >= rectX && clicX <= (rectX + ancho)
+              && clicY >= rectY && clicY <= (rectY + alto);
     }
     
     /**

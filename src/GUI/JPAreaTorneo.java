@@ -132,7 +132,11 @@ public class JPAreaTorneo extends JPanel implements KeyListener, MouseListener{
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        torneo.procesarClic(e.getX(), e.getY());
+        try {
+            torneo.procesarClic(e.getX(), e.getY());
+        } catch (IOException ex) {
+            Logger.getLogger(JPAreaTorneo.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

@@ -77,7 +77,7 @@ public abstract class Carta {
     public abstract void aplicarEfecto(JugadorBola usuario, JugadorBola rival, GroggyRing juego);
     
     public void dibujar(Graphics g, int x, int y, int ancho, int alto){
-        if(imagen == null){
+        if(imagen != null){
             g.drawImage(imagen, x, y, ancho, alto, null);
         }
     }
