@@ -116,10 +116,10 @@ public class GroggyRingCartasHUD {
     public void dibujarMazoCentral(Graphics g, int x, int y) {
         //Fondo del mazo
         g.setColor(new Color(40, 40, 40, 180));
-        g.fillRoundRect(x, y - 25, 100, 75, 10, 10);
+        g.fillRoundRect(x, y - 25, 100, 85, 10, 10);
 
         g.setColor(Color.ORANGE);
-        g.drawRoundRect(x, y - 25, 100, 75, 10, 10);
+        g.drawRoundRect(x, y - 25, 100, 85, 10, 10);
 
         BufferedImage spriteMazo;
         try {
@@ -136,7 +136,7 @@ public class GroggyRingCartasHUD {
 
         g.setColor(Color.WHITE);
         g.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-        g.drawString("Restantes: " + mazo.getCartasRestantes(), x + 18, y + 45);
+        g.drawString("Restantes: " + mazo.getCartasRestantes(), x + 18, y + 55);
     } // dibujarMazoCentral
 
 } // fin clase

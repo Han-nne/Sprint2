@@ -50,6 +50,6 @@ public class GroggyRingCartas {
     
     public static BufferedImage cargarSpriteMazoCentral() throws IOException{
         BufferedImage sheet = cargarImagenCartas();
-        return sheet.getSubimage(ANCHOCARTA * 3 + 3, 0, ANCHOCARTA, ALTOCARTA);
+        return sheet.getSubimage(ANCHOCARTA * 3 + 6, 0, ANCHOCARTA, ALTOCARTA);
     }
 } // fin clase
