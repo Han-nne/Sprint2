@@ -147,11 +147,6 @@ public class GroggyRing implements Juego {
         crearZonaJuego();
         reiniciarPosiciones();
         turnoActual = bolaJugador1;
-        
-        for (int i = 0; i < 5; i++) {
-            bolaJugador1.guardarCartaEnMazoPersonal(mazo.robarCarta());
-            bolaJugador2.guardarCartaEnMazoPersonal(mazo.robarCarta());
-        }
     }
 
     /**
@@ -278,7 +273,7 @@ public class GroggyRing implements Juego {
         } else{
             turnoActual = siguienteTurno;
         }
-        
+        turnoActual.reiniciarTurnoTactico();
     }
 
     /**
@@ -288,10 +283,11 @@ public class GroggyRing implements Juego {
     private void robarCarta(JugadorBola jugador) throws IOException{
         if(terminado || pausa > 0 || jugador != turnoActual) return;
         
-        if(jugador.getMazoPersonal().size() >= 5) return;
+        if(jugador.getCartasRobadas() >= 2 ||jugador.getMazoPersonal().size() >= 5) return;
         
         Carta cartaRobada = mazo.robarCarta();
         jugador.guardarCartaEnMazoPersonal(cartaRobada);
+        jugador.setCartasRobadas(jugador.getCartasRobadas() + 1);
     }
     
     /**
@@ -302,6 +298,15 @@ public class GroggyRing implements Juego {
      */
     public void usarCarta(JugadorBola jugador, Carta carta){
         if(terminado || pausa > 0 || jugador !=turnoActual) return;
+        
+        if(carta instanceof CartaAtaque){
+            if(jugador.isAtaqueUsado()) return;
+            jugador.setAtaqueUsado(true);
+            
+        }else if(carta instanceof CartaDefensa){
+            if(jugador.isDefensaUsada()) return;
+            jugador.setDefensaUsada(true);
+        }
         
         JugadorBola rival = rivalDe(jugador);
         carta.aplicarEfecto(jugador, rival, this);

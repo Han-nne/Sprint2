@@ -18,7 +18,7 @@ public class CartaDesplazamiento extends Carta{
 
     @Override
     public void aplicarEfecto(JugadorBola usuario, JugadorBola rival, GroggyRing juego) {
-        usuario.setCasillasExtra(2);
+        usuario.sumarCasillasExtra(2);
     }
     
 }

@@ -30,6 +30,15 @@ public class JugadorBola {
      */
     private int casillasExtra = 0;
     
+    /**Indica si el jugador ya ha usado una carta de ataque en su turno.*/
+    private boolean ataqueUsado = false;
+    
+    /**Indica si el jugador ya ha usado una carta de defensa en su turno.*/
+    private boolean defensaUsada = false;
+    
+    /**Indica la cantidad de cartas que el jugador a robado del mazo central.*/
+    private int cartasRobadas = 0;
+    
     public static final int TAM = Casilla.TAM;
      
     private int anotaciones;
@@ -113,6 +122,53 @@ public class JugadorBola {
         this.casillasExtra = casillasExtra;
     }
     
+    public void sumarCasillasExtra(int extra){this.casillasExtra += extra;}
+
+    /**
+     * Se obtiene si el jugador ya usó una carta de ataque durante su turno.
+     * @return {@code true} si la lanzó. {@code false} si no la ha lanzado.
+     */
+    public boolean isAtaqueUsado() {return ataqueUsado;}
+
+    /**
+     * Establece si el jugador ya usó una carta de ataque durante su turno.
+     * @param ataqueUsado bandera que modifica el estado.
+     */
+    public void setAtaqueUsado(boolean ataqueUsado) { this.ataqueUsado = ataqueUsado;}
+
+    /**
+     * Se obtiene si el jugador ya usó una carta de defensa durante su turno.
+     * @return {@code true} si la lanzó. {@code false} si no la ha lanzado.
+     */
+    public boolean isDefensaUsada() {return defensaUsada;}
+
+    /**
+     * Establece si el jugador ya usó una carta de defensa durante su turno.
+     * @param defensaUsada bandera que modifica el estado.
+     */
+    public void setDefensaUsada(boolean defensaUsada) {this.defensaUsada = defensaUsada;}
+
+    /**
+     * Se obtiene la cantidad de cartas que el jugador ha robado del mazo central.
+     * @return número de cartas robadas del mazo central.
+     */
+    public int getCartasRobadas() {return cartasRobadas;}
+
+    /**
+     * Establece la cantidad de cartas que el jugador ha robado del mazo central.
+     * @param cartasRobadas número de cartas robadas del mazo central.
+     */
+    public void setCartasRobadas(int cartasRobadas) {this.cartasRobadas = cartasRobadas;}
+    
+    /**Reiniciar las banderas de ataque, defensa, y el número 
+     * de cartas robadas al final del turno.
+     */
+     public void reiniciarTurnoTactico(){
+         this.ataqueUsado = false;
+         this.defensaUsada = false;
+         this.cartasRobadas = 0;
+     }
+    
     public int getAnotaciones() { 
         return anotaciones; 
     }
@@ -162,4 +218,4 @@ public class JugadorBola {
         this.columna = columna;
     }
     
-}
+} 
