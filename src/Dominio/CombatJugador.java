@@ -111,14 +111,13 @@ public class CombatJugador {
         } // fin de for
         
         setIndiceProgreso(0);
-        
     }
     
     public boolean perteneceTeclaJugador(int keyCode){
         return getTeclasPermitidas().contains(keyCode);
     }
     
-    public void procesarIntento(int keyCode){
+    public boolean procesarIntento(int keyCode){
         int teclaEsperada = getSecuenciaActual().get(getIndiceProgreso());
         
         if (keyCode == teclaEsperada) {
@@ -127,12 +126,13 @@ public class CombatJugador {
             if (getIndiceProgreso() >= getSecuenciaActual().size()) {
                 aciertoSecuencia();
                 generarNuevaSecuencia();
+                return true;
             } 
         } else {
             falloSecuencia();
             generarNuevaSecuencia();
         }
-
+        return false;
     }
     
 
@@ -146,10 +146,9 @@ public class CombatJugador {
         
     }
     
-    private void falloSecuencia() {
+    public void falloSecuencia() {
         setPrimerIntento(false);
         setBarraPoder(Math.max(0, getBarraPoder() - 5));
     }
-
 
 }

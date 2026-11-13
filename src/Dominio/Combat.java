@@ -25,6 +25,7 @@ public class Combat implements Juego {
     private CombatHUD hudCombat;
     private int tiempoRestanteCombat;
     private boolean partidaTerminadaCombat;
+    private boolean continuarTorneo;
     private String mensajeResultado;
     private Timer temporizadorCombat;
 
@@ -57,6 +58,7 @@ public class Combat implements Juego {
         
         this.tiempoRestanteCombat = 45;
         this.partidaTerminadaCombat = false;
+        this.continuarTorneo = false;
         this.mensajeResultado = "";
         
         if (getTemporizadorCombat() != null) {
@@ -87,14 +89,25 @@ public class Combat implements Juego {
     @Override
     public void procesarTeclaPresionada(int keyCode){
         if (isPartidaTerminadaCombat()) {
+            setContinuarTorneo(true);
             return;
         }
         
         if (getConfiguracionCombat().isTecladoCompartido()) {
             if (getJugadorCombat1().perteneceTeclaJugador(keyCode)) {
-                getJugadorCombat1().procesarIntento(keyCode);
+                boolean completoLaSecuencia = getJugadorCombat1().procesarIntento(keyCode);
+                if (completoLaSecuencia) {
+                    getJugadorCombat2().falloSecuencia();
+                }
             } else if (getJugadorCombat2().perteneceTeclaJugador(keyCode)) {
-                getJugadorCombat2().procesarIntento(keyCode);
+                boolean completoLaSecuencia = getJugadorCombat2().procesarIntento(keyCode);
+                if (completoLaSecuencia) {
+                    getJugadorCombat1().falloSecuencia();
+                }
+            }
+            
+            if (getJugadorCombat1().getBarraPoder() <= 0 || getJugadorCombat2().getBarraPoder() <= 0) {
+                finalizarRondaPorJugador();
             }
         }
     }
@@ -102,7 +115,6 @@ public class Combat implements Juego {
     
     @Override
     public void procesarTeclaLiberada(int keyCode){
-        
     }
     
     
@@ -213,11 +225,21 @@ public class Combat implements Juego {
     public void setTemporizadorCombat(Timer temporizadorCombat) {
         this.temporizadorCombat = temporizadorCombat;
     }   
+
+    public boolean isContinuarTorneo() {
+        return continuarTorneo;
+    }
+
+    public void setContinuarTorneo(boolean continuarTorneo) {
+        this.continuarTorneo = continuarTorneo;
+    }
+    
+    
     
 
     @Override
     public boolean haTerminado() {
-        return isPartidaTerminadaCombat();
+        return isContinuarTorneo();
     }
 
     

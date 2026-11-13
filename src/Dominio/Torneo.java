@@ -50,6 +50,8 @@ public class Torneo {
         if (indiceJuego + 1 < configuraciones.size()) {
             //Aqui pantalla que muestra la puntuacion general del torneo de cada tripulacion
             iniciarJuego(indiceJuego + 1);
+        } else {
+            System.exit(0);
         }
         // Aqui poner resultado final del torneo 
     }
