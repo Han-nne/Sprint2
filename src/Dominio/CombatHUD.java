@@ -53,21 +53,23 @@ public class CombatHUD {
         this.fuenteTeclas = fuenteTeclas;
     }
     
-    public void dibujar(Graphics g, CombatJugador jugador1, CombatJugador jugador2, String nombreJugador1, String nombreJugador2, int tiempoRestante, boolean terminado, String mensajeGanador){
-        g.setColor(new Color(28, 33, 43));
-        g.fillRect(0, 0, 2000, 1200);
+    
+    public void dibujar(Graphics g, CombatBarraJugador jugador1, CombatBarraJugador jugador2, String nombreJugador1, String nombreJugador2, int tiempoRestante, boolean terminado, String mensajeGanador){
         
         Rectangle limites = g.getClipBounds();
         int anchoPantalla = (limites != null && limites.width > 0) ? limites.width : 1280;
         
         g.setFont(getFuenteTitulo());
-        g.setColor(Color.WHITE);
         String textoReloj = String.valueOf(tiempoRestante);
         FontMetrics fmReloj = g.getFontMetrics();
         int xReloj = (anchoPantalla - fmReloj.stringWidth(textoReloj)) / 2;
-        g.drawString(textoReloj, xReloj, 55);
         
-        Color colorAzul = new Color(0, 120, 255);
+        g.setColor(Color.BLACK);
+        g.drawString(textoReloj, xReloj + 2, 52);
+        g.setColor(Color.WHITE);
+        g.drawString(textoReloj, xReloj, 50);
+        
+        Color colorAzul = new Color(0, 140, 255);
         Color colorRojo = new Color(220, 40, 40);
         
         dibujarPanelJugador(g, jugador1, nombreJugador1 + " (W, A, D)", 20, 95, colorAzul);
@@ -84,12 +86,12 @@ public class CombatHUD {
             g.setColor(Color.WHITE);
             g.drawRoundRect(xCuadroMensaje, yCuadroMensaje, anchoCuadroMensaje, altoCuadroMensaje, 20, 20);
             
-            g.setColor(Color.YELLOW);
+            
             g.setFont(getFuenteTitulo());
             FontMetrics fmGanador = g.getFontMetrics();
-            int xGanador = xCuadroMensaje + (anchoCuadroMensaje - fmGanador.stringWidth(mensajeGanador)) - 2;
-            int yGanador = yCuadroMensaje + 55;
-            g.drawString(mensajeGanador, xGanador, yGanador);
+            int xGanador = xCuadroMensaje + (anchoCuadroMensaje - fmGanador.stringWidth(mensajeGanador)) / 2;
+            g.setColor(Color.WHITE);
+            g.drawString(mensajeGanador, xGanador, yCuadroMensaje + 55);
             
             g.setColor(Color.WHITE);
             g.setFont(getFuenteTexto());
@@ -102,7 +104,10 @@ public class CombatHUD {
     }
     
     
-    private void dibujarPanelJugador(Graphics g, CombatJugador jugador, String titulo, int x, int y, Color colorBarra){
+    private void dibujarPanelJugador(Graphics g, CombatBarraJugador jugador, String titulo, int x, int y, Color colorBarra){
+        g.setColor(new Color(0, 0, 0, 160));
+        g.fillRoundRect(x - 10, y - 8, 320, 100, 12, 12);
+        
         g.setColor(Color.DARK_GRAY);
         g.fillRect(x, y, 300, 26);
         
@@ -128,9 +133,9 @@ public class CombatHUD {
             int posX = startX + (i * 65);
             
             if (i < progreso) {
-                g.setColor(new Color(46, 204, 113));
+                g.setColor(Color.GREEN);
             } else if (i == progreso) {
-                g.setColor(new Color(241, 196, 15));
+                g.setColor(Color.WHITE);
             } else {
                 g.setColor(Color.LIGHT_GRAY);
             }
