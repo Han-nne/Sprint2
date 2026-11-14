@@ -5,6 +5,7 @@
 package Dominio;
 
 import java.awt.Graphics;  
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import utility.TileSetManagerGroggyRing;
 
@@ -14,8 +15,10 @@ import utility.TileSetManagerGroggyRing;
  * <p>
  * Cada neumático pertenece a una bola ({@link JugadorBola}) en particular.
  * Cuando la bola del rival llega a esta casilla, el rival anota un punto.
+ * Accede al estado de {@link Casilla} únicamente mediante sus métodos de acceso.
  * </p>
  *
+ * @author johan
  * @see Casilla
  * @see JugadorBola
  * @see GroggyRing
@@ -33,10 +36,10 @@ public class CasillaNeumatico extends Casilla {
      * @param posY coordenada Y de la casilla (en coordenadas locales del tablero)
      * @throws IOException si ocurre un error al cargar la imagen del tile
      */
-    public CasillaNeumatico(float posX, float posY) throws IOException {
+    public CasillaNeumatico(double posX, double posY) throws IOException {
         super(posX, posY);
-        this.imagenCasilla = TileSetManagerGroggyRing.cargarImagenGroggyRing();
-        this.imagenCasilla = this.imagenCasilla.getSubimage(72, 0, TAM, TAM);
+        BufferedImage tileSet = TileSetManagerGroggyRing.cargarImagenGroggyRing();
+        setImagenCasilla(tileSet.getSubimage(72, 0, TAM, TAM));
     }
 
     /**
@@ -44,14 +47,18 @@ public class CasillaNeumatico extends Casilla {
      *
      * @return la bola dueña, o {@code null} si aún no se ha asignado
      */
-    public JugadorBola getDueno() { return dueno; }
+    public JugadorBola getDueno() {
+        return dueno;
+    }
 
     /**
      * Asigna la bola dueña de este neumático.
      *
      * @param dueno bola a la que pertenece esta casilla
      */
-    public void setDueno(JugadorBola dueno) { this.dueno = dueno; }
+    public void setDueno(JugadorBola dueno) {
+        this.dueno = dueno;
+    }
 
     /**
      * Dibuja la imagen del neumático en su posición dentro del tablero.
@@ -60,6 +67,6 @@ public class CasillaNeumatico extends Casilla {
      */
     @Override
     public void dibujar(Graphics g) {
-        g.drawImage(imagenCasilla, (int) posX, (int) posY, TAM, TAM, null);
+        g.drawImage(getImagenCasilla(), (int) getPosX(), (int) getPosY(), TAM, TAM, null);
     }
 }

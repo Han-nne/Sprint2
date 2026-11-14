@@ -43,7 +43,7 @@ public abstract class Casilla {
      * @param posX coordenada X de la casilla
      * @param posY coordenada Y de la casilla
      */
-    public Casilla(float posX, float posY) {
+    public Casilla(double posX, double posY) {
         this.posX = posX;
         this.posY = posY;
     }

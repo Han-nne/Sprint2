@@ -5,21 +5,29 @@
 package Dominio;
 
 /**
- * Clase hija que controla los parametros del minijuego Combat,
- *   heredando de la clase padre ConfiguracionGeneral.
+ * Clase hija que controla los parámetros del minijuego Combat,
+ * heredando de la clase padre {@link ConfiguracionGeneral}.
+ * <p>
+ * Los parámetros se establecen según el nivel de dificultad elegido
+ * ({@link #nivelFacil()}, {@link #nivelNormal()} o {@link #nivelDificil()})
+ * y también pueden ajustarse individualmente mediante sus setters.
+ * </p>
  *
  * @author Keithy Carrillo
+ * @see ConfiguracionGeneral
  */
 public class ConfiguracionCombat extends ConfiguracionGeneral {
+
+    /** Valor inicial de la barra de poder. Debe ser mayor que cero. */
     private int valorInicialBarra;
+
+    /** Indica si los jugadores comparten el mismo teclado. */
     private boolean tecladoCompartido;
 
-    
     /**
- * Sobrescritura del metodo nivelFacil
- *  Define los valores de los parametros para el nivel facil del minijuego Combat
- * 
-    */
+     * Sobrescritura del método {@code nivelFacil}.
+     * Define los valores de los parámetros para el nivel fácil del minijuego Combat.
+     */
     @Override
     public void nivelFacil() {
         this.valorInicialBarra = 100;
@@ -27,10 +35,9 @@ public class ConfiguracionCombat extends ConfiguracionGeneral {
     }
 
     /**
- * Sobrescritura del metodo nivelMedio
- *  Define los valores de los parametros para el nivel facil del minijuego Combat
- * 
-    */
+     * Sobrescritura del método {@code nivelNormal}.
+     * Define los valores de los parámetros para el nivel normal del minijuego Combat.
+     */
     @Override
     public void nivelNormal() {
         this.valorInicialBarra = 100;
@@ -38,10 +45,9 @@ public class ConfiguracionCombat extends ConfiguracionGeneral {
     }
 
     /**
- * Sobrescritura del metodo nivelDificil
- *  Define los valores de los parametros para el nivel facil del minijuego Combat
- * 
-    */
+     * Sobrescritura del método {@code nivelDificil}.
+     * Define los valores de los parámetros para el nivel difícil del minijuego Combat.
+     */
     @Override
     public void nivelDificil() {
         this.valorInicialBarra = 100;
@@ -50,26 +56,37 @@ public class ConfiguracionCombat extends ConfiguracionGeneral {
 
     /**
      * Obtiene el valor inicial de la barra de poder configurado.
-     * 
-     * @return Retorna un número entero con el valor inicial de la barra de poder.
+     *
+     * @return un número entero con el valor inicial de la barra de poder
      */
     public int getValorInicialBarra() {
         return valorInicialBarra;
     }
 
     /**
-     * Obtiene el modo de juego configurado.
-     * 
-     * @return Retorna un valor boolean con el modo de juego.
+     * Indica si los jugadores comparten el mismo teclado.
+     *
+     * @return {@code true} si el teclado es compartido; {@code false} en caso contrario
      */
     public boolean isTecladoCompartido() {
         return tecladoCompartido;
     }
 
+    /**
+     * Establece el valor inicial de la barra de poder.
+     *
+     * @param valorInicialBarra nuevo valor inicial de la barra; debe ser mayor que cero
+     */
     public void setValorInicialBarra(int valorInicialBarra) {
         this.valorInicialBarra = valorInicialBarra;
     }
 
+    /**
+     * Establece si los jugadores comparten el mismo teclado.
+     *
+     * @param tecladoCompartido {@code true} para teclado compartido;
+     *                          {@code false} en caso contrario
+     */
     public void setTecladoCompartido(boolean tecladoCompartido) {
         this.tecladoCompartido = tecladoCompartido;
     }

@@ -24,7 +24,16 @@ import utility.TileSetManagerGroggyRing;
  * Gana quien primero alcance la puntuación de victoria configurada.
  * </p>
  * <p>
- * Controles: jugador 1 con W/A/S/D y jugador 2 con las flechas del teclado.
+ * En su turno, cada jugador debe robar una carta del mazo central (o tener la
+ * mano llena) y usar una carta de su mazo personal antes de poder mover su bola.
+ * </p>
+ * <p>
+ * Controles: jugador 1 con W/A/S/D y jugador 2 con las flechas del teclado. Las
+ * cartas se roban y se usan con el ratón, mediante {@link #procesarClic(int, int)}.
+ * </p>
+ * <p>
+ * Todo el estado de la partida es privado: el exterior solo interactúa con el
+ * juego mediante los métodos de {@link Juego} y {@link #procesarClic(int, int)}.
  * </p>
  *
  * @see Juego
@@ -33,37 +42,65 @@ import utility.TileSetManagerGroggyRing;
  * @see ConfiguracionGroggyRing
  */
 public class GroggyRing implements Juego {
-    
-    /**Ubicación horzontal del panel del jugador 1.*/
+
+    /** Ancho del panel de juego, en píxeles. */
+    private static final int ANCHO_PANEL = 1280;
+
+    /** Alto del panel de juego, en píxeles. */
+    private static final int ALTO_PANEL = 720;
+
+    /** Ubicación horizontal del panel de cartas del jugador 1. */
     private static final int PANEL_J1_X = 130;
-    
-    /**Ubicación horizontal del panel del jugador 2.*/
+
+    /** Ubicación horizontal del panel de cartas del jugador 2. */
     private static final int PANEL_J2_X = 810;
-    
-    /**Ubicación vertical del panel de cartas .*/
+
+    /** Ubicación vertical del panel de cartas. */
     private static final int PANEL_CARTAS_Y = 665;
-    
-    /**Ubicación horizontal del panel del mazo central.*/
-    private static final int MAZO_CENTRAR_X = 590;
-    
-    /**Ubicación vertical del panel del mazo central.*/
+
+    /** Ancho del panel de cartas de cada jugador. */
+    private static final int ANCHO_PANEL_CARTAS = 340;
+
+    /** Ubicación horizontal del panel del mazo central. */
+    private static final int MAZO_CENTRAL_X = 590;
+
+    /** Ubicación vertical del panel del mazo central. */
     private static final int MAZO_CENTRAL_Y = 635;
-    
-    /**Ancho del mazo central.*/
+
+    /** Ancho del mazo central. */
     private static final int MAZO_ANCHO = 100;
-    
-    /**Alto del mazo central.*/
+
+    /** Alto del mazo central. */
     private static final int MAZO_ALTO = 75;
-    
-    /**Dimensión vertical de las cartas del juego.*/
+
+    /** Dimensión vertical de las cartas del juego. */
     private static final int CARTAS_ALTO = 60;
-    
-    /**Dimensión horizontal de las cartas del juego.*/
+
+    /** Dimensión horizontal de las cartas del juego. */
     private static final int CARTAS_ANCHO = 45;
-    
-    /**Espacio entre cada carta del mazo personal de cada jugador.*/
+
+    /** Espacio entre cada carta del mazo personal de cada jugador. */
     private static final int CARTAS_SEPARACION = 8;
-    
+
+    /** Cantidad máxima de cartas que puede tener un jugador en su mazo personal. */
+    private static final int MAX_CARTAS_MANO = JugadorBola.MAX_CARTAS_MANO;
+
+    /** Cantidad máxima de cartas que un jugador puede robar por turno. */
+    private static final int MAX_CARTAS_ROBADAS = 2;
+
+    /** Ancho total que ocupan las cartas de una mano completa, con sus separaciones. */
+    private static final int ANCHO_TOTAL_CARTAS =
+            (MAX_CARTAS_MANO * CARTAS_ANCHO) + ((MAX_CARTAS_MANO - 1) * CARTAS_SEPARACION);
+
+    /** Margen horizontal que centra una mano completa dentro del panel de cartas. */
+    private static final int MARGEN_PANEL_CARTAS_X = (ANCHO_PANEL_CARTAS - ANCHO_TOTAL_CARTAS) / 2;
+
+    /** Margen que sobresale la sombra respecto a las cartas, en píxeles. */
+    private static final int MARGEN_SOMBRA = 3;
+
+    /** Color semitransparente que oscurece las cartas del jugador que no tiene el turno. */
+    private static final Color COLOR_SOMBRA_CARTAS = new Color(0, 0, 0, 160);
+
     /** Tamaño en píxeles de cada casilla. */
     private static final int TAM = Casilla.TAM;
 
@@ -79,14 +116,29 @@ public class GroggyRing implements Juego {
     /** Duración (en ciclos de actualización) de la pausa que muestra el marcador tras un punto. */
     private static final int CICLOS_PAUSA = 90;
 
-    /** Imagen de fondo del juego. */
-    private final BufferedImage imagen;
-
     /** Coordenada X de la esquina superior izquierda del tablero en pantalla. */
     private static final int ORIGEN_X = 130;
 
     /** Coordenada Y de la esquina superior izquierda del tablero en pantalla. */
     private static final int ORIGEN_Y = 80;
+
+    /** Ancho del cuadro del marcador, en píxeles. */
+    private static final int ANCHO_MARCADOR = 420;
+
+    /** Alto del cuadro del marcador, en píxeles. */
+    private static final int ALTO_MARCADOR = 160;
+
+    /** Color semitransparente de fondo del marcador. */
+    private static final Color COLOR_FONDO_MARCADOR = new Color(0, 0, 0, 180);
+
+    /** Fuente del título del marcador. */
+    private static final Font FUENTE_TITULO_MARCADOR = new Font("Arial", Font.BOLD, 28);
+
+    /** Fuente de la puntuación del marcador. */
+    private static final Font FUENTE_PUNTAJE_MARCADOR = new Font("Arial", Font.BOLD, 56);
+
+    /** Imagen de fondo del juego. */
+    private final BufferedImage imagen;
 
     /** Matriz de casillas que forman el tablero (indexada por [fila][columna]). */
     private final Casilla[][] zonaJuego;
@@ -96,8 +148,8 @@ public class GroggyRing implements Juego {
 
     /** Bola controlada por el jugador 2 (lado derecho, teclas de flechas). */
     private final JugadorBola bolaJugador2;
-    
-    /**Mazo central de GroggyRing*/
+
+    /** Mazo central de GroggyRing, del que los jugadores roban cartas. */
     private final Mazo mazo;
 
     /** Cantidad de puntos necesarios para ganar el juego. */
@@ -117,31 +169,45 @@ public class GroggyRing implements Juego {
 
     /** Indica si el juego ya finalizó. */
     private boolean terminado = false;
-    
-    /**Dibuja la imagen de la pelota del jugador correspondient*/
-    private GroggyRingHUD hud;
-    
-    /**HUD especializado en las cartas y el mazo.*/
-    private GroggyRingCartasHUD cartasHUD;
-    
 
-    public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionGroggyRing configuracion) throws IOException {
-       this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
-       this.imagen = TileSetManagerGroggyRing.cargarImagenFondoGroggyRing();
-       this.bolaJugador1 = new JugadorBola(tripulacion1 , TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(144, 0 , TAM, TAM));
-       this.bolaJugador2 = new JugadorBola(tripulacion2 , TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(216, 0 , TAM, TAM));
-       this.hud = new GroggyRingHUD(bolaJugador1, bolaJugador2);
-       
-       this.mazo = new Mazo();
-       this.cartasHUD = new GroggyRingCartasHUD(bolaJugador1, bolaJugador2, mazo);
-       
-       this.zonaJuego = new Casilla[FILAS][COLUMNAS];
-       iniciarJuego();
+    /** HUD que dibuja la información de cada jugador (imagen de su bola, nombre y puntuación). */
+    private final GroggyRingHUD hud;
+
+    /** HUD especializado en las cartas y el mazo. */
+    private final GroggyRingCartasHUD cartasHUD;
+
+    /**
+     * Construye una partida de Groggy Ring con las dos tripulaciones indicadas.
+     * Carga las imágenes, crea las bolas, el mazo y los HUD, y deja el tablero
+     * listo con {@link #iniciarJuego()}.
+     *
+     * @param tripulacion1 tripulación del jugador 1
+     * @param tripulacion2 tripulación del jugador 2
+     * @param configuracion configuración que define la puntuación de victoria
+     * @throws IOException si ocurre un error al cargar las imágenes del juego
+     */
+    public GroggyRing(Tripulacion tripulacion1, Tripulacion tripulacion2,
+                      ConfiguracionGroggyRing configuracion) throws IOException {
+        this.puntuacionVictoria = configuracion.getPuntuacionVictoria();
+        this.imagen = TileSetManagerGroggyRing.cargarImagenFondoGroggyRing();
+        this.bolaJugador1 = new JugadorBola(tripulacion1,
+                TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(144, 0, TAM, TAM));
+        this.bolaJugador2 = new JugadorBola(tripulacion2,
+                TileSetManagerGroggyRing.cargarImagenGroggyRing().getSubimage(216, 0, TAM, TAM));
+        this.hud = new GroggyRingHUD(bolaJugador1, bolaJugador2);
+
+        this.mazo = new Mazo();
+        this.cartasHUD = new GroggyRingCartasHUD(bolaJugador1, bolaJugador2, mazo);
+
+        this.zonaJuego = new Casilla[FILAS][COLUMNAS];
+        iniciarJuego();
     }
 
     /**
      * Inicializa el tablero, coloca las bolas en sus posiciones iniciales
      * y asigna el primer turno al jugador 1.
+     *
+     * @throws IOException si ocurre un error al cargar las imágenes de las casillas
      */
     private void iniciarJuego() throws IOException {
         crearZonaJuego();
@@ -154,6 +220,8 @@ public class GroggyRing implements Juego {
      * central son neumáticos (cada uno pertenece a un jugador); el resto son
      * casillas de campo. Las casillas se crean en coordenadas locales y
      * {@link #dibujar(Graphics)} se encarga de desplazarlas.
+     *
+     * @throws IOException si ocurre un error al cargar las imágenes de las casillas
      */
     private void crearZonaJuego() throws IOException {
         for (int i = 0; i < FILAS; i++) {
@@ -172,15 +240,16 @@ public class GroggyRing implements Juego {
     /**
      * Devuelve ambas bolas a sus posiciones iniciales en la fila central:
      * el jugador 1 en la columna 1 y el jugador 2 en la penúltima columna.
+     * También vacía el mazo personal de cada jugador.
      */
     private void reiniciarPosiciones() {
         liberar(bolaJugador1);
         liberar(bolaJugador2);
         colocar(bolaJugador1, FILA_CENTRO, 1);
         colocar(bolaJugador2, FILA_CENTRO, COLUMNAS - 2);
-        
-        bolaJugador1.getMazoPersonal().clear();
-        bolaJugador2.getMazoPersonal().clear();
+
+        bolaJugador1.vaciarMazoPersonal();
+        bolaJugador2.vaciarMazoPersonal();
     }
 
     /**
@@ -220,14 +289,16 @@ public class GroggyRing implements Juego {
     }
 
     /**
-     * Intenta mover una bola una casilla en la dirección indicada.
+     * Intenta mover una bola una casilla (más las casillas extra que le hayan
+     * dado las cartas) en la dirección indicada.
      * <p>
      * El movimiento se ignora si el juego terminó, si hay una pausa activa,
-     * si no es el turno de la bola, si el destino está fuera del tablero o si
-     * la casilla destino está ocupada. Si la bola llega al neumático del rival,
-     * se anota un punto y se inicia la pausa del marcador (y, si se alcanza la
-     * puntuación de victoria, se define el ganador). En caso contrario, el
-     * turno pasa al rival.
+     * si no es el turno de la bola, si el jugador aún no robó una carta (a menos
+     * que tenga la mano llena), si aún no usó una carta, si el destino está fuera
+     * del tablero o si la casilla destino está ocupada. Si la bola llega al
+     * neumático del rival, se anota un punto y se inicia la pausa del marcador
+     * (y, si se alcanza la puntuación de victoria, se define el ganador). En caso
+     * contrario, el turno pasa al rival, salvo que este tenga el turno omitido.
      * </p>
      *
      * @param bola  bola que se intenta mover
@@ -238,11 +309,11 @@ public class GroggyRing implements Juego {
         if (terminado || pausa > 0 || bola != turnoActual) {
             return;
         }
-        
-        boolean manoLlena = bola.getMazoPersonal().size() >= 5;
-        if(!manoLlena && !bola.isCartaRobada()) return;
-        if(!bola.isCartaUsada()) return;
-        
+
+        boolean manoLlena = bola.getMazoPersonal().size() >= MAX_CARTAS_MANO;
+        if (!manoLlena && !bola.isCartaRobada()) return;
+        if (!bola.isCartaUsada()) return;
+
         int pasos = 1 + bola.getCasillasExtra();
         int nuevaFila = bola.getFila() + (dFila * pasos);
         int nuevaCol = bola.getColumna() + (dCol * pasos);
@@ -260,7 +331,7 @@ public class GroggyRing implements Juego {
         colocar(bola, nuevaFila, nuevaCol);
 
         bola.setCasillasExtra(0);
-        
+
         if (destino instanceof CasillaNeumatico
                 && ((CasillaNeumatico) destino).getDueno() != bola) {
 
@@ -274,62 +345,74 @@ public class GroggyRing implements Juego {
         }
 
         JugadorBola siguienteTurno = rivalDe(bola);
-        if(siguienteTurno.isTurnoOmitido()){
+        if (siguienteTurno.isTurnoOmitido()) {
             siguienteTurno.setTurnoOmitido(false);
             turnoActual = bola;
-        } else{
+        } else {
             turnoActual = siguienteTurno;
         }
         turnoActual.reiniciarTurnoTactico();
     }
 
     /**
-     * Extrae una carta del mazo, y se le agrega al mazo personal del jugador.
-     * @param jugador jugador que robó la carta.
+     * Extrae una carta del mazo central y la agrega al mazo personal del jugador.
+     * <p>
+     * Se ignora si el juego terminó, si hay una pausa activa, si no es el turno
+     * del jugador, si ya robó {@value #MAX_CARTAS_ROBADAS} cartas en este turno o
+     * si su mazo personal está lleno.
+     * </p>
+     *
+     * @param jugador jugador que roba la carta
+     * @throws IOException si ocurre un error al cargar la imagen de la carta
      */
-    private void robarCarta(JugadorBola jugador) throws IOException{
-        if(terminado || pausa > 0 || jugador != turnoActual) return;
-        
-        if(jugador.getCartasRobadas() >= 2 ||jugador.getMazoPersonal().size() >= 5) return;
-        
+    private void robarCarta(JugadorBola jugador) throws IOException {
+        if (terminado || pausa > 0 || jugador != turnoActual) return;
+
+        if (jugador.getCartasRobadas() >= MAX_CARTAS_ROBADAS
+                || jugador.getMazoPersonal().size() >= MAX_CARTAS_MANO) return;
+
         Carta cartaRobada = mazo.robarCarta();
         jugador.guardarCartaEnMazoPersonal(cartaRobada);
-        jugador.setCartasRobadas(jugador.getCartasRobadas() + 1);
-        
-        jugador.setCartaRobada(true);
+        jugador.registrarCartaRobada();
     }
-    
+
     /**
-     * Permite al jugador usar una carta de su mazo personal.
-     * 
-     * @param jugador el jugador que usa la carta.
-     * @param carta la carta específica que desea jugar.
+     * Permite al jugador usar una carta de su mazo personal. Es privado: solo se
+     * invoca desde {@link #procesarClic(int, int)}, de modo que las reglas del
+     * turno no se puedan saltar desde fuera de la clase.
+     * <p>
+     * Se ignora si el juego terminó, si hay una pausa activa, si no es el turno
+     * del jugador o si ya usó una carta del mismo tipo (ataque o defensa) en este turno.
+     * </p>
+     *
+     * @param jugador el jugador que usa la carta
+     * @param carta la carta específica que desea jugar
      */
-    public void usarCarta(JugadorBola jugador, Carta carta){
-        if(terminado || pausa > 0 || jugador !=turnoActual) return;
-            
-        if(carta instanceof CartaAtaque){
-            if(jugador.isAtaqueUsado()) return;
+    private void usarCarta(JugadorBola jugador, Carta carta) {
+        if (terminado || pausa > 0 || jugador != turnoActual) return;
+
+        if (carta instanceof CartaAtaque) {
+            if (jugador.isAtaqueUsado()) return;
             jugador.setAtaqueUsado(true);
-            
-        }else if(carta instanceof CartaDefensa){
-            if(jugador.isDefensaUsada()) return;
+
+        } else if (carta instanceof CartaDefensa) {
+            if (jugador.isDefensaUsada()) return;
             jugador.setDefensaUsada(true);
         }
-        
+
         JugadorBola rival = rivalDe(jugador);
         carta.aplicarEfecto(jugador, rival, this);
         jugador.usarCartaEnMazoPersonal(carta);
-        
+
         jugador.setCartaUsada(true);
     }
-    
-    
+
     /**
      * Actualiza el estado del juego en cada ciclo. Mientras hay una pausa
      * activa la va decrementando; al terminar, finaliza el juego si hay un
      * ganador, o reinicia las posiciones y cede el turno a quien recibió el
-     * punto.
+     * punto, reiniciando también el estado táctico de su turno (cartas robadas
+     * y usadas) para que pueda robar y usar cartas con normalidad.
      */
     @Override
     public void actualizar() {
@@ -341,6 +424,7 @@ public class GroggyRing implements Juego {
                 } else {
                     reiniciarPosiciones();
                     turnoActual = rivalDe(anotador);   // empieza quien recibió el punto
+                    turnoActual.reiniciarTurnoTactico();
                 }
             }
         }
@@ -349,13 +433,13 @@ public class GroggyRing implements Juego {
     /**
      * Dibuja el fondo, el tablero, las bolas y, si hay una pausa activa, el
      * marcador. El contexto gráfico se traslada al origen del tablero y se
-     * restaura al finalizar.
+     * restaura al finalizar. Después dibuja los HUD y las cartas de los jugadores.
      *
      * @param g contexto gráfico sobre el cual dibujar
      */
     @Override
     public void dibujar(Graphics g) {
-        g.drawImage( this.imagen, 0 , 0 , 1280, 720 , null);
+        g.drawImage(this.imagen, 0, 0, ANCHO_PANEL, ALTO_PANEL, null);
         g.translate(ORIGEN_X, ORIGEN_Y);   // el tablero empieza aquí
         for (int i = 0; i < FILAS; i++) {
             for (int j = 0; j < COLUMNAS; j++) {
@@ -384,64 +468,66 @@ public class GroggyRing implements Juego {
     private void dibujarMarcador(Graphics g) {
         int anchoTablero = COLUMNAS * TAM;
         int altoTablero = FILAS * TAM;
-        int anchoCaja = 420;
-        int altoCaja = 160;
-        int x = (anchoTablero - anchoCaja) / 2;
-        int y = (altoTablero - altoCaja) / 2;
+        int x = (anchoTablero - ANCHO_MARCADOR) / 2;
+        int y = (altoTablero - ALTO_MARCADOR) / 2;
 
-        g.setColor(new Color(0, 0, 0, 180));
-        g.fillRoundRect(x, y, anchoCaja, altoCaja, 30, 30);
+        g.setColor(COLOR_FONDO_MARCADOR);
+        g.fillRoundRect(x, y, ANCHO_MARCADOR, ALTO_MARCADOR, 30, 30);
 
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 28));
+        g.setFont(FUENTE_TITULO_MARCADOR);
         String titulo = (ganador != null)
                 ? "¡" + nombre(anotador) + " gana el juego!"
                 : "¡Punto para " + nombre(anotador) + "!";
         centrarTexto(g, titulo, anchoTablero / 2, y + 55);
 
-        g.setFont(new Font("Arial", Font.BOLD, 56));
+        g.setFont(FUENTE_PUNTAJE_MARCADOR);
         centrarTexto(g, bolaJugador1.getAnotaciones() + "  -  " + bolaJugador2.getAnotaciones(),
                 anchoTablero / 2, y + 125);
     }
 
     /**
-     * Dibuja las cartas que cada jugador tiene almacenado en su mazo personal.
-     * 
-     * @param g contexto gráfico en el que se dibuja.
+     * Dibuja las cartas que cada jugador tiene almacenadas en su mazo personal y
+     * oscurece las del jugador que no tiene el turno.
+     *
+     * @param g contexto gráfico en el que se dibuja
      */
-    public void dibujarCartasJugadores(Graphics g){
-        
-        int anchoPanelCartas = 340;
-        int anchoTotalCartas = (5 * CARTAS_ANCHO) + (4 * CARTAS_SEPARACION);
-        int margenPanelX = (anchoPanelCartas - anchoTotalCartas) / 2;
-        
+    private void dibujarCartasJugadores(Graphics g) {
+
         List<Carta> manoJugador1 = bolaJugador1.getMazoPersonal();
         for (int i = 0; i < manoJugador1.size(); i++) {
-            int cartaX = PANEL_J1_X + margenPanelX + (i * (CARTAS_ANCHO + CARTAS_SEPARACION));
+            int cartaX = posicionXCarta(PANEL_J1_X, i);
             manoJugador1.get(i).dibujar(g, cartaX, PANEL_CARTAS_Y, CARTAS_ANCHO, CARTAS_ALTO);
         }
-        
+
         List<Carta> manoJugador2 = bolaJugador2.getMazoPersonal();
         for (int i = 0; i < manoJugador2.size(); i++) {
-            int cartaX = PANEL_J2_X + margenPanelX + (i * (CARTAS_ANCHO + CARTAS_SEPARACION));
+            int cartaX = posicionXCarta(PANEL_J2_X, i);
             manoJugador2.get(i).dibujar(g, cartaX, PANEL_CARTAS_Y, CARTAS_ANCHO, CARTAS_ALTO);
         }
-        
-        g.setColor(new Color(0,0,0,160));
-        int anchoSombra = anchoTotalCartas + 6;
-        int altoSombra = CARTAS_ALTO + 6;
-        int sombraY = PANEL_CARTAS_Y - 3;
-        
-        if(turnoActual == bolaJugador1){
-            int sombraX = PANEL_J2_X + margenPanelX - 3;
-            g.fillRoundRect(sombraX, sombraY, anchoSombra, altoSombra, 8, 8);
-        }else{
-            int sombraX = PANEL_J1_X + margenPanelX - 3;
-            g.fillRoundRect(sombraX, sombraY, anchoSombra, altoSombra, 8, 8);
-        }
-        
+
+        g.setColor(COLOR_SOMBRA_CARTAS);
+        int anchoSombra = ANCHO_TOTAL_CARTAS + (2 * MARGEN_SOMBRA);
+        int altoSombra = CARTAS_ALTO + (2 * MARGEN_SOMBRA);
+        int sombraY = PANEL_CARTAS_Y - MARGEN_SOMBRA;
+
+        int panelSinTurnoX = (turnoActual == bolaJugador1) ? PANEL_J2_X : PANEL_J1_X;
+        int sombraX = panelSinTurnoX + MARGEN_PANEL_CARTAS_X - MARGEN_SOMBRA;
+        g.fillRoundRect(sombraX, sombraY, anchoSombra, altoSombra, 8, 8);
+
     }
-    
+
+    /**
+     * Calcula la coordenada X de una carta dentro del panel de cartas de un jugador.
+     *
+     * @param panelX coordenada X del panel de cartas del jugador
+     * @param indice posición de la carta dentro de su mazo personal (desde 0)
+     * @return coordenada X en la que se dibuja la carta
+     */
+    private int posicionXCarta(int panelX, int indice) {
+        return panelX + MARGEN_PANEL_CARTAS_X + (indice * (CARTAS_ANCHO + CARTAS_SEPARACION));
+    }
+
     /**
      * Dibuja un texto centrado horizontalmente respecto a una coordenada X.
      *
@@ -462,8 +548,7 @@ public class GroggyRing implements Juego {
      * @return nombre de la tripulación de la bola
      */
     private String nombre(JugadorBola bola) {
-
-        return (bola == bolaJugador1) ? this.bolaJugador1.getTripulacion().getNombreTripulacion() : this.bolaJugador2.getTripulacion().getNombreTripulacion();
+        return bola.getTripulacion().getNombreTripulacion();
     }
 
     /**
@@ -505,64 +590,66 @@ public class GroggyRing implements Juego {
      *         {@code false} en caso contrario
      */
     @Override
-    public boolean haTerminado() { return terminado; }
+    public boolean haTerminado() {
+        return terminado;
+    }
 
     /**
-     * Procesa un clic del ratón según las coordenada (x,y) de la pantalla.
+     * Procesa un clic del ratón según las coordenadas (x, y) de la pantalla.
      * Detecta si se hizo clic en el mazo central para robar una carta, o sobre
      * una carta del mazo personal del jugador en turno para usarla.
-     * 
-     * @param x coordenada X del clic en el panel.
-     * @param y coordenada Y del clic en el panel.
-     * @throws IOException En caso que el clic esté fuera de la pantalla.
+     *
+     * @param x coordenada X del clic en el panel
+     * @param y coordenada Y del clic en el panel
+     * @throws IOException si ocurre un error al cargar la imagen de la carta robada
      */
-    public void procesarClic(int x, int y) throws IOException{
-        
-        if(terminado || pausa > 0) return;
-        
-        if(estaDentro(x, y, MAZO_CENTRAR_X, MAZO_CENTRAL_Y, MAZO_ANCHO, MAZO_ALTO)){
+    public void procesarClic(int x, int y) throws IOException {
+
+        if (terminado || pausa > 0) return;
+
+        if (estaDentro(x, y, MAZO_CENTRAL_X, MAZO_CENTRAL_Y, MAZO_ANCHO, MAZO_ALTO)) {
             robarCarta(turnoActual);
             return;
         }
-        
-        int anchoPanel = 340;
-        int anchoTotalPanel = (5 * CARTAS_ANCHO) + (4 * CARTAS_SEPARACION);
-        int margenX = (anchoPanel - anchoTotalPanel) / 2;
-        
-        int baseX = (turnoActual == bolaJugador1)? PANEL_J1_X : PANEL_J2_X;
+
+        int baseX = (turnoActual == bolaJugador1) ? PANEL_J1_X : PANEL_J2_X;
         List<Carta> mazoPersonal = turnoActual.getMazoPersonal();
-        
+
         for (int i = 0; i < mazoPersonal.size(); i++) {
-            int cartaX = baseX + margenX + (i * (CARTAS_ANCHO + CARTAS_SEPARACION));
-            
-            if(estaDentro(x, y, cartaX, PANEL_CARTAS_Y, CARTAS_ANCHO, CARTAS_ALTO)){
+            int cartaX = posicionXCarta(baseX, i);
+
+            if (estaDentro(x, y, cartaX, PANEL_CARTAS_Y, CARTAS_ANCHO, CARTAS_ALTO)) {
                 Carta cartaSeleccionada = mazoPersonal.get(i);
                 usarCarta(turnoActual, cartaSeleccionada);
                 return;
             }
         }
-    } //procesarClic
-    
+    } // procesarClic
+
     /**
-     * Método auxiliar para detectar la hitbox de cada carta o mazo personal.
-     * 
-     * @param clicX ubicación horizontal del clic en pantalla.
-     * @param clicY ubicación vertical del clic en pantalla.
-     * @param rectX ubicación horizontal del panel correspondiente.
-     * @param rectY ubicación vertical del panel correspondiente.
-     * @param ancho dimensión horizontal de las cartas del mazo personal.
-     * @param alto dimensión vertical de las cartas del mazo personal.
-     * @return 
+     * Método auxiliar para detectar si un clic cae dentro de un rectángulo, como
+     * la hitbox de una carta o del mazo central.
+     *
+     * @param clicX coordenada horizontal del clic en pantalla
+     * @param clicY coordenada vertical del clic en pantalla
+     * @param rectX coordenada horizontal de la esquina superior izquierda del rectángulo
+     * @param rectY coordenada vertical de la esquina superior izquierda del rectángulo
+     * @param ancho dimensión horizontal del rectángulo
+     * @param alto dimensión vertical del rectángulo
+     * @return {@code true} si el clic está dentro del rectángulo (bordes incluidos);
+     *         {@code false} en caso contrario
      */
-    private boolean estaDentro(int clicX, int clicY, int rectX, int rectY, int ancho, int alto){
+    private boolean estaDentro(int clicX, int clicY, int rectX, int rectY, int ancho, int alto) {
         return clicX >= rectX && clicX <= (rectX + ancho)
-              && clicY >= rectY && clicY <= (rectY + alto);
+                && clicY >= rectY && clicY <= (rectY + alto);
     }
-    
+
     /**
      * Obtiene la bola ganadora del juego.
      *
      * @return la bola ganadora, o {@code null} si todavía nadie ha ganado
      */
-    public JugadorBola getGanador() { return ganador; }
+    public JugadorBola getGanador() {
+        return ganador;
+    }
 }

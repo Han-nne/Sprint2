@@ -17,7 +17,7 @@ public class GroggyRingHUD {
     private static final int TAMANNO_BANDERA = 45;
     private static final int MARGEN = 12;
     private static final int PADDING = 5;
-    private static final int SEPARACION = 8; // espacio entre la caja de DibujarBandera y esta
+    private static final int SEPARACION = 8; 
 
     private final JugadorBola jugadorBola1;
     private final JugadorBola jugadorBola2;
@@ -35,16 +35,13 @@ public class GroggyRingHUD {
         int anchoCaja = TAMANNO_BANDERA + PADDING * 2;
         int altoCaja = TAMANNO_BANDERA + PADDING * 2;
 
-        // Debajo de la caja de DibujarBandera (que termina en MARGEN - PADDING + altoCaja)
         int yCaja = (MARGEN - PADDING) + altoCaja + SEPARACION;
         int yImagen = yCaja + PADDING;
 
-        // Jugador 1: izquierda, alineado con la bandera de la tripulación 1
         int xImagen1 = MARGEN;
         dibujarCaja(g, xImagen1 - PADDING, yCaja, anchoCaja, altoCaja);
         dibujarImagen(g, jugadorBola1, xImagen1, yImagen);
 
-        // Jugador 2: derecha, alineado con la bandera de la tripulación 2
         int xImagen2 = ANCHO_PANEL - MARGEN - TAMANNO_BANDERA;
         dibujarCaja(g, xImagen2 - PADDING, yCaja, anchoCaja, altoCaja);
         dibujarImagen(g, jugadorBola2, xImagen2, yImagen);

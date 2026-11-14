@@ -6,6 +6,7 @@ package Dominio;
 
 import static Dominio.Casilla.TAM;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import utility.TileSetManagerGroggyRing;
 
@@ -14,6 +15,7 @@ import utility.TileSetManagerGroggyRing;
  * <p>
  * Representa una casilla normal por la que las bolas pueden desplazarse.
  * No otorga puntos ni tiene dueño, a diferencia de {@link CasillaNeumatico}.
+ * Accede al estado de {@link Casilla} únicamente mediante sus métodos de acceso.
  * </p>
  *
  * @author johan
@@ -31,10 +33,10 @@ public class CasillaCampo extends Casilla {
      * @param posY coordenada Y de la casilla (en coordenadas locales del tablero)
      * @throws IOException si ocurre un error al cargar la imagen del tile
      */
-    public CasillaCampo(float posX, float posY) throws IOException {
+    public CasillaCampo(double posX, double posY) throws IOException {
         super(posX, posY);
-        this.imagenCasilla = TileSetManagerGroggyRing.cargarImagenGroggyRing();
-        this.imagenCasilla = this.imagenCasilla.getSubimage(0, 0, TAM, TAM);
+        BufferedImage tileSet = TileSetManagerGroggyRing.cargarImagenGroggyRing();
+        setImagenCasilla(tileSet.getSubimage(0, 0, TAM, TAM));
     }
 
     /**
@@ -44,7 +46,6 @@ public class CasillaCampo extends Casilla {
      */
     @Override
     public void dibujar(Graphics g) {
-        g.drawImage(imagenCasilla, (int) posX, (int) posY, TAM, TAM, null);
+        g.drawImage(getImagenCasilla(), (int) getPosX(), (int) getPosY(), TAM, TAM, null);
     }
-
 }

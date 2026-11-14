@@ -31,6 +31,7 @@ public class Mazo {
     /**
      * Contruye un mazo nuevo, lo inicializa con 52 cartas
      * y aplica un barajado aleatorio inicial.
+     * @throws java.io.IOException
      */
     public Mazo() throws IOException{
         this.cartas = new ArrayList<>();
@@ -47,7 +48,7 @@ public class Mazo {
      * </ul>
      * y aplica {@link Collections#shuffle} para desordenarlas.
      */
-    public void inicializarYBarajar() throws IOException{
+    private void inicializarYBarajar() throws IOException{
         cartas.clear();
         
         for (int i = 0; i < 20; i++) {
@@ -72,6 +73,7 @@ public class Mazo {
      * <p>
      * 
      * @return  La primera {@link Carta} disponible para robar.
+     * @throws java.io.IOException
      */
     public Carta robarCarta() throws IOException{
         if(cartas.isEmpty()) inicializarYBarajar();

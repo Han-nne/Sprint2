@@ -5,11 +5,20 @@
 package Dominio;
 
 /**
+ * Niveles de dificultad disponibles en los minijuegos del torneo.
  *
  * @author johan
+ * @see ConfiguracionGeneral
+ * @see ConfiguracionDonutRace
  */
 public enum Dificultad {
-    FACIL ,
+
+    /** Nivel de dificultad fácil. */
+    FACIL,
+
+    /** Nivel de dificultad normal (medio). */
     NORMAL,
-    DIFICIL;
+
+    /** Nivel de dificultad difícil. */
+    DIFICIL
 }

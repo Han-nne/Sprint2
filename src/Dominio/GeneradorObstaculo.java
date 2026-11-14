@@ -14,19 +14,22 @@ import java.util.List;
  * según la dificultad seleccionada.
  * <p>
  * Las posiciones de cada dificultad se guardan como datos (pares {@code {x, y}})
- * en arreglos constantes, de modo que modificar una dificultad o agregar
- * obstáculos no requiere cambiar la lógica de generación.
+ * en arreglos constantes privados, de modo que modificar una dificultad o agregar
+ * obstáculos no requiere cambiar la lógica de generación. Los arreglos nunca se
+ * exponen: cada llamada a {@link #generar(Dificultad)} crea objetos nuevos.
  * </p>
  * <p>
- * Es una clase de utilidad: todos sus métodos son estáticos. {@link DonutRace}
- * la usa al iniciar la partida para poblar el escenario.
+ * Es una clase de utilidad: es {@code final}, no se puede instanciar y todos sus
+ * métodos son estáticos. {@link DonutRace} la usa al iniciar la partida para
+ * poblar el escenario.
  * </p>
  *
  * @author johan
  * @see Obstaculo
  * @see DonutRace
+ * @see Dificultad
  */
-public class GeneradorObstaculo {
+public final class GeneradorObstaculo {
 
     /**
      * Posiciones de los obstáculos en dificultad Fácil (7 obstáculos).
@@ -73,11 +76,12 @@ public class GeneradorObstaculo {
      * </p>
      *
      * @param dificultad dificultad de los obstáculos fijos seleccionada en la
-     *                   configuración de la partida
+     *                   configuración de la partida; no puede ser {@code null}
      * @return lista de obstáculos nuevos, ubicados según la dificultad
      * @throws IOException si ocurre un error al cargar la imagen de un obstáculo
      */
     public static List<Obstaculo> generar(Dificultad dificultad) throws IOException {
+
         int[][] posiciones;
         switch (dificultad) {
             case FACIL:

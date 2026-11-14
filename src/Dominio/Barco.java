@@ -8,7 +8,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import static java.lang.Math.max;
-import java.util.ArrayList;
 import java.util.List;
 import utility.BarcoSprites;
 
@@ -27,6 +26,11 @@ import utility.BarcoSprites;
  * en que recupera su velocidad original. Al colisionar con cualquier otro objeto
  * (excepto una {@link Meta}), el barco retrocede y se detiene.
  * </p>
+ * <p>
+ * El estado interno del barco (dirección de movimiento, última dirección,
+ * sprites y contador de colisiones) solo se modifica mediante los métodos de
+ * movimiento y colisión de esta clase, de modo que siempre se mantiene coherente.
+ * </p>
  *
  * @author johan
  * @see ObjetoMovil
@@ -39,17 +43,29 @@ import utility.BarcoSprites;
  */
 public class Barco extends ObjetoMovil {
 
+    /** Radio de colisión del barco, en píxeles. */
+    private static final double RADIO_COLISION = 15;
+
     /** Tripulación que maneja este barco. */
     private final Tripulacion tripulacion;
 
     /** Munición de obstáculos que el barco puede lanzar. */
     private final Municion municion;
 
+    /** Efecto de ralentización que controla la velocidad actual del barco. */
+    private final EfectoRalentizacion ralentizacion;
+
+    /**
+     * Sprites del barco según su dirección (lista inmutable). Índices:
+     * 0 = arriba, 1 = derecha, 2 = abajo, 3 = izquierda.
+     */
+    private final List<BufferedImage> imagenBarcos;
+
     /** Dirección horizontal actual: -1 (izquierda), 0 (quieto) o 1 (derecha). */
-    private double dirX = 0;
+    private int dirX = 0;
 
     /** Dirección vertical actual: -1 (arriba), 0 (quieto) o 1 (abajo). */
-    private double dirY = 0;
+    private int dirY = 0;
 
     /**
      * Última dirección hacia la que se movió el barco. Determina hacia dónde
@@ -59,18 +75,9 @@ public class Barco extends ObjetoMovil {
 
     /** Indica si el barco ha cumplido la condición de victoria. */
     private boolean condicionVictoria = false;
-    
-    /**Indica cuantos obstáculos ha colisionado durante la carrera/*/
-    private int obstaculosColiosionados = 0;
 
-    /** Efecto de ralentización que controla la velocidad actual del barco. */
-    private final EfectoRalentizacion ralentizacion;
-
-    /**
-     * Sprites del barco según su dirección. Índices: 0 = arriba, 1 = derecha,
-     * 2 = abajo, 3 = izquierda.
-     */
-    private  List<BufferedImage> imagenBarcos;
+    /** Cantidad de obstáculos con los que ha colisionado el barco durante la carrera. */
+    private int obstaculosColisionados = 0;
 
     /**
      * Construye un barco con la tripulación, velocidad, posición, munición y
@@ -91,21 +98,9 @@ public class Barco extends ObjetoMovil {
         this.tripulacion = tripulacion;
         this.ralentizacion = new EfectoRalentizacion(velocidadEmbarcacion);
         this.municion = new Municion(municionObstaculosLanzados);
-        this.radio = 15;
+        this.radio = RADIO_COLISION;
 
-        this.imagenBarcos = new ArrayList<>();
-        imagenBarco(colorBarco);
-    }
-
-    /**
-     * Carga los sprites del barco según su color y establece como imagen
-     * inicial la que mira hacia la derecha.
-     *
-     * @param colorBarco color del barco cuyos sprites se cargan
-     * @throws IOException si ocurre un error al cargar las imágenes
-     */
-    private void imagenBarco(ColorBarco colorBarco) throws IOException {
-        this.imagenBarcos = BarcoSprites.cargar(colorBarco);
+        this.imagenBarcos = List.copyOf(BarcoSprites.cargar(colorBarco));
         this.imagen = this.imagenBarcos.get(1);
     }
 
@@ -147,17 +142,22 @@ public class Barco extends ObjetoMovil {
     }
 
     /**
-     * Obtiene la cantidad de obstáculos colisionados de un barco.
-     * @return Retorna los obstáculos colisionados correspondientes al barco.
+     * Obtiene la cantidad de obstáculos con los que ha colisionado el barco.
+     *
+     * @return los obstáculos colisionados correspondientes al barco
      */
     public int getObstaculosColisionados() {
-        return obstaculosColiosionados;
+        return obstaculosColisionados;
     }
 
-    /**Incrementa en uno la cantidad de obstáculos colisionados.*/
-    public void incrementarObstaculosColisionados(){
-        this.obstaculosColiosionados++;
+    /**
+     * Incrementa en uno la cantidad de obstáculos colisionados. Solo se
+     * invoca internamente desde {@link #accionChoque(Colisionable)}.
+     */
+    private void incrementarObstaculosColisionados() {
+        this.obstaculosColisionados++;
     }
+
     /**
      * Consume una unidad de munición para lanzar un obstáculo.
      *
@@ -199,9 +199,9 @@ public class Barco extends ObjetoMovil {
     /**
      * Define la reacción del barco al colisionar con otro objeto:
      * <ul>
-     *   <li>Si es un {@link Obstaculo} o un {@link ObstaculoLanzado}: aplica el
-     *       efecto de ralentización.</li>
-     *   <li>Si es una {@link Meta}: no realiza ninguna acción por el momento.</li>
+     *   <li>Si es un {@link Obstaculo} o un {@link ObstaculoLanzado}: incrementa
+     *       el contador de colisiones y aplica el efecto de ralentización.</li>
+     *   <li>Si es una {@link Meta}: marca la condición de victoria.</li>
      *   <li>Cualquier otro objeto: revierte el último desplazamiento y detiene
      *       el barco en ambos ejes.</li>
      * </ul>
@@ -232,8 +232,6 @@ public class Barco extends ObjetoMovil {
      * Si el barco se mueve, desplaza su posición según la dirección y la velocidad
      * actual y registra el desplazamiento (al menos 1 píxel) en el efecto de
      * ralentización, que restaura la velocidad original cuando se acumulan 75
-     * píxeles recorridos. Finalmente, restringe la posición a los límites del
-     * área de juego (X entre 0 y 1230, Y entre 0 y 670).
      * </p>
      */
     public void actualizar() {
@@ -244,11 +242,6 @@ public class Barco extends ObjetoMovil {
 
             ralentizacion.registrarDesplazamiento((int) max(1, velocidad));
         }
-
-        if ((int) posX < 0) posX = 0;
-        if ((int) posX > 1230) posX = 1230;
-        if ((int) posY < 0) posY = 0;
-        if ((int) posY > 670) posY = 670;
     }
 
     /**
@@ -365,35 +358,47 @@ public class Barco extends ObjetoMovil {
         return radio;
     }
 
-    public double getDirX() {
+    /**
+     * Obtiene la componente horizontal de la dirección actual de movimiento.
+     *
+     * @return -1 si se mueve a la izquierda, 0 si está quieto en el eje X
+     *         y 1 si se mueve a la derecha
+     */
+    public int getDirX() {
         return dirX;
     }
 
-    public void setDirX(double dirX) {
-        this.dirX = dirX;
-    }
-
-    public double getDirY() {
+    /**
+     * Obtiene la componente vertical de la dirección actual de movimiento.
+     *
+     * @return -1 si se mueve hacia arriba, 0 si está quieto en el eje Y
+     *         y 1 si se mueve hacia abajo
+     */
+    public int getDirY() {
         return dirY;
     }
 
-    public void setDirY(double dirY) {
-        this.dirY = dirY;
-    }
-
+    /**
+     * Obtiene la última dirección hacia la que se movió el barco, que
+     * determina hacia dónde se lanzan los obstáculos.
+     *
+     * @return la última {@link Direccion} utilizada
+     */
     public Direccion getUltimaDireccion() {
         return ultimaDireccion;
     }
 
-    public void setUltimaDireccion(Direccion ultimaDireccion) {
-        this.ultimaDireccion = ultimaDireccion;
-    }
-
+    /**
+     * Obtiene los sprites del barco. Índices: 0 = arriba, 1 = derecha,
+     * 2 = abajo, 3 = izquierda.
+     * <p>
+     * La lista devuelta es inmutable, por lo que no se puede modificar el
+     * estado interno del barco desde fuera.
+     * </p>
+     *
+     * @return lista inmutable con las imágenes del barco
+     */
     public List<BufferedImage> getImagenBarcos() {
         return imagenBarcos;
-    }
-
-    public void setImagenBarcos(List<BufferedImage> imagenBarcos) {
-        this.imagenBarcos = imagenBarcos;
     }
 } // fin clase

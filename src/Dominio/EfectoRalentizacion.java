@@ -11,16 +11,21 @@ package Dominio;
  * fracción de su velocidad base. El efecto termina automáticamente cuando
  * el barco ha recorrido una distancia determinada desde que fue aplicado.
  * </p>
+ * <p>
+ * El estado del efecto solo cambia mediante {@link #aplicar()} y
+ * {@link #registrarDesplazamiento(double)}, de modo que siempre es coherente.
+ * </p>
  *
  * @author johan
+ * @see Barco
  */
 public class EfectoRalentizacion {
 
     /** Fracción de la velocidad base que se conserva mientras dura el efecto (75%). */
-    private static final double FACTOR_VELOCIDAD = 0.75;
+    public static final double FACTOR_VELOCIDAD = 0.75;
 
     /** Distancia, en píxeles, que debe recorrer el barco para recuperar su velocidad. */
-    private static final double DISTANCIA_RECUPERACION = 75.0;
+    public static final double DISTANCIA_RECUPERACION = 75.0;
 
     /** Velocidad normal del barco, sin efectos. */
     private final double velocidadBase;
@@ -35,9 +40,15 @@ public class EfectoRalentizacion {
      * Crea un efecto de ralentización inactivo para un barco con la
      * velocidad base indicada.
      *
-     * @param velocidadBase velocidad normal del barco, sin efectos
+     * @param velocidadBase velocidad normal del barco, sin efectos; debe ser
+     *                      un número mayor que cero
+     * @throws IllegalArgumentException si {@code velocidadBase} es menor o igual
+     *                                  a cero, {@code NaN} o infinito
      */
     public EfectoRalentizacion(double velocidadBase) {
+        if (!(velocidadBase > 0) || Double.isInfinite(velocidadBase)) {
+            throw new IllegalArgumentException("La velocidad base debe ser un número mayor que cero.");
+        }
         this.velocidadBase = velocidadBase;
     }
 
@@ -56,9 +67,13 @@ public class EfectoRalentizacion {
      * cuando la distancia acumulada alcanza la necesaria para recuperarse.
      * Si el efecto no está activo, no hace nada.
      *
-     * @param pixeles distancia, en píxeles, recorrida por el barco
+     * @param pixeles distancia, en píxeles, recorrida por el barco; no puede ser negativa
+     * @throws IllegalArgumentException si {@code pixeles} es negativo
      */
     public void registrarDesplazamiento(double pixeles) {
+        if (pixeles < 0) {
+            throw new IllegalArgumentException("El desplazamiento no puede ser negativo.");
+        }
         if (!activo) {
             return;
         }
@@ -107,25 +122,4 @@ public class EfectoRalentizacion {
         return distanciaRecorrida;
     }
 
-    /**
-     * Establece la distancia recorrida desde que se aplicó el efecto.
-     *
-     * @param distanciaRecorrida nueva distancia recorrida, en píxeles
-     */
-    public void setDistanciaRecorrida(double distanciaRecorrida) {
-        this.distanciaRecorrida = distanciaRecorrida;
-    }
-
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
-
-    public static double getFACTOR_VELOCIDAD() {
-        return FACTOR_VELOCIDAD;
-    }
-
-    public static double getDISTANCIA_RECUPERACION() {
-        return DISTANCIA_RECUPERACION;
-    }
-    
 }
