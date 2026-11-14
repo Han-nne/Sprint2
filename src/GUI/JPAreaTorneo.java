@@ -22,7 +22,8 @@ import javax.swing.Timer;
 
 /**
  * Panel gráfico donde se desarrolla el torneo. Dibuja el fondo marino y los
- * elementos del juego, y recibe el teclado para controlar a los jugadores.
+ * elementos del juego, recibe el teclado para controlar a los jugadores y 
+ * recibe el clic del mouse para seleccionar las cartas de GroggyRing.
  * <p>
  * Crea un {@link Torneo} con las dos tripulaciones y la configuración recibidas.
  * Un {@link Timer} de Swing, que se ejecuta cada 16 ms (aprox. 60 cuadros por
@@ -130,6 +131,10 @@ public class JPAreaTorneo extends JPanel implements KeyListener, MouseListener{
         torneo.procesarTeclaLiberada(e.getKeyCode());
     }
 
+    /**
+     * Reenvía al torneo las coordenadas (x,y) del clic en pantalla,
+     * @param e evento del mouse al dar un único clic.
+     */
     @Override
     public void mouseClicked(MouseEvent e) {
         try {
@@ -139,15 +144,31 @@ public class JPAreaTorneo extends JPanel implements KeyListener, MouseListener{
         }
     }
 
+    /**
+     * Evento del mouse con clic presionado. No se usa en este panel.
+     * @param e evento del mouse.
+     */
     @Override
     public void mousePressed(MouseEvent e) {}
 
+    /**
+     * Evento del mouse con clic liberado. No se usa en este panel.
+     * @param e evento del mouse.
+     */
     @Override
     public void mouseReleased(MouseEvent e) {}
 
+    /**
+     * Evento del mouse con el cursor ingresado. No se usa en este panel.
+     * @param e evento del mouse.
+     */
     @Override
     public void mouseEntered(MouseEvent e) {}
 
+    /**
+     * Evento del mouse con el cursor expulsado. No se usa en este panel.
+     * @param e evento del mouse.
+     */
     @Override
     public void mouseExited(MouseEvent e) {}
 } //fin clase
