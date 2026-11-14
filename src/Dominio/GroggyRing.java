@@ -178,6 +178,9 @@ public class GroggyRing implements Juego {
         liberar(bolaJugador2);
         colocar(bolaJugador1, FILA_CENTRO, 1);
         colocar(bolaJugador2, FILA_CENTRO, COLUMNAS - 2);
+        
+        bolaJugador1.getMazoPersonal().clear();
+        bolaJugador2.getMazoPersonal().clear();
     }
 
     /**
@@ -235,7 +238,11 @@ public class GroggyRing implements Juego {
         if (terminado || pausa > 0 || bola != turnoActual) {
             return;
         }
-
+        
+        boolean manoLlena = bola.getMazoPersonal().size() >= 5;
+        if(!manoLlena && !bola.isCartaRobada()) return;
+        if(!bola.isCartaUsada()) return;
+        
         int pasos = 1 + bola.getCasillasExtra();
         int nuevaFila = bola.getFila() + (dFila * pasos);
         int nuevaCol = bola.getColumna() + (dCol * pasos);
@@ -288,6 +295,8 @@ public class GroggyRing implements Juego {
         Carta cartaRobada = mazo.robarCarta();
         jugador.guardarCartaEnMazoPersonal(cartaRobada);
         jugador.setCartasRobadas(jugador.getCartasRobadas() + 1);
+        
+        jugador.setCartaRobada(true);
     }
     
     /**
@@ -298,7 +307,7 @@ public class GroggyRing implements Juego {
      */
     public void usarCarta(JugadorBola jugador, Carta carta){
         if(terminado || pausa > 0 || jugador !=turnoActual) return;
-        
+            
         if(carta instanceof CartaAtaque){
             if(jugador.isAtaqueUsado()) return;
             jugador.setAtaqueUsado(true);
@@ -311,6 +320,8 @@ public class GroggyRing implements Juego {
         JugadorBola rival = rivalDe(jugador);
         carta.aplicarEfecto(jugador, rival, this);
         jugador.usarCartaEnMazoPersonal(carta);
+        
+        jugador.setCartaUsada(true);
     }
     
     

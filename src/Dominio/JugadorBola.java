@@ -25,6 +25,8 @@ public class JugadorBola {
     /**Bandera del efecto de un ataque recibido.*/
     private boolean turnoOmitido = false;
     
+    private boolean turnoExtra = false;
+    
     /**Indica la cantidad de casillas extra que se puede mover el jugador 
      * por la carta de desplazamiento.
      */
@@ -38,6 +40,12 @@ public class JugadorBola {
     
     /**Indica la cantidad de cartas que el jugador a robado del mazo central.*/
     private int cartasRobadas = 0;
+    
+    /**Bandera que indica si el jugador ha robado alguna carta del mazo central durante su turno.*/
+    private boolean cartaRobada = false;
+    
+    /**Bandera que indica si el jugador ha usado alguna carta del mazo personal durante su turno.*/
+    private boolean cartaUsada = false;
     
     public static final int TAM = Casilla.TAM;
      
@@ -106,6 +114,48 @@ public class JugadorBola {
      */
     public void setTurnoOmitido(boolean turnoOmitido) { this.turnoOmitido = turnoOmitido;}
 
+    public boolean isTurnoExtra() { return turnoExtra;}
+
+    public void setTurnoExtra(boolean turnoExtra) {this.turnoExtra = turnoExtra;}
+
+    /**
+     * Aumenta la cantidad de turnos omitidos del jugador afectado.
+     * @param extra cantidad de turnos a omitir.
+     */
+    //public void incrementarTurnosOmitidos(int extra) { this.turnosOmitidos += extra;}
+
+    /**
+     * Se obtiene si el jugador ha robado al menos una carta del mazo central.
+     * @return {@code true} si ha robado o {@code false} si no ha robado.
+     */
+    public boolean isCartaRobada() {
+        return cartaRobada;
+    }
+
+    /**
+     * Establece que el jugador a robado o no alguna carta del mazo central.
+     * @param cartaRobada {@code true} si ha robado o {@code false} si no ha robado.
+     */
+    public void setCartaRobada(boolean cartaRobada) {
+        this.cartaRobada = cartaRobada;
+    }
+
+    /**
+     * Se obtiene si el jugador ha usado al menos una carta del mazo personal.
+     * @return {@code true} si ha usado o {@code false} si no ha usado almenos una carta.
+     */
+    public boolean isCartaUsada() {
+        return cartaUsada;
+    }
+
+    /**
+     * Establece que el jugador a usado o no alguna carta del mazo personal.
+     * @param cartaUsada  {@code true} si ha usado o {@code false} si no ha usado almenos una carta.
+     */
+    public void setCartaUsada(boolean cartaUsada) {
+        this.cartaUsada = cartaUsada;
+    }
+    
     /**
      * Se obtiene cuántas casillas extra puede moverse el jugador (efecto de cartaDesplazamiento).
      * @return número de casillas extra a moverse.
@@ -160,13 +210,15 @@ public class JugadorBola {
      */
     public void setCartasRobadas(int cartasRobadas) {this.cartasRobadas = cartasRobadas;}
     
-    /**Reiniciar las banderas de ataque, defensa, y el número 
-     * de cartas robadas al final del turno.
+    /**Reiniciar el estado de ataque, defensa, número 
+     * de cartas robadas y usadas al final del turno.
      */
      public void reiniciarTurnoTactico(){
          this.ataqueUsado = false;
          this.defensaUsada = false;
          this.cartasRobadas = 0;
+         this.cartaRobada = false;
+         this.cartaUsada = false;
      }
     
     public int getAnotaciones() { 
