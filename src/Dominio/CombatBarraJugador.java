@@ -11,7 +11,7 @@ import java.util.Random;
  *
  * @author Keithy Carrillo
  */
-public class CombatJugador {
+public class CombatBarraJugador {
     
     private int barraPoder;
     private int valorInicialBarra;
@@ -22,7 +22,7 @@ public class CombatJugador {
     private int indiceProgreso;
     private Random generadorAleatorio;
 
-    public CombatJugador(int valorInicialBarra, ArrayList<Integer> teclasPermitidas, int longitudSecuencia) {
+    public CombatBarraJugador(int valorInicialBarra, ArrayList<Integer> teclasPermitidas, int longitudSecuencia) {
         this.valorInicialBarra = valorInicialBarra;
         this.barraPoder = valorInicialBarra;
         this.primerIntento = true;
