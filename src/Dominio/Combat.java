@@ -5,11 +5,15 @@
 package Dominio;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.Timer;
+import utility.TileSetManagerCombat;
 
 /**
  *
@@ -20,21 +24,23 @@ public class Combat implements Juego {
     private Tripulacion tripulacion1;
     private Tripulacion tripulacion2;
     private ConfiguracionCombat configuracionCombat;
-    private CombatJugador jugadorCombat1;
-    private CombatJugador jugadorCombat2;
+    private CombatBarraJugador jugadorCombat1;
+    private CombatBarraJugador jugadorCombat2;
     private CombatHUD hudCombat;
     private int tiempoRestanteCombat;
     private boolean partidaTerminadaCombat;
     private boolean continuarTorneo;
     private String mensajeResultado;
     private Timer temporizadorCombat;
+    private BufferedImage fondo;
 
     
-    public Combat(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionCombat configuracionCombat) {
+    public Combat(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionCombat configuracionCombat) throws IOException {
         this.tripulacion1 = tripulacion1;
         this.tripulacion2 = tripulacion2;
         this.configuracionCombat = configuracionCombat;
         this.hudCombat = new CombatHUD();
+        this.fondo = TileSetManagerCombat.cargarImagenFondoCombat();
         iniciarJuego();
     }
 
@@ -53,8 +59,8 @@ public class Combat implements Juego {
         int valorInicial = getConfiguracionCombat().getValorInicialBarra();
         int longitudSecuencia = 4;
         
-        this.jugadorCombat1 = new CombatJugador(valorInicial, controlesJugador1, longitudSecuencia);
-        this.jugadorCombat2 = new CombatJugador(valorInicial, controlesJugador2, longitudSecuencia);
+        this.jugadorCombat1 = new CombatBarraJugador(valorInicial, controlesJugador1, longitudSecuencia);
+        this.jugadorCombat2 = new CombatBarraJugador(valorInicial, controlesJugador2, longitudSecuencia);
         
         this.tiempoRestanteCombat = 45;
         this.partidaTerminadaCombat = false;
@@ -140,8 +146,21 @@ public class Combat implements Juego {
     
     @Override
     public void dibujar(Graphics g){
-        getHudCombat().dibujar(g, getJugadorCombat1(), getJugadorCombat2(), getTripulacion1().getNombreTripulacion(), getTripulacion2().getNombreTripulacion(), 
+        
+        Rectangle limites = g.getClipBounds();
+        int ancho = (limites != null && limites.width > 0) ? limites.width : 1280;
+        int alto = (limites != null && limites.height > 0) ? limites.height : 720;
+        
+        if (getFondo() != null) {
+            g.drawImage(getFondo(), 0, 0, ancho, alto, null);
+        }
+        
+        
+        if (getJugadorCombat1()!= null && getJugadorCombat2()!= null) {
+            getHudCombat().dibujar(g, getJugadorCombat1(), getJugadorCombat2(), getTripulacion1().getNombreTripulacion(), getTripulacion2().getNombreTripulacion(), 
                 getTiempoRestanteCombat(), isPartidaTerminadaCombat(), getMensajeResultado());
+        }
+        
     }
     
     
@@ -170,19 +189,19 @@ public class Combat implements Juego {
         this.configuracionCombat = configuracionCombat;
     }
 
-    public CombatJugador getJugadorCombat1() {
+    public CombatBarraJugador getJugadorCombat1() {
         return jugadorCombat1;
     }
 
-    public void setJugadorCombat1(CombatJugador jugadorCombat1) {
+    public void setJugadorCombat1(CombatBarraJugador jugadorCombat1) {
         this.jugadorCombat1 = jugadorCombat1;
     }
 
-    public CombatJugador getJugadorCombat2() {
+    public CombatBarraJugador getJugadorCombat2() {
         return jugadorCombat2;
     }
 
-    public void setJugadorCombat2(CombatJugador jugadorCombat2) {
+    public void setJugadorCombat2(CombatBarraJugador jugadorCombat2) {
         this.jugadorCombat2 = jugadorCombat2;
     }
 
@@ -233,9 +252,14 @@ public class Combat implements Juego {
     public void setContinuarTorneo(boolean continuarTorneo) {
         this.continuarTorneo = continuarTorneo;
     }
-    
-    
-    
+
+    public BufferedImage getFondo() {
+        return fondo;
+    }
+
+    public void setFondo(BufferedImage fondo) {
+        this.fondo = fondo;
+    }
 
     @Override
     public boolean haTerminado() {

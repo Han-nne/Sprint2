@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class TripulacionNegocios {
  
     /** Acceso al archivo donde se guardan las tripulaciones. */
-    private TripulacionDatos tripulacionDatos;
+    private final TripulacionDatos tripulacionDatos;
  
     /**
      * Construye la capa de negocio con su propio acceso a datos.
