@@ -289,71 +289,125 @@ public class GroggyRing implements Juego {
     }
 
     /**
-     * Intenta mover una bola una casilla (más las casillas extra que le hayan
-     * dado las cartas) en la dirección indicada.
-     * <p>
-     * El movimiento se ignora si el juego terminó, si hay una pausa activa,
-     * si no es el turno de la bola, si el jugador aún no robó una carta (a menos
-     * que tenga la mano llena), si aún no usó una carta, si el destino está fuera
-     * del tablero o si la casilla destino está ocupada. Si la bola llega al
-     * neumático del rival, se anota un punto y se inicia la pausa del marcador
-     * (y, si se alcanza la puntuación de victoria, se define el ganador). En caso
-     * contrario, el turno pasa al rival, salvo que este tenga el turno omitido.
-     * </p>
-     *
-     * @param bola  bola que se intenta mover
-     * @param dFila desplazamiento en filas (-1, 0 o 1)
-     * @param dCol  desplazamiento en columnas (-1, 0 o 1)
-     */
-    private void intentarMover(JugadorBola bola, int dFila, int dCol) {
-        if (terminado || pausa > 0 || bola != turnoActual) {
-            return;
+ * Calcula la casilla a la que llegaría una bola al moverse en una dirección,
+ * avanzando casilla por casilla hasta completar los pasos disponibles
+ * (1 más las casillas extra acumuladas por cartas de desplazamiento).
+ * <p>
+ * El recorrido se detiene en la última casilla libre cuando ocurre alguna de
+ * estas situaciones: el siguiente paso saldría del tablero, la siguiente casilla
+ * está ocupada por otra bola, o la bola acaba de llegar al neumático del rival
+ * (en cuyo caso se detiene sobre él para poder anotar).
+ * </p>
+ *
+ * @param bola  bola que se desea mover
+ * @param dFila desplazamiento en filas (-1, 0 o 1)
+ * @param dCol  desplazamiento en columnas (-1, 0 o 1)
+ * @return arreglo {@code {fila, columna}} con la casilla de destino, o
+ *         {@code null} si la bola no puede avanzar ni una sola casilla
+ */
+private int[] calcularDestino(JugadorBola bola, int dFila, int dCol) {
+    int pasos = 1 + bola.getCasillasExtra();
+    int fila = bola.getFila();
+    int col = bola.getColumna();
+
+    for (int i = 0; i < pasos; i++) {
+        int siguienteFila = fila + dFila;
+        int siguienteCol = col + dCol;
+
+        // Borde del tablero
+        if (siguienteFila < 0 || siguienteFila >= FILAS
+                || siguienteCol < 0 || siguienteCol >= COLUMNAS) {
+            break;
         }
 
-        boolean manoLlena = bola.getMazoPersonal().size() >= MAX_CARTAS_MANO;
-        if (!manoLlena && !bola.isCartaRobada()) return;
-        if (!bola.isCartaUsada()) return;
+        Casilla siguiente = zonaJuego[siguienteFila][siguienteCol];
 
-        int pasos = 1 + bola.getCasillasExtra();
-        int nuevaFila = bola.getFila() + (dFila * pasos);
-        int nuevaCol = bola.getColumna() + (dCol * pasos);
-
-        if (nuevaFila < 0 || nuevaFila >= FILAS || nuevaCol < 0 || nuevaCol >= COLUMNAS) {
-            return;
+        // Casilla ocupada por la otra bola
+        if (siguiente.getJugadorBola() != null) {
+            break;
         }
 
-        Casilla destino = zonaJuego[nuevaFila][nuevaCol];
-        if (destino.getJugadorBola() != null) {
-            return;
+        fila = siguienteFila;
+        col = siguienteCol;
+
+        // Si llegó al neumático del rival, se detiene ahí para anotar
+        if (siguiente instanceof CasillaNeumatico
+                && ((CasillaNeumatico) siguiente).getDueno() != bola) {
+            break;
         }
-
-        zonaJuego[bola.getFila()][bola.getColumna()].setJugadorBola(null);
-        colocar(bola, nuevaFila, nuevaCol);
-
-        bola.setCasillasExtra(0);
-
-        if (destino instanceof CasillaNeumatico
-                && ((CasillaNeumatico) destino).getDueno() != bola) {
-
-            bola.sumarAnotacion();
-            anotador = bola;
-            pausa = CICLOS_PAUSA;
-            if (bola.getAnotaciones() >= puntuacionVictoria) {
-                ganador = bola;   // el juego acaba cuando termine la pausa
-            }
-            return;
-        }
-
-        JugadorBola siguienteTurno = rivalDe(bola);
-        if (siguienteTurno.isTurnoOmitido()) {
-            siguienteTurno.setTurnoOmitido(false);
-            turnoActual = bola;
-        } else {
-            turnoActual = siguienteTurno;
-        }
-        turnoActual.reiniciarTurnoTactico();
     }
 
+    // No pudo avanzar ni una casilla
+    if (fila == bola.getFila() && col == bola.getColumna()) {
+        return null;
+    }
+    return new int[] {fila, col};
+}
+
+/**
+ * Intenta mover una bola en la dirección indicada, avanzando tantas casillas
+ * como pueda hasta un máximo de 1 más las casillas extra que le hayan dado las
+ * cartas. Si hay un obstáculo o el borde del tablero antes de completar todos
+ * los pasos, la bola avanza hasta la última casilla libre.
+ * <p>
+ * El movimiento se ignora si el juego terminó, si hay una pausa activa,
+ * si no es el turno de la bola, si el jugador aún no robó una carta (a menos
+ * que tenga la mano llena), si aún no usó una carta, o si la bola no puede
+ * avanzar ni una casilla (en ese caso no se gastan las casillas extra ni el
+ * turno). Si la bola llega al neumático del rival, se anota un punto y se inicia
+ * la pausa del marcador (y, si se alcanza la puntuación de victoria, se define
+ * el ganador). En caso contrario, el turno pasa al rival, salvo que este tenga
+ * el turno omitido.
+ * </p>
+ *
+ * @param bola  bola que se intenta mover
+ * @param dFila desplazamiento en filas (-1, 0 o 1)
+ * @param dCol  desplazamiento en columnas (-1, 0 o 1)
+ * @see #calcularDestino(JugadorBola, int, int)
+ */
+private void intentarMover(JugadorBola bola, int dFila, int dCol) {
+    if (terminado || pausa > 0 || bola != turnoActual) {
+        return;
+    }
+
+    boolean manoLlena = bola.getMazoPersonal().size() >= MAX_CARTAS_MANO;
+    if (!manoLlena && !bola.isCartaRobada()) return;
+    if (!bola.isCartaUsada()) return;
+
+    int[] posicionDestino = calcularDestino(bola, dFila, dCol);
+    if (posicionDestino == null) {
+        return;   // bloqueada: no se mueve y conserva sus casillas extra
+    }
+
+    Casilla destino = zonaJuego[posicionDestino[0]][posicionDestino[1]];
+
+    zonaJuego[bola.getFila()][bola.getColumna()].setJugadorBola(null);
+    colocar(bola, posicionDestino[0], posicionDestino[1]);
+
+    bola.setCasillasExtra(0);
+
+    if (destino instanceof CasillaNeumatico
+            && ((CasillaNeumatico) destino).getDueno() != bola) {
+
+        bola.sumarAnotacion();
+        anotador = bola;
+        pausa = CICLOS_PAUSA;
+        if (bola.getAnotaciones() >= puntuacionVictoria) {
+            ganador = bola;   // el juego acaba cuando termine la pausa
+        }
+        return;
+    }
+
+    JugadorBola siguienteTurno = rivalDe(bola);
+    if (siguienteTurno.isTurnoOmitido()) {
+        siguienteTurno.setTurnoOmitido(false);
+        turnoActual = bola;
+    } else {
+        turnoActual = siguienteTurno;
+    }
+    turnoActual.reiniciarTurnoTactico();
+}
+    
     /**
      * Extrae una carta del mazo central y la agrega al mazo personal del jugador.
      * <p>
