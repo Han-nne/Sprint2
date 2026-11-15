@@ -79,7 +79,7 @@ public abstract class Carta {
      * @param rival Jugador opuesto.
      * @param juego Instancia actual de GroggyRing para consultas del tablero.
      */
-    public abstract void aplicarEfecto(JugadorBola usuario, JugadorBola rival, GroggyRing juego);
+    public abstract void aplicarEfecto(JugadorBola usuario, JugadorBola rival);
     
     /**
      * Se encarga de dibujar una carta según su tipo (ataque, defensa, desplazamiento) 

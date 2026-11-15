@@ -28,7 +28,7 @@ public class CartaAtaque extends Carta{
     }
 
     @Override
-    public void aplicarEfecto(JugadorBola usuario, JugadorBola rival, GroggyRing juego) {
+    public void aplicarEfecto(JugadorBola usuario, JugadorBola rival) {
         if(rival.isEscudoActivo()){
             rival.setEscudoActivo(false);
         } else {

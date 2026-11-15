@@ -401,7 +401,7 @@ public class GroggyRing implements Juego {
         }
 
         JugadorBola rival = rivalDe(jugador);
-        carta.aplicarEfecto(jugador, rival, this);
+        carta.aplicarEfecto(jugador, rival);
         jugador.usarCartaEnMazoPersonal(carta);
 
         jugador.setCartaUsada(true);
