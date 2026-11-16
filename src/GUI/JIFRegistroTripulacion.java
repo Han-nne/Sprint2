@@ -8,6 +8,10 @@ import Dominio.Tripulacion;
 import Negocios.TripulacionNegocios;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -41,7 +45,7 @@ public class JIFRegistroTripulacion extends javax.swing.JInternalFrame {
      * Capa de negocio que valida y guarda las tripulaciones. Se usa en
      * {@link #jbtnRegistrarActionPerformed(java.awt.event.ActionEvent)}.
      */
-    private TripulacionNegocios tripulacionNegocios;
+    private final TripulacionNegocios tripulacionNegocios;
     
      /**
      * Construye la ventana de registro de tripulaciones.
@@ -160,7 +164,7 @@ public class JIFRegistroTripulacion extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "Ingrese su bandera");
             String bandera = null;
             while (bandera == null) {
-                bandera = seleccionarImagen();
+                bandera = seleccionarImagen(nombre);
                 if (bandera == null) {
                     int op = JOptionPane.showConfirmDialog(this,
                             "No se seleccionó una bandera válida. ¿Intentar de nuevo?",
@@ -194,11 +198,16 @@ public class JIFRegistroTripulacion extends javax.swing.JInternalFrame {
      * realmente una imagen. Si el usuario cancela, el archivo no es una imagen
      * válida o ocurre un error de lectura, devuelve {@code null}.
      * </p>
+     * 
+     * <p>
+     * Al seleccionar una imagen se crea una copia dentro del juego con el nombre : 
+     * "Bandera_NombreTripulacion.extension" 
+     * </p>
      *
-     * @return la ruta absoluta de la imagen seleccionada, o {@code null} si no
+     * @return la ruta de la imagen dentro del sistema , o {@code null} si no
      *         se obtuvo ninguna
      */
-    private String seleccionarImagen() {
+    private String seleccionarImagen(String nombre) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter(
                 "Archivos de Imagen (JPG, PNG)", "jpg", "png", "jpeg"));
@@ -214,7 +223,26 @@ public class JIFRegistroTripulacion extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(this, "El archivo seleccionado no es una imagen válida.");
                 return null;
             }
-            return archivo.getAbsolutePath();
+            
+        String nombreOriginal = archivo.getName();
+        String extension = "";
+        int puntoIndex = nombreOriginal.lastIndexOf('.');
+        if (puntoIndex > 0) {
+            extension = nombreOriginal.substring(puntoIndex).toLowerCase();
+        }
+
+        String nuevoNombre = "bandera_" + nombre + extension;
+
+        Path carpetaDestino = Paths.get( "src" , "assets");
+        if (!Files.exists(carpetaDestino)) {
+            Files.createDirectories(carpetaDestino);
+        }
+
+        Path rutaDestino = carpetaDestino.resolve(nuevoNombre);
+        Files.copy(archivo.toPath(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
+
+        return rutaDestino.toString(); 
+            
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Ocurrió un error al leer la imagen.");
             return null;
