@@ -21,7 +21,9 @@ import utility.GroggyRingCartas;
  * 
  * @author emmanuelarce
  * @see Carta
- * @see CartaTipo
+ * @see CartaAtaque
+ * @see CartaDefensa
+ * @see CartaDesplazamiento
  */
 public class Mazo {
     

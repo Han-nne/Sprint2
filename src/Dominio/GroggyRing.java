@@ -455,7 +455,7 @@ private void intentarMover(JugadorBola bola, int dFila, int dCol) {
         }
 
         JugadorBola rival = rivalDe(jugador);
-        carta.aplicarEfecto(jugador, rival, this);
+        carta.aplicarEfecto(jugador, rival);
         jugador.usarCartaEnMazoPersonal(carta);
 
         jugador.setCartaUsada(true);
