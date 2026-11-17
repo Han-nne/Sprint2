@@ -5,6 +5,7 @@
 package Dominio;
 
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.List;
 
@@ -14,18 +15,18 @@ import java.util.List;
  * orden.
  * <p>
  * Mantiene el minijuego en curso y delega en él la actualización, el dibujo y el
- * manejo de teclado y ratón. Cuando un minijuego termina, inicia el siguiente
- * con la configuración que le corresponde, y dibuja sobre cada minijuego las
- * banderas de las tripulaciones mediante {@link DibujarBandera}.
- * </p>
- * <p>
- * El minijuego en curso y su posición en la secuencia solo cambian dentro de
- * esta clase, de modo que siempre son coherentes entre sí.
+ * manejo de teclado y ratón. Cuando un minijuego termina, lleva la cuenta del
+ * marcador y muestra la pantalla de resultado (dibujada por
+ * {@link DibujarMarcador}) hasta que un jugador presione la barra espaciadora;
+ * entonces inicia el siguiente minijuego con la configuración que le corresponde.
+ * Sobre cada minijuego dibuja las banderas de las tripulaciones mediante
+ * {@link DibujarBandera}.
  * </p>
  *
  * @see Juego
  * @see ConfiguracionGeneral
  * @see DibujarBandera
+ * @see DibujarMarcador
  */
 public class Torneo {
 
@@ -38,8 +39,14 @@ public class Torneo {
     /** Posición de {@link Combat} en la secuencia de minijuegos. */
     private static final int JUEGO_COMBAT = 2;
 
+    /** Nombres de los minijuegos, en el orden de la secuencia (para la pantalla de resultado). */
+    private static final String[] NOMBRES_JUEGOS = {"Donut Race", "Groggy Ring", "Combat"};
+
     /** Minijuego que se está disputando actualmente. */
     private Juego juegoActual;
+
+    /** Torneo finalizado */
+    private boolean finalizado = false;
 
     /** Posición del minijuego actual en la secuencia del torneo (desde 0). */
     private int indiceJuego = 0;
@@ -49,6 +56,21 @@ public class Torneo {
 
     /** Tripulación del jugador 2. */
     private final Tripulacion tripulacion2;
+
+    /** Minijuegos ganados por la tripulación 1. */
+    private int puntos1 = 0;
+
+    /** Minijuegos ganados por la tripulación 2. */
+    private int puntos2 = 0;
+
+    /** Indica si se está mostrando la pantalla de resultado del minijuego que terminó. */
+    private boolean mostrandoResultado = false;
+
+    /** Se activa al presionar espacio en la pantalla de resultado; {@link #actualizarJuego()} lo consume. */
+    private boolean continuarPendiente = false;
+
+    /** Ganador del último minijuego disputado; {@code null} si fue empate. */
+    private Tripulacion ganadorUltimoJuego;
 
     /**
      * Configuraciones de los minijuegos, en el orden en que se disputan (lista
@@ -60,12 +82,11 @@ public class Torneo {
     /** Dibujador de las banderas y nombres de las tripulaciones. */
     private final DibujarBandera dibujarBandera;
 
+    /** Dibujador de la pantalla de resultado y marcador. */
+    private final DibujarMarcador dibujarMarcador;
+
     /**
      * Crea un torneo entre dos tripulaciones e inicia el primer minijuego.
-     * <p>
-     * La lista de configuraciones se copia, por lo que modificar la lista original
-     * después de crear el torneo no lo afecta.
-     * </p>
      *
      * @param tripulacion1 tripulación del jugador 1.
      * @param tripulacion2 tripulación del jugador 2.
@@ -78,6 +99,7 @@ public class Torneo {
         this.tripulacion2 = tripulacion2;
         this.configuraciones = List.copyOf(configuraciones);
         this.dibujarBandera = new DibujarBandera(tripulacion1, tripulacion2);
+        this.dibujarMarcador = new DibujarMarcador(tripulacion1, tripulacion2);
         iniciarJuego(JUEGO_DONUT_RACE);
     }
 
@@ -116,75 +138,121 @@ public class Torneo {
     }
 
     /**
-     * Avanza al siguiente minijuego de la secuencia. Si ya se disputaron todos,
-     * cierra la aplicación.
-     * <p>
-     * Es privado: solo se invoca cuando el minijuego actual termina, de modo que
-     * no se pueda saltar un minijuego desde fuera de la clase.
-     * </p>
+     * Registra el resultado del minijuego que acaba de terminar: suma el punto al
+     * ganador (si no hubo empate) y activa la pantalla de resultado.
+     */
+    private void registrarResultado() {
+        ganadorUltimoJuego = juegoActual.getGanador();
+        if (ganadorUltimoJuego == tripulacion1) {
+            puntos1++;
+        } else if (ganadorUltimoJuego == tripulacion2) {
+            puntos2++;
+        }
+        mostrandoResultado = true;
+        continuarPendiente = false;
+    }
+
+    /**
+     * Cierra la pantalla de resultado y avanza al siguiente minijuego, o termina
+     * el torneo si ya se disputaron todos.
      *
      * @throws IOException si ocurre un error al cargar los recursos del siguiente minijuego
      */
     private void siguienteJuego() throws IOException {
+        mostrandoResultado = false;
+        continuarPendiente = false;
         if (indiceJuego + 1 < configuraciones.size()) {
-            // Aquí pantalla que muestra la puntuación general del torneo de cada tripulación
             iniciarJuego(indiceJuego + 1);
         } else {
-            // Aquí poner resultado final del torneo
-            System.exit(0);
+            this.finalizado = true;
         }
     }
 
     /**
-     * Actualiza el minijuego actual y, si este terminó, avanza al siguiente.
+     * Actualiza el minijuego actual. Cuando termina, muestra el resultado y espera
+     * a que se presione la barra espaciadora para avanzar al siguiente minijuego.
      *
      * @throws IOException si ocurre un error al cargar los recursos del siguiente minijuego
      */
     public void actualizarJuego() throws IOException {
+        if (finalizado) {
+            return;
+        }
+        if (mostrandoResultado) {
+            if (continuarPendiente) {
+                siguienteJuego();
+            }
+            return;
+        }
         juegoActual.actualizar();
         if (juegoActual.haTerminado()) {
-            siguienteJuego();
+            registrarResultado();
         }
     }
 
     /**
      * Dibuja el minijuego actual y, encima, las banderas y nombres de las
-     * tripulaciones.
+     * tripulaciones. Si hay una pantalla de resultado activa, la dibuja encima de todo.
      *
      * @param g contexto gráfico sobre el cual dibujar
      */
     public void dibujar(Graphics g) {
         juegoActual.dibujar(g);
         dibujarBandera.dibujar(g);
+        if (mostrandoResultado) {
+            boolean esUltimo = indiceJuego + 1 >= configuraciones.size();
+            String siguiente = esUltimo ? null : NOMBRES_JUEGOS[indiceJuego + 1];
+            dibujarMarcador.dibujar(g, NOMBRES_JUEGOS[indiceJuego], ganadorUltimoJuego,
+                    puntos1, puntos2, siguiente);
+        }
     }
 
     /**
-     * Envía una tecla presionada al minijuego actual.
+     * Envía una tecla presionada al minijuego actual. Mientras se muestra la
+     * pantalla de resultado, la barra espaciadora indica que se desea continuar y
+     * el resto de teclas se ignoran.
      *
      * @param e código de la tecla presionada (constante de {@link java.awt.event.KeyEvent})
      */
     public void procesarTeclaPresionada(int e) {
+        if (mostrandoResultado) {
+            if (e == KeyEvent.VK_SPACE) {
+                continuarPendiente = true;
+            }
+            return;
+        }
+        if (finalizado) {
+            return;
+        }
         juegoActual.procesarTeclaPresionada(e);
     }
 
     /**
-     * Envía una tecla liberada al minijuego actual.
+     * Envía una tecla liberada al minijuego actual (se ignora mientras se
+     * muestra la pantalla de resultado).
      *
      * @param e código de la tecla liberada (constante de {@link java.awt.event.KeyEvent})
      */
     public void procesarTeclaLiberada(int e) {
+        if (mostrandoResultado || finalizado) {
+            return;
+        }
         juegoActual.procesarTeclaLiberada(e);
     }
 
     /**
      * Envía un clic del ratón al minijuego actual. Solo {@link GroggyRing} usa el
-     * ratón; en los demás minijuegos el clic se ignora.
+     * ratón; en los demás minijuegos el clic se ignora, y también mientras se
+     * muestra la pantalla de resultado.
      *
      * @param x coordenada X del clic en el panel
      * @param y coordenada Y del clic en el panel
      * @throws IOException si ocurre un error al cargar la imagen de una carta robada
      */
     public void procesarClic(int x, int y) throws IOException {
+        if (mostrandoResultado || finalizado) {
+            return;
+        }
         if (juegoActual instanceof GroggyRing) {
             ((GroggyRing) juegoActual).procesarClic(x, y);
         }
@@ -208,4 +276,32 @@ public class Torneo {
         return indiceJuego;
     }
 
-}
+    /**
+     * Indica si el torneo ya terminó (se disputaron todos los minijuegos y se
+     * cerró la pantalla del último resultado).
+     *
+     * @return {@code true} si el torneo finalizó
+     */
+    public boolean isFinalizado() {
+        return finalizado;
+    }
+
+    /**
+     * Obtiene los minijuegos ganados por la tripulación 1.
+     *
+     * @return puntos de la tripulación 1
+     */
+    public int getPuntos1() {
+        return puntos1;
+    }
+
+    /**
+     * Obtiene los minijuegos ganados por la tripulación 2.
+     *
+     * @return puntos de la tripulación 2
+     */
+    public int getPuntos2() {
+        return puntos2;
+        
+     }
+    }

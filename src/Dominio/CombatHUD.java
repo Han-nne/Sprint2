@@ -74,33 +74,6 @@ public class CombatHUD {
         
         dibujarPanelJugador(g, jugador1, nombreJugador1 + " (W, A, D)", 20, 95, colorAzul);
         dibujarPanelJugador(g, jugador2, nombreJugador2 + " (←, ↑, →)", anchoPantalla - 330, 95, colorRojo);
-        
-        if (terminado) {
-            int anchoCuadroMensaje = 650;
-            int altoCuadroMensaje = 140;
-            int xCuadroMensaje = 315;
-            int yCuadroMensaje = 260;
-            
-            g.setColor(new Color(0, 0, 0, 220));
-            g.fillRoundRect(xCuadroMensaje, yCuadroMensaje, anchoCuadroMensaje, altoCuadroMensaje, 20, 20);
-            g.setColor(Color.WHITE);
-            g.drawRoundRect(xCuadroMensaje, yCuadroMensaje, anchoCuadroMensaje, altoCuadroMensaje, 20, 20);
-            
-            
-            g.setFont(getFuenteTitulo());
-            FontMetrics fmGanador = g.getFontMetrics();
-            int xGanador = xCuadroMensaje + (anchoCuadroMensaje - fmGanador.stringWidth(mensajeGanador)) / 2;
-            g.setColor(Color.WHITE);
-            g.drawString(mensajeGanador, xGanador, yCuadroMensaje + 55);
-            
-            g.setColor(Color.WHITE);
-            g.setFont(getFuenteTexto());
-            String textoContinuar = "Presione cualquier tecla para continuar";
-            FontMetrics fmContinuar = g.getFontMetrics();
-            int xContinuar = xCuadroMensaje + (anchoCuadroMensaje - fmContinuar.stringWidth(textoContinuar)) / 2;
-            int yContinuar = yCuadroMensaje +105;
-            g.drawString(textoContinuar, xContinuar, yContinuar);
-        }
     }
     
     

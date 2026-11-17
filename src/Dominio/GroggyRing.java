@@ -34,6 +34,9 @@ import utility.TileSetManagerGroggyRing;
  * <p>
  * Todo el estado de la partida es privado: el exterior solo interactúa con el
  * juego mediante los métodos de {@link Juego} y {@link #procesarClic(int, int)}.
+ * Cuando el juego termina, el {@link Torneo} consulta el ganador con
+ * {@link #getGanador()} y se encarga de mostrar el resultado y de avanzar al
+ * siguiente minijuego.
  * </p>
  *
  * @see Juego
@@ -699,11 +702,14 @@ private void intentarMover(JugadorBola bola, int dFila, int dCol) {
     }
 
     /**
-     * Obtiene la bola ganadora del juego.
+     * Obtiene la tripulación ganadora del juego. El {@link Torneo} lo consulta
+     * cuando {@link #haTerminado()} devuelve {@code true}.
      *
-     * @return la bola ganadora, o {@code null} si todavía nadie ha ganado
+     * @return la tripulación de la bola ganadora, o {@code null} si todavía
+     *         nadie ha ganado
      */
-    public JugadorBola getGanador() {
-        return ganador;
+    @Override
+    public Tripulacion getGanador() {
+        return (ganador == null) ? null : ganador.getTripulacion();
     }
 }

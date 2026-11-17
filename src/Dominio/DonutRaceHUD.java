@@ -60,18 +60,6 @@ public class DonutRaceHUD {
     /** Color semitransparente de fondo de los paneles de estado. */
     private static final Color COLOR_FONDO_HUD = new Color(0, 0, 0, 120);
 
-    /** Color semitransparente de fondo del mensaje de fin de carrera. */
-    private static final Color COLOR_FONDO_FIN = new Color(0, 0, 0, 180);
-
-    /** Fuente del título de fin de carrera. */
-    private static final Font FUENTE_TITULO = new Font("Segoe UI", Font.BOLD, 26);
-
-    /** Fuente del mensaje del ganador. */
-    private static final Font FUENTE_GANADOR = new Font("Segoe UI", Font.BOLD, 24);
-
-    /** Fuente de la instrucción para continuar con el torneo. */
-    private static final Font FUENTE_INSTRUCCION = new Font("Segoe UI", Font.ITALIC, 14);
-
     /** Barco del jugador 1, cuyo estado se muestra en el extremo izquierdo. */
     private final Barco barco1;
 
@@ -101,12 +89,6 @@ public class DonutRaceHUD {
      * La velocidad del barco se procesa matemáticamente para garantizar un único dígito
      * decimal formateado con coma (ej: {@code 1,5x}).
      * </p>
-     * <p>
-     * Si el juego terminó, dibuja además el recuadro de fin de carrera con el
-     * mensaje del ganador. Si alguno de los barcos es {@code null}, no dibuja nada.
-     * Este método modifica la fuente y el color del contexto gráfico recibido, y no
-     * los restaura al finalizar.
-     * </p>
      *
      * @param g contexto gráfico sobre el cual se realiza el renderizado,
      *          obtenido desde el método {@code paintComponent} o el orquestador
@@ -133,24 +115,6 @@ public class DonutRaceHUD {
         g.fillRoundRect(posXBarco2HUD, POS_Y_HUD, ANCHO_HUD_2, ALTO_HUD, ARCO_HUD, ARCO_HUD);
         g.setColor(Color.CYAN);
         g.drawString(textoEstado(barco2), posXBarco2HUD + 8, POS_Y_HUD + 15);
-
-        if (juegoTerminado) {
-            g.setColor(COLOR_FONDO_FIN);
-            g.fillRoundRect(340, 260, 600, 150, 16, 16);
-
-            g.setColor(Color.YELLOW);
-            g.setFont(FUENTE_TITULO);
-            g.drawString("!!CARRERA FINALIZADA!!", 480, 310);
-
-            g.setColor(Color.WHITE);
-            g.setFont(FUENTE_GANADOR);
-            g.drawString(mensajeGanador == null ? "" : mensajeGanador, 400, 360);
-
-            g.setColor(Color.LIGHT_GRAY);
-            g.setFont(FUENTE_INSTRUCCION);
-            g.drawString("Presione [BARRA ESPACIADORA] para continuar con el torneo...", 450, 385);
-        }
-
     } // dibujar
 
     /**

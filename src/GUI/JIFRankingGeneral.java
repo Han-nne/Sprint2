@@ -4,6 +4,13 @@
  */
 package GUI;
 
+import Dominio.Tripulacion;
+import Negocios.TripulacionNegocios;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  * Ventana interna ({@link javax.swing.JInternalFrame}) que muestra el ranking general del torneo.
  * Actualmente la ventana solo tiene el título "Ranking General del Torneo". 
@@ -11,6 +18,9 @@ package GUI;
  * @author Keithy Carrillo
  */
 public class JIFRankingGeneral extends javax.swing.JInternalFrame {
+    
+    
+    private final TripulacionNegocios tripulacionNegocios;
 
     /**
      * Creates new form JIFRankingGeneral
@@ -19,9 +29,11 @@ public class JIFRankingGeneral extends javax.swing.JInternalFrame {
      * y configura la ventana para que sea cerrable y redimensionable.
      */
     public JIFRankingGeneral() {
+        tripulacionNegocios = new TripulacionNegocios();
         initComponents();
         setClosable(true); 
         setResizable(true);
+        cargarTablaTop10();
     }
 
     /**
@@ -34,9 +46,24 @@ public class JIFRankingGeneral extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jlRankingGeneral = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTPuntaje = new javax.swing.JTable();
 
         jlRankingGeneral.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jlRankingGeneral.setText("Ranking General del Torneo");
+
+        jTPuntaje.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTPuntaje);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -45,14 +72,20 @@ public class JIFRankingGeneral extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(170, 170, 170)
                 .addComponent(jlRankingGeneral)
-                .addContainerGap(192, Short.MAX_VALUE))
+                .addContainerGap(203, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(49, 49, 49))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(12, 12, 12)
                 .addComponent(jlRankingGeneral)
-                .addContainerGap(353, Short.MAX_VALUE))
+                .addGap(34, 34, 34)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(137, Short.MAX_VALUE))
         );
 
         pack();
@@ -60,6 +93,43 @@ public class JIFRankingGeneral extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTPuntaje;
     private javax.swing.JLabel jlRankingGeneral;
     // End of variables declaration//GEN-END:variables
+
+    private void cargarTablaTop10() {
+        
+        try {
+            DefaultTableModel modelo = (DefaultTableModel) jTPuntaje.getModel();
+            
+            // 2. Limpiar filas anteriores por si se recarga la ventana
+            modelo.setRowCount(0);
+            
+            // (Opcional) Definir los títulos de las columnas si no los pusiste en las propiedades de la tabla
+            modelo.setColumnIdentifiers(new Object[]{"Puesto", "Jugador", "Puntaje"});
+            
+            // 3. Llamar a tu capa de negocios para obtener la lista
+            ArrayList<Tripulacion> top10 = tripulacionNegocios.obtenerTop10();
+            
+            if (!top10.isEmpty()) {
+                  int puesto = 1;
+            for (Tripulacion tripulacionActual : top10) {
+                modelo.addRow(new Object[]{
+                    puesto++,
+                    tripulacionActual.getNombreTripulacion(), // O el método que uses para el nombre
+                    tripulacionActual.getPuntaje()  // El puntaje del objeto
+                });
+                }
+              }else{
+                modelo.addRow( new Object[]{
+                    "No hay " ,
+                    "puntuaciones registradas ",
+                     "aún"
+                });
+            }
+           } catch (IOException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Ha ocurrido un error");
+        }
+    }
 }

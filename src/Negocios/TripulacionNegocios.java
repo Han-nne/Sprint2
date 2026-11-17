@@ -8,6 +8,8 @@ import Datos.TripulacionDatos;
 import Dominio.Tripulacion;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 /**
  * Capa de negocio para las {@link Tripulacion}es.
@@ -75,4 +77,22 @@ public class TripulacionNegocios {
     public ArrayList<Tripulacion> listarTripulaciones() throws IOException {
         return this.tripulacionDatos.listarTripulaciones();
     }
+    
+    
+    /**
+     * Obtiene el top 10
+     * 
+     * @return lista filtrada del top 10 tripulaciones con mayor puntaje
+     * @throws IOException 
+     */
+    public ArrayList<Tripulacion> obtenerTop10() throws IOException{
+        ArrayList<Tripulacion> tripulaciones = tripulacionDatos.listarTripulaciones();
+        
+        return (ArrayList<Tripulacion>) tripulaciones.stream()
+                .filter((Tripulacion o) -> o.getPuntaje() > 0)
+                .sorted(Comparator.comparingDouble( Tripulacion:: getPuntaje).reversed())
+                .limit(10)
+                .collect(Collectors.toList());
+    }
+   
 }

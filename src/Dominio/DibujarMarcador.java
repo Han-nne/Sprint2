@@ -1,0 +1,134 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package Dominio;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+
+/**
+ * La clase {@code DibujarMarcador} dibuja la pantalla que se muestra al terminar
+ * cada minijuego: el ganador de ese juego, el marcador general del torneo y, al
+ * final, el campeón.
+ * <p>
+ * Solo se encarga de la presentación: no conoce la secuencia de minijuegos ni
+ * modifica ningún estado. Todos los datos le llegan como parámetros.
+ * </p>
+ *
+ * @see Torneo
+ * @see DibujarBandera
+ */
+public class DibujarMarcador {
+
+    /** Tamaño del panel por si el contexto gráfico no informa el área visible. */
+    private static final int ANCHO_POR_DEFECTO = 1280;
+    private static final int ALTO_POR_DEFECTO = 720;
+
+    private static final Color COLOR_FONDO = new Color(0, 0, 0, 170);
+    private static final Color COLOR_DESTACADO = new Color(255, 215, 0);
+
+    /** Tripulación del jugador 1. */
+    private final Tripulacion tripulacion1;
+
+    /** Tripulación del jugador 2. */
+    private final Tripulacion tripulacion2;
+
+    /**
+     * Crea un dibujador de marcador para dos tripulaciones.
+     *
+     * @param tripulacion1 tripulación del jugador 1
+     * @param tripulacion2 tripulación del jugador 2
+     */
+    public DibujarMarcador(Tripulacion tripulacion1, Tripulacion tripulacion2) {
+        this.tripulacion1 = tripulacion1;
+        this.tripulacion2 = tripulacion2;
+    }
+
+    /**
+     * Dibuja la pantalla de resultado sobre lo que haya en el contexto gráfico.
+     *
+     * @param g contexto gráfico sobre el cual dibujar
+     * @param nombreJuego nombre del minijuego que acaba de terminar
+     * @param ganadorJuego ganador de ese minijuego; {@code null} si fue empate
+     * @param puntos1 minijuegos ganados por la tripulación 1
+     * @param puntos2 minijuegos ganados por la tripulación 2
+     * @param siguienteJuego nombre del siguiente minijuego; {@code null} si el
+     *                       que terminó era el último (se muestra al campeón)
+     */
+    public void dibujar(Graphics g, String nombreJuego, Tripulacion ganadorJuego,
+                        int puntos1, int puntos2, String siguienteJuego) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        try {
+            Rectangle area = g2.getClipBounds();
+            int ancho = area != null ? area.width : ANCHO_POR_DEFECTO;
+            int alto = area != null ? area.height : ALTO_POR_DEFECTO;
+            int x0 = area != null ? area.x : 0;
+            int y0 = area != null ? area.y : 0;
+            int centroX = x0 + ancho / 2;
+
+            g2.setColor(COLOR_FONDO);
+            g2.fillRect(x0, y0, ancho, alto);
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("SansSerif", Font.BOLD, 36));
+            centrado(g2, nombreJuego + " terminado", centroX, y0 + alto * 24 / 100);
+
+            String textoGanador = ganadorJuego == null
+                    ? "¡Empate!"
+                    : "Ganador: " + ganadorJuego.getNombreTripulacion();
+            g2.setColor(COLOR_DESTACADO);
+            g2.setFont(new Font("SansSerif", Font.BOLD, 48));
+            centrado(g2, textoGanador, centroX, y0 + alto * 38 / 100);
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("SansSerif", Font.BOLD, 96));
+            centrado(g2, puntos1 + " - " + puntos2, centroX, y0 + alto * 58 / 100);
+
+            g2.setFont(new Font("SansSerif", Font.PLAIN, 28));
+            centrado(g2, tripulacion1.getNombreTripulacion(), x0 + ancho / 4, y0 + alto * 68 / 100);
+            centrado(g2, tripulacion2.getNombreTripulacion(), x0 + ancho * 3 / 4, y0 + alto * 68 / 100);
+
+            g2.setFont(new Font("SansSerif", Font.ITALIC, 28));
+            if (siguienteJuego == null) {
+                g2.setColor(COLOR_DESTACADO);
+                centrado(g2, textoCampeon(puntos1, puntos2), centroX, y0 + alto * 80 / 100);
+            } else {
+                g2.setColor(Color.LIGHT_GRAY);
+                centrado(g2, "Siguiente: " + siguienteJuego, centroX, y0 + alto * 80 / 100);
+            }
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("SansSerif", Font.BOLD, 24));
+            String accion = siguienteJuego == null ? "finalizar" : "continuar";
+            centrado(g2, "Presiona ESPACIO para " + accion, centroX, y0 + alto * 92 / 100);
+        } finally {
+            g2.dispose();
+        }
+    }
+
+    /**
+     * Construye el mensaje del campeón según el marcador final.
+     */
+    private String textoCampeon(int puntos1, int puntos2) {
+        if (puntos1 > puntos2) {
+            return "¡Campeón del torneo: " + tripulacion1.getNombreTripulacion() + "!";
+        }
+        if (puntos2 > puntos1) {
+            return "¡Campeón del torneo: " + tripulacion2.getNombreTripulacion() + "!";
+        }
+        return "El torneo termina en empate";
+    }
+
+    /**
+     * Dibuja un texto centrado horizontalmente en la posición indicada.
+     */
+    private void centrado(Graphics2D g2, String texto, int centroX, int y) {
+        FontMetrics fm = g2.getFontMetrics();
+        g2.drawString(texto, centroX - fm.stringWidth(texto) / 2, y);
+    }
+}

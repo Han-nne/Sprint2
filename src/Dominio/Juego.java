@@ -54,5 +54,11 @@ public interface Juego {
      *         {@code false} si el juego sigue en curso
      */
     boolean haTerminado();
+    
+    /**
+     * Le da al torneo la tripulacion ganadora de cada juego 
+     * @return La tripulacion ganadora de cada juego 
+     */
+    Tripulacion getGanador();
 }
 

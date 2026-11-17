@@ -30,7 +30,9 @@ import utility.TileSetManagerDonutRace;
  * </p>
  * <p>
  * Todo el estado de la partida es privado: el exterior solo interactúa con el
- * juego mediante los métodos de {@link Juego}.
+ * juego mediante los métodos de {@link Juego}. Cuando la carrera termina, el
+ * {@link Torneo} consulta el ganador con {@link #getGanador()} y se encarga de
+ * mostrar el resultado y de avanzar al siguiente minijuego.
  * </p>
  *
  * @author johan
@@ -68,17 +70,8 @@ public class DonutRace implements Juego {
     /** Bandera que determina si el juego concluyó o sigue en curso. */
     private boolean juegoTerminado = false;
 
-    /**
-     * Bandera que determina si se debe avanzar en el torneo.
-     * <ul>
-     *   <li>{@code false}: DonutRace sigue dibujándose.</li>
-     *   <li>{@code true}: DonutRace deja de dibujarse y se avanza en el torneo.</li>
-     * </ul>
-     */
-    private boolean listoParaAvanzar = false;
-
-    /** Mensaje a visualizar cuando se determine el ganador. */
-    private String mensajeGanador = "";
+    /** Ganador de la carrera; {@code null} mientras no termine o si hubo empate. */
+    private Tripulacion ganador = null;
 
     /** Pista de la carrera. */
     private final Pista pista;
@@ -98,7 +91,7 @@ public class DonutRace implements Juego {
     /** Configuración del minijuego (velocidad, dificultad y obstáculos lanzables). */
     private final ConfiguracionDonutRace configuracionDonut;
 
-    /** Interfaz de información (HUD) que muestra el estado de los barcos y el ganador. */
+    /** Interfaz de información (HUD) que muestra el estado de los barcos. */
     private final DonutRaceHUD donutRaceHUD;
 
     /** Obstáculos fijos activos presentes en el escenario. */
@@ -223,7 +216,8 @@ public class DonutRace implements Juego {
             lanzado.dibujar(g);
         }
 
-        this.donutRaceHUD.dibujar(g, juegoTerminado, mensajeGanador);
+        // El resultado ya no se muestra aquí: lo muestra el Torneo con DibujarMarcador.
+        this.donutRaceHUD.dibujar(g, juegoTerminado, "");
 
     } // dibujar
 
@@ -294,19 +288,15 @@ public class DonutRace implements Juego {
      * <ul>
      *   <li>Jugador 1: W, A, S, D para moverse y R para lanzar un obstáculo.</li>
      *   <li>Jugador 2: flechas direccionales para moverse y L para lanzar un obstáculo.</li>
-     *   <li>Con el juego terminado, la barra espaciadora indica que se puede avanzar en el torneo.</li>
      * </ul>
-     * Las demás teclas se ignoran.
+     * Las demás teclas se ignoran, y con el juego terminado se ignoran todas.
      *
      * @param e código de la tecla presionada (constante de {@link KeyEvent})
      */
     @Override
     public void procesarTeclaPresionada(int e) {
 
-        if (juegoTerminado) {
-            if (e == KeyEvent.VK_SPACE) listoParaAvanzar = true;
-            return;
-        }
+        if (juegoTerminado) return;
         switch (e) {
             case KeyEvent.VK_W: barcoJugador1.moverAdelante(); break;
             case KeyEvent.VK_S: barcoJugador1.moverAtras(); break;
@@ -346,15 +336,14 @@ public class DonutRace implements Juego {
     } // procesarTeclaLiberada
 
     /**
-     * Determina si el juego terminó y el torneo puede avanzar.
+     * Determina si la carrera terminó.
      * <p>
      * Si algún barco cruzó la meta, marca el juego como terminado y calcula el
-     * ganador con {@link #determinarGanador(boolean, boolean)}. El torneo solo
-     * avanza cuando, además, el jugador presionó la barra espaciadora.
+     * ganador con {@link #determinarGanador(boolean, boolean)}. El avance al
+     * siguiente minijuego y la pantalla de resultado los gestiona el {@link Torneo}.
      * </p>
      *
-     * @return {@code true} para avanzar con el torneo; {@code false} para mantenerse
-     *         en el juego en curso
+     * @return {@code true} si la carrera terminó; {@code false} si sigue en curso
      */
     @Override
     public boolean haTerminado() {
@@ -364,46 +353,58 @@ public class DonutRace implements Juego {
             boolean jugador2CruzoMeta = barcoJugador2.isCondicionVictoria();
 
             if (jugador1CruzoMeta || jugador2CruzoMeta) {
-                determinarGanador(jugador1CruzoMeta, jugador2CruzoMeta);
+                ganador = determinarGanador(jugador1CruzoMeta, jugador2CruzoMeta);
                 juegoTerminado = true;
             }
         }
 
-        return juegoTerminado && listoParaAvanzar;
+        return juegoTerminado;
     } // haTerminado
 
     /**
-     * Procesa los barcos que cruzaron la meta para determinar el ganador y
-     * construir el mensaje que se muestra en pantalla.
+     * Obtiene el ganador de la carrera.
+     *
+     * @return la {@link Tripulacion} ganadora, o {@code null} si la carrera aún no
+     *         terminó o si terminó en empate absoluto
+     */
+    @Override
+    public Tripulacion getGanador() {
+        return ganador;
+    }
+
+    /**
+     * Determina el ganador a partir de los barcos que cruzaron la meta.
      * <p>
-     * Si ambos barcos cruzaron la meta (empate en meta), gana el que tenga menor
-     * cantidad de obstáculos colisionados; si también empatan en choques, el
-     * resultado es un empate absoluto.
+     * Si solo un barco cruzó la meta, gana ese. Si ambos cruzaron (empate en
+     * meta), gana el que tenga menor cantidad de obstáculos colisionados; si
+     * también empatan en choques, el resultado es un empate absoluto.
      * </p>
      *
      * @param jugador1CruzoMeta indica si el barco del jugador 1 cruzó la meta
      * @param jugador2CruzoMeta indica si el barco del jugador 2 cruzó la meta
+     * @return la tripulación ganadora, o {@code null} si hubo empate absoluto
      */
-    private void determinarGanador(boolean jugador1CruzoMeta, boolean jugador2CruzoMeta) {
-        String jugador1 = barcoJugador1.getTripulacion().getNombreTripulacion();
-        String jugador2 = barcoJugador2.getTripulacion().getNombreTripulacion();
+    private Tripulacion determinarGanador(boolean jugador1CruzoMeta, boolean jugador2CruzoMeta) {
+        Tripulacion jugador1 = barcoJugador1.getTripulacion();
+        Tripulacion jugador2 = barcoJugador2.getTripulacion();
 
         if (jugador1CruzoMeta && !jugador2CruzoMeta) {
-            mensajeGanador = "Ganador: " + jugador1 + "!!";
-        } else if (!jugador1CruzoMeta && jugador2CruzoMeta) {
-            mensajeGanador = "Ganador: " + jugador2 + "!!";
-        } else {
-            int colisionesJugador1 = barcoJugador1.getObstaculosColisionados();
-            int colisionesJugador2 = barcoJugador2.getObstaculosColisionados();
-
-            if (colisionesJugador1 < colisionesJugador2) {
-                mensajeGanador = "!!Empate en meta!! Ganador por menos choques: " + jugador1;
-            } else if (colisionesJugador2 < colisionesJugador1) {
-                mensajeGanador = "!!Empate en meta!! Ganador por menos choques: " + jugador2;
-            } else {
-                mensajeGanador = "!!Empate absoluto!!";
-            }
+            return jugador1;
         }
+        if (!jugador1CruzoMeta && jugador2CruzoMeta) {
+            return jugador2;
+        }
+
+        int colisionesJugador1 = barcoJugador1.getObstaculosColisionados();
+        int colisionesJugador2 = barcoJugador2.getObstaculosColisionados();
+
+        if (colisionesJugador1 < colisionesJugador2) {
+            return jugador1;
+        }
+        if (colisionesJugador2 < colisionesJugador1) {
+            return jugador2;
+        }
+        return null;
 
     } // determinarGanador
 
