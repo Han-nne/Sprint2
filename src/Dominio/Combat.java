@@ -21,18 +21,20 @@ import utility.TileSetManagerCombat;
  */
 public class Combat implements Juego {
     
-    private Tripulacion tripulacion1;
-    private Tripulacion tripulacion2;
-    private ConfiguracionCombat configuracionCombat;
+    private final Tripulacion tripulacion1;
+    private final Tripulacion tripulacion2;
+    private final ConfiguracionCombat configuracionCombat;
+    private final BufferedImage fondo;
+    private final CombatHUD hudCombat;
+    
     private CombatBarraJugador jugadorCombat1;
     private CombatBarraJugador jugadorCombat2;
-    private CombatHUD hudCombat;
+    private Tripulacion ganador;
     private int tiempoRestanteCombat;
     private boolean partidaTerminadaCombat;
     private boolean continuarTorneo;
     private String mensajeResultado;
     private Timer temporizadorCombat;
-    private BufferedImage fondo;
 
     
     public Combat(Tripulacion tripulacion1, Tripulacion tripulacion2, ConfiguracionCombat configuracionCombat) throws IOException {
@@ -45,48 +47,50 @@ public class Combat implements Juego {
     }
 
     
-    public void iniciarJuego() {
+    private void iniciarJuego() {
         ArrayList<Integer> controlesJugador1 = new ArrayList<>();
         controlesJugador1.add(KeyEvent.VK_W);
         controlesJugador1.add(KeyEvent.VK_A);
         controlesJugador1.add(KeyEvent.VK_D);
-        
+          
         ArrayList<Integer> controlesJugador2 = new ArrayList<>();
         controlesJugador2.add(KeyEvent.VK_UP);
         controlesJugador2.add(KeyEvent.VK_RIGHT);
         controlesJugador2.add(KeyEvent.VK_LEFT);
 
-        int valorInicial = getConfiguracionCombat().getValorInicialBarra();
+        int valorInicial = this.configuracionCombat.getValorInicialBarra();
         int longitudSecuencia = 4;
         
         this.jugadorCombat1 = new CombatBarraJugador(valorInicial, controlesJugador1, longitudSecuencia);
         this.jugadorCombat2 = new CombatBarraJugador(valorInicial, controlesJugador2, longitudSecuencia);
         
+        this.ganador = null;
         this.tiempoRestanteCombat = 45;
         this.partidaTerminadaCombat = false;
         this.continuarTorneo = false;
         this.mensajeResultado = "";
         
-        if (getTemporizadorCombat() != null) {
-            getTemporizadorCombat().stop();
+        if (this.temporizadorCombat != null) {
+            this.temporizadorCombat.stop();
         }
         
-        setTemporizadorCombat(new Timer(1000, new ActionListener() {
+        this.temporizadorCombat = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!isPartidaTerminadaCombat()) {
-                    setTiempoRestanteCombat(getTiempoRestanteCombat() - 1);
-                    if (getTiempoRestanteCombat() <= 0) {
-                        setTiempoRestanteCombat(0);
-                        getTemporizadorCombat().stop();
+                if (!partidaTerminadaCombat) {
+                    tiempoRestanteCombat--;
+                    if (tiempoRestanteCombat <= 0) {
+                        tiempoRestanteCombat = 0;
+                        temporizadorCombat.stop();
                         finalizarRondaPorJugador();
                     }
                 }
             }
-        }));
-         getTemporizadorCombat().start();
+        });
+        this.temporizadorCombat.start();
     }
-    
+        
+        
     @Override
     public void actualizar(){
         
@@ -94,25 +98,24 @@ public class Combat implements Juego {
   
     @Override
     public void procesarTeclaPresionada(int keyCode){
-        if (isPartidaTerminadaCombat()) {
-            setContinuarTorneo(true);
+        if (this.partidaTerminadaCombat) {
+            this.continuarTorneo = true;
             return;
         }
         
-        if (getConfiguracionCombat().isTecladoCompartido()) {
-            if (getJugadorCombat1().perteneceTeclaJugador(keyCode)) {
-                boolean completoLaSecuencia = getJugadorCombat1().procesarIntento(keyCode);
-                if (completoLaSecuencia) {
-                    getJugadorCombat2().falloSecuencia();
+        if (this.configuracionCombat.isTecladoCompartido()) {
+            if (this.jugadorCombat1.perteneceTeclaJugador(keyCode)) {
+                if (this.jugadorCombat1.procesarIntento(keyCode)) {
+                    this.jugadorCombat2.falloSecuencia();
                 }
-            } else if (getJugadorCombat2().perteneceTeclaJugador(keyCode)) {
-                boolean completoLaSecuencia = getJugadorCombat2().procesarIntento(keyCode);
-                if (completoLaSecuencia) {
-                    getJugadorCombat1().falloSecuencia();
+            } else if (this.jugadorCombat2.perteneceTeclaJugador(keyCode)) {
+                if (this.jugadorCombat2.procesarIntento(keyCode)) {
+                    this.jugadorCombat1.falloSecuencia();
                 }
             }
             
-            if (getJugadorCombat1().getBarraPoder() <= 0 || getJugadorCombat2().getBarraPoder() <= 0) {
+            
+            if (this.jugadorCombat1.getBarraPoder() <= 0 || this.jugadorCombat2.getBarraPoder()<= 0) {
                 finalizarRondaPorJugador();
             }
         }
@@ -125,21 +128,24 @@ public class Combat implements Juego {
     
     
     public void finalizarRondaPorJugador(){
-        setPartidaTerminadaCombat(true);
+        this.partidaTerminadaCombat = true;
         
-        if (getTemporizadorCombat() != null) {
-            getTemporizadorCombat().stop();
+        if (this.temporizadorCombat != null) {
+            this.temporizadorCombat.stop();
         }
         
-        int poderJugador1 = getJugadorCombat1().getBarraPoder();
-        int poderJugador2 = getJugadorCombat2().getBarraPoder();
+        int poderJugador1 = this.jugadorCombat1.getBarraPoder();
+        int poderJugador2 = this.jugadorCombat2.getBarraPoder();
         
         if (poderJugador1 > poderJugador2) {
-            setMensajeResultado("El ganador es " + getTripulacion1().getNombreTripulacion());
+            this.ganador = this.tripulacion1;
+            this.mensajeResultado = "El ganador es " + this.tripulacion1.getNombreTripulacion();
         } else if (poderJugador2 > poderJugador1) {
-            setMensajeResultado("El ganador es " + getTripulacion2().getNombreTripulacion());
+            this.ganador = this.tripulacion2;
+            this.mensajeResultado = "El ganador es " + this.tripulacion2.getNombreTripulacion();
         } else {
-            setMensajeResultado("Empataron con " + poderJugador1 + " puntos");
+            this.ganador = null;
+            this.mensajeResultado = "Empataron con " + poderJugador1 + " puntos";
         }
     }
     
@@ -151,123 +157,34 @@ public class Combat implements Juego {
         int ancho = (limites != null && limites.width > 0) ? limites.width : 1280;
         int alto = (limites != null && limites.height > 0) ? limites.height : 720;
         
-        if (getFondo() != null) {
-            g.drawImage(getFondo(), 0, 0, ancho, alto, null);
+        if (this.fondo != null) {
+            g.drawImage(this.fondo, 0, 0, ancho, alto, null);
         }
         
         
-        if (getJugadorCombat1()!= null && getJugadorCombat2()!= null) {
-            getHudCombat().dibujar(g, getJugadorCombat1(), getJugadorCombat2(), getTripulacion1().getNombreTripulacion(), getTripulacion2().getNombreTripulacion(), 
-                getTiempoRestanteCombat(), isPartidaTerminadaCombat(), getMensajeResultado());
+        if (this.jugadorCombat1!= null && this.jugadorCombat2!= null) {
+            this.hudCombat.dibujar(g, 
+                    this.jugadorCombat1, this.jugadorCombat2,
+                    this.tripulacion1.getNombreTripulacion(),
+                    this.tripulacion2.getNombreTripulacion(),
+                    this.tiempoRestanteCombat, this.partidaTerminadaCombat,
+                    this.mensajeResultado);
         }
         
     }
     
-    
-    //getters y setters
-    public Tripulacion getTripulacion1() {
-        return tripulacion1;
-    }
-
-    public void setTripulacion1(Tripulacion tripulacion1) {
-        this.tripulacion1 = tripulacion1;
-    }
-
-    public Tripulacion getTripulacion2() {
-        return tripulacion2;
-    }
-
-    public void setTripulacion2(Tripulacion tripulacion2) {
-        this.tripulacion2 = tripulacion2;
-    }
-
-    public ConfiguracionCombat getConfiguracionCombat() {
-        return configuracionCombat;
-    }
-
-    public void setConfiguracionCombat(ConfiguracionCombat configuracionCombat) {
-        this.configuracionCombat = configuracionCombat;
-    }
-
-    public CombatBarraJugador getJugadorCombat1() {
-        return jugadorCombat1;
-    }
-
-    public void setJugadorCombat1(CombatBarraJugador jugadorCombat1) {
-        this.jugadorCombat1 = jugadorCombat1;
-    }
-
-    public CombatBarraJugador getJugadorCombat2() {
-        return jugadorCombat2;
-    }
-
-    public void setJugadorCombat2(CombatBarraJugador jugadorCombat2) {
-        this.jugadorCombat2 = jugadorCombat2;
-    }
-
-    public CombatHUD getHudCombat() {
-        return hudCombat;
-    }
-
-    public void setHudCombat(CombatHUD hudCombat) {
-        this.hudCombat = hudCombat;
-    }
-
-    public int getTiempoRestanteCombat() {
-        return tiempoRestanteCombat;
-    }
-
-    public void setTiempoRestanteCombat(int tiempoRestanteCombat) {
-        this.tiempoRestanteCombat = tiempoRestanteCombat;
-    }
-
-    public boolean isPartidaTerminadaCombat() {
-        return partidaTerminadaCombat;
-    }
-
-    public void setPartidaTerminadaCombat(boolean partidaTerminadaCombat) {
-        this.partidaTerminadaCombat = partidaTerminadaCombat;
-    }
-
-    public String getMensajeResultado() {
-        return mensajeResultado;
-    }
-
-    public void setMensajeResultado(String mensajeResultado) {
-        this.mensajeResultado = mensajeResultado;
-    }
-
-    public Timer getTemporizadorCombat() {
-        return temporizadorCombat;
-    }
-
-    public void setTemporizadorCombat(Timer temporizadorCombat) {
-        this.temporizadorCombat = temporizadorCombat;
-    }   
-
-    public boolean isContinuarTorneo() {
-        return continuarTorneo;
-    }
-
-    public void setContinuarTorneo(boolean continuarTorneo) {
-        this.continuarTorneo = continuarTorneo;
-    }
-
-    public BufferedImage getFondo() {
-        return fondo;
-    }
-
-    public void setFondo(BufferedImage fondo) {
-        this.fondo = fondo;
-    }
-
     @Override
     public boolean haTerminado() {
-        return isContinuarTorneo();
+        return this.continuarTorneo;
     }
 
     
     public boolean listoParaAvanzar() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Tripulacion getGanador() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     

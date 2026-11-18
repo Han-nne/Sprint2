@@ -18,9 +18,9 @@ import java.util.ArrayList;
  */
 public class CombatHUD {
     
-    private Font fuenteTitulo;
-    private Font fuenteTexto;
-    private Font fuenteTeclas;
+    private final Font fuenteTitulo;
+    private final Font fuenteTexto;
+    private final Font fuenteTeclas;
 
     public CombatHUD() {
         this.fuenteTitulo = new Font("Arial", Font.BOLD, 28);
@@ -28,38 +28,12 @@ public class CombatHUD {
         this.fuenteTeclas = new Font("Monospaced", Font.BOLD, 24);
     }
 
-    //getters y setters
-    public Font getFuenteTitulo() {
-        return fuenteTitulo;
-    }
-
-    public void setFuenteTitulo(Font fuenteTitulo) {
-        this.fuenteTitulo = fuenteTitulo;
-    }
-
-    public Font getFuenteTexto() {
-        return fuenteTexto;
-    }
-
-    public void setFuenteTexto(Font fuenteTexto) {
-        this.fuenteTexto = fuenteTexto;
-    }
-
-    public Font getFuenteTeclas() {
-        return fuenteTeclas;
-    }
-
-    public void setFuenteTeclas(Font fuenteTeclas) {
-        this.fuenteTeclas = fuenteTeclas;
-    }
-    
-    
     public void dibujar(Graphics g, CombatBarraJugador jugador1, CombatBarraJugador jugador2, String nombreJugador1, String nombreJugador2, int tiempoRestante, boolean terminado, String mensajeGanador){
         
         Rectangle limites = g.getClipBounds();
         int anchoPantalla = (limites != null && limites.width > 0) ? limites.width : 1280;
         
-        g.setFont(getFuenteTitulo());
+        g.setFont(this.fuenteTitulo);
         String textoReloj = String.valueOf(tiempoRestante);
         FontMetrics fmReloj = g.getFontMetrics();
         int xReloj = (anchoPantalla - fmReloj.stringWidth(textoReloj)) / 2;
@@ -91,7 +65,7 @@ public class CombatHUD {
         g.setColor(Color.WHITE);
         g.drawRect(x, y, 300, 26);
         
-        g.setFont(getFuenteTexto());
+        g.setFont(this.fuenteTexto);
         g.drawString("Barra de Poder: " + jugador.getBarraPoder() + " puntos", x, y + 48);
         
         g.setColor(colorBarra);
@@ -101,7 +75,7 @@ public class CombatHUD {
 
 
     private void dibujarSecuenciaTeclas(Graphics g, ArrayList<Integer> secuencia, int progreso, int startX, int startY) {
-        g.setFont(getFuenteTeclas());
+        g.setFont(this.fuenteTeclas);
         for (int i = 0; i < secuencia.size(); i++) {
             int posX = startX + (i * 65);
             
@@ -139,5 +113,4 @@ public class CombatHUD {
                 return "?";
         }
     }
-    
 }
