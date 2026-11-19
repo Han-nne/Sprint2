@@ -94,5 +94,16 @@ public class TripulacionNegocios {
                 .limit(10)
                 .collect(Collectors.toList());
     }
-   
+    
+    /**
+     *   Actualiza la tripulacion luego del torneo
+     * 
+     * @param tripulacion
+     * @return true si se actualizo correctamente 
+     * @throws IOException 
+     */
+    public boolean actualizarTripulacion( Tripulacion tripulacion) throws IOException{
+       return  this.tripulacionDatos.actualizar(tripulacion);
+    }
+
 }

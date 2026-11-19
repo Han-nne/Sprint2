@@ -13,11 +13,15 @@ import java.awt.Rectangle;
 
 /**
  * La clase {@code DibujarMarcador} dibuja la pantalla que se muestra al terminar
- * cada minijuego: el ganador de ese juego, el marcador general del torneo y, al
- * final, el campeón.
+ * cada minijuego: el ganador de ese juego y el marcador general del torneo.
  * <p>
  * Solo se encarga de la presentación: no conoce la secuencia de minijuegos ni
  * modifica ningún estado. Todos los datos le llegan como parámetros.
+ * </p>
+ * <p>
+ * El campeón del torneo <b>no</b> se muestra aquí: esa responsabilidad
+ * le corresponde a {@code JPFinTorneo}, que se presenta después del último
+ * minijuego.
  * </p>
  *
  * @see Torneo
@@ -25,11 +29,16 @@ import java.awt.Rectangle;
  */
 public class DibujarMarcador {
 
-    /** Tamaño del panel por si el contexto gráfico no informa el área visible. */
+    /** Ancho del panel por si el contexto gráfico no informa el área visible. */
     private static final int ANCHO_POR_DEFECTO = 1280;
+
+    /** Alto del panel por si el contexto gráfico no informa el área visible. */
     private static final int ALTO_POR_DEFECTO = 720;
 
+    /** Color del velo oscuro semitransparente que cubre el juego. */
     private static final Color COLOR_FONDO = new Color(0, 0, 0, 170);
+
+    /** Color dorado usado para resaltar al ganador del minijuego. */
     private static final Color COLOR_DESTACADO = new Color(255, 215, 0);
 
     /** Tripulación del jugador 1. */
@@ -51,6 +60,11 @@ public class DibujarMarcador {
 
     /**
      * Dibuja la pantalla de resultado sobre lo que haya en el contexto gráfico.
+     * <p>
+     * Si {@code siguienteJuego} es {@code null}, significa que el juego que
+     * terminó era el último; en ese caso solo se indica que se pasará a la
+     * pantalla final, sin anunciar al campeón.
+     * </p>
      *
      * @param g contexto gráfico sobre el cual dibujar
      * @param nombreJuego nombre del minijuego que acaba de terminar
@@ -58,7 +72,7 @@ public class DibujarMarcador {
      * @param puntos1 minijuegos ganados por la tripulación 1
      * @param puntos2 minijuegos ganados por la tripulación 2
      * @param siguienteJuego nombre del siguiente minijuego; {@code null} si el
-     *                       que terminó era el último (se muestra al campeón)
+     *                       que terminó era el último
      */
     public void dibujar(Graphics g, String nombreJuego, Tripulacion ganadorJuego,
                         int puntos1, int puntos2, String siguienteJuego) {
@@ -94,13 +108,11 @@ public class DibujarMarcador {
             centrado(g2, tripulacion2.getNombreTripulacion(), x0 + ancho * 3 / 4, y0 + alto * 68 / 100);
 
             g2.setFont(new Font("SansSerif", Font.ITALIC, 28));
-            if (siguienteJuego == null) {
-                g2.setColor(COLOR_DESTACADO);
-                centrado(g2, textoCampeon(puntos1, puntos2), centroX, y0 + alto * 80 / 100);
-            } else {
-                g2.setColor(Color.LIGHT_GRAY);
-                centrado(g2, "Siguiente: " + siguienteJuego, centroX, y0 + alto * 80 / 100);
-            }
+            g2.setColor(Color.LIGHT_GRAY);
+            String textoInferior = siguienteJuego == null
+                    ? "Último minijuego completado"
+                    : "Siguiente: " + siguienteJuego;
+            centrado(g2, textoInferior, centroX, y0 + alto * 80 / 100);
 
             g2.setColor(Color.WHITE);
             g2.setFont(new Font("SansSerif", Font.BOLD, 24));
@@ -112,20 +124,12 @@ public class DibujarMarcador {
     }
 
     /**
-     * Construye el mensaje del campeón según el marcador final.
-     */
-    private String textoCampeon(int puntos1, int puntos2) {
-        if (puntos1 > puntos2) {
-            return "¡Campeón del torneo: " + tripulacion1.getNombreTripulacion() + "!";
-        }
-        if (puntos2 > puntos1) {
-            return "¡Campeón del torneo: " + tripulacion2.getNombreTripulacion() + "!";
-        }
-        return "El torneo termina en empate";
-    }
-
-    /**
      * Dibuja un texto centrado horizontalmente en la posición indicada.
+     *
+     * @param g2 contexto gráfico con la fuente y el color ya configurados
+     * @param texto texto a dibujar
+     * @param centroX coordenada X sobre la cual se centra el texto
+     * @param y línea base vertical del texto
      */
     private void centrado(Graphics2D g2, String texto, int centroX, int y) {
         FontMetrics fm = g2.getFontMetrics();

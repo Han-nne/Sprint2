@@ -22,6 +22,11 @@ import java.util.List;
  * Sobre cada minijuego dibuja las banderas de las tripulaciones mediante
  * {@link DibujarBandera}.
  * </p>
+ * <p>
+ * Tras el último minijuego el torneo pasa a estado finalizado
+ * ({@link #isFinalizado()}). El anuncio del campeón no lo hace esta clase ni
+ * {@link DibujarMarcador}, sino la interfaz gráfica ({@code JPFinTorneo}).
+ * </p>
  *
  * @see Juego
  * @see ConfiguracionGeneral
@@ -45,7 +50,7 @@ public class Torneo {
     /** Minijuego que se está disputando actualmente. */
     private Juego juegoActual;
 
-    /** Torneo finalizado */
+    /** Indica si el torneo ya terminó (se disputaron todos los minijuegos). */
     private boolean finalizado = false;
 
     /** Posición del minijuego actual en la secuencia del torneo (desde 0). */
@@ -302,6 +307,23 @@ public class Torneo {
      */
     public int getPuntos2() {
         return puntos2;
-        
-     }
     }
+
+    /**
+     * Obtiene la tripulación del jugador 1.
+     *
+     * @return tripulación 1
+     */
+    public Tripulacion getTripulacion1() {
+        return tripulacion1;
+    }
+
+    /**
+     * Obtiene la tripulación del jugador 2.
+     *
+     * @return tripulación 2
+     */
+    public Tripulacion getTripulacion2() {
+        return tripulacion2;
+    }
+}

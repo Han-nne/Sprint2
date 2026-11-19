@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package GUI;
 
 import Dominio.ConfiguracionGeneral;
@@ -21,56 +17,46 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 /**
- * Panel gráfico donde se desarrolla el torneo. Dibuja el fondo marino y los
- * elementos del juego, recibe el teclado para controlar a los jugadores y 
- * recibe el clic del mouse para seleccionar las cartas de GroggyRing.
+ * Panel principal donde se desarrolla el torneo. Se encarga de conectar la
+ * interfaz gráfica con la lógica de {@link Torneo}: ejecuta el ciclo de juego
+ * con un {@link Timer} (aproximadamente 60 cuadros por segundo), dibuja el
+ * estado actual y reenvía al torneo los eventos de teclado y de mouse.
  * <p>
- * Crea un {@link Torneo} con las dos tripulaciones y la configuración recibidas.
- * Un {@link Timer} de Swing, que se ejecuta cada 16 ms (aprox. 60 cuadros por
- * segundo), actualiza la lógica del torneo y vuelve a pintar el panel. Las teclas
- * presionadas y liberadas se reenvían al torneo, que las interpreta según el
- * minijuego en curso.
- * </p>
- * <p>
- * Tiene un tamaño preferido de 1280x720 píxeles y se muestra dentro de
- * {@link JIFVentanaTorneo}.
+ * Cuando el torneo termina, detiene el ciclo y notifica una única vez mediante
+ * el {@link Runnable} configurado con {@link #setOnTorneoFinalizado(Runnable)}.
  * </p>
  *
- * @author johan
  * @see Torneo
- * @see JIFVentanaTorneo
  */
-public class JPAreaTorneo extends JPanel implements KeyListener, MouseListener{
+public class JPAreaTorneo extends JPanel implements KeyListener, MouseListener {
 
-    /** Lógica del torneo: administra los minijuegos, sus estados y el dibujo. */
-    private Torneo torneo ;
-   
-     /** Temporizador que actualiza el torneo y repinta el panel cada 16 ms. */
-    private final Timer timer;
-   
-     /**
-     * Construye el panel del torneo: define su tamaño y foco, registra el
-     * teclado, carga la imagen de fondo, crea el {@link Torneo} e inicia el
-     * temporizador del ciclo de juego.
-     * <p>
-     * Si ocurre un error de lectura al cargar los recursos, se muestra un mensaje
-     * al usuario; en ese caso el panel queda sin inicializar por completo.
-     * </p>
+    /** Torneo en curso, con toda la lógica y el dibujo de los minijuegos. */
+    private Torneo torneo;
+
+    /** Temporizador que avanza y repinta el juego en cada cuadro. */
+    private Timer timer = null;
+
+    /** Acción que se ejecuta una vez cuando el torneo finaliza. */
+    private Runnable onTorneoFinalizado;
+
+    /** Evita notificar más de una vez el fin del torneo. */
+    private boolean notificacionEnviada = false;
+
+    /**
+     * Crea el panel, inicia un nuevo torneo y arranca el ciclo de juego.
      *
-     * @param tripulacion1 tripulación del primer jugador
-     * @param tripulacion2 tripulación del segundo jugador
-     * @param configuraciones configuraciones de los minijuegos definidas por el
-     *                        administrador
-     * @throws IOException declarada por el constructor; actualmente los errores de
-     *                     lectura se capturan y se muestran en un mensaje
+     * @param tripulacion1 tripulación del jugador 1
+     * @param tripulacion2 tripulación del jugador 2
+     * @param configuraciones configuraciones de los minijuegos que componen el torneo
+     * @throws IOException si ocurre un error al cargar los recursos del torneo
      */
-    public JPAreaTorneo( Tripulacion tripulacion1 , Tripulacion tripulacion2 , List <ConfiguracionGeneral> configuraciones) throws IOException {
-       
+    public JPAreaTorneo(Tripulacion tripulacion1, Tripulacion tripulacion2, List<ConfiguracionGeneral> configuraciones) throws IOException {
         this.setPreferredSize(new Dimension(1280, 720));
+        this.setBounds(0, 0, 1280, 720);
         this.addKeyListener(this);
         this.addMouseListener(this);
-        
-        this.torneo= new Torneo(tripulacion1, tripulacion2 , configuraciones);
+
+        this.torneo = new Torneo(tripulacion1, tripulacion2, configuraciones);
         timer = new Timer(16, e -> {
             try {
                 this.torneo.actualizarJuego();
@@ -78,97 +64,160 @@ public class JPAreaTorneo extends JPanel implements KeyListener, MouseListener{
                 Logger.getLogger(JPAreaTorneo.class.getName()).log(Level.SEVERE, null, ex);
             }
             repaint();
+
+            if (!notificacionEnviada && this.torneo.isFinalizado()) {
+                notificacionEnviada = true;
+                timer.stop();
+                if (onTorneoFinalizado != null) {
+                    onTorneoFinalizado.run();
+                }
+            }
         });
-        
+
         timer.start();
         this.setFocusable(true);
         this.requestFocusInWindow();
     }
-    
-//    public void detenerTimer(){
-//        timer.stop();
-//    }
 
-      /**
-     * Pinta el panel: primero la imagen de fondo ajustada al tamaño actual y
-     * luego los elementos del torneo.
+    /**
+     * Descarta el torneo actual y comienza uno nuevo con los datos indicados.
+     * También rehabilita la notificación de fin de torneo.
      *
-     * @param g contexto gráfico sobre el que se dibuja
+     * @param tripulacion1 tripulación del jugador 1
+     * @param tripulacion2 tripulación del jugador 2
+     * @param configuraciones configuraciones de los minijuegos del nuevo torneo
+     * @throws IOException si ocurre un error al cargar los recursos del torneo
+     */
+    public void reiniciarTorneo(Tripulacion tripulacion1, Tripulacion tripulacion2, List<ConfiguracionGeneral> configuraciones) throws IOException {
+        timer.stop();
+        this.torneo = new Torneo(tripulacion1, tripulacion2, configuraciones);
+        this.notificacionEnviada = false;
+        timer.start();
+        this.setFocusable(true);
+        this.requestFocusInWindow();
+        repaint();
+    }
+
+    /**
+     * Define la acción que se ejecuta cuando el torneo termina.
+     *
+     * @param onTorneoFinalizado acción a ejecutar; puede ser {@code null}
+     */
+    public void setOnTorneoFinalizado(Runnable onTorneoFinalizado) {
+        this.onTorneoFinalizado = onTorneoFinalizado;
+    }
+
+    /**
+     * Obtiene el torneo en curso.
+     *
+     * @return torneo actual
+     */
+    public Torneo getTorneo() {
+        return torneo;
+    }
+
+    /**
+     * Detiene el ciclo de juego (actualización y repintado).
+     */
+    public void detenerTimer() {
+        timer.stop();
+    }
+
+    /**
+     * Dibuja el estado actual del torneo.
+     *
+     * @param g contexto gráfico del componente
      */
     @Override
     protected void paintComponent(Graphics g) {
-        this.torneo.dibujar(g);
-        
-    } // paintComponent
+        super.paintComponent(g);
+        if (this.torneo != null) {
+            this.torneo.dibujar(g);
+        }
+    }
 
-      /**
-     * Evento de tecla escrita. No se usa en este panel.
+    /**
+     * No se utiliza.
      *
      * @param e evento de teclado
      */
     @Override
     public void keyTyped(KeyEvent e) {
-        
-    }
-
-      /**
-     * Reenvía al torneo el código de la tecla presionada.
-     *
-     * @param e evento de teclado de la tecla presionada
-     */
-    @Override
-    public void keyPressed(KeyEvent e) {
-        torneo.procesarTeclaPresionada(e.getKeyCode());
-    }
-
-     /**
-     * Reenvía al torneo el código de la tecla liberada.
-     *
-     * @param e evento de teclado de la tecla liberada
-     */
-    @Override
-    public void keyReleased(KeyEvent e) {
-        torneo.procesarTeclaLiberada(e.getKeyCode());
     }
 
     /**
-     * Reenvía al torneo las coordenadas (x,y) del clic en pantalla,
-     * @param e evento del mouse al dar un único clic.
+     * Reenvía al torneo la tecla que se acaba de presionar.
+     *
+     * @param e evento de teclado
      */
     @Override
-    public void mouseClicked(MouseEvent e) {
-        try {
-            torneo.procesarClic(e.getX(), e.getY());
-        } catch (IOException ex) {
-            Logger.getLogger(JPAreaTorneo.class.getName()).log(Level.SEVERE, null, ex);
+    public void keyPressed(KeyEvent e) {
+        if (torneo != null) {
+            torneo.procesarTeclaPresionada(e.getKeyCode());
         }
     }
 
     /**
-     * Evento del mouse con clic presionado. No se usa en este panel.
-     * @param e evento del mouse.
+     * Reenvía al torneo la tecla que se acaba de soltar.
+     *
+     * @param e evento de teclado
      */
     @Override
-    public void mousePressed(MouseEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        if (torneo != null) {
+            torneo.procesarTeclaLiberada(e.getKeyCode());
+        }
+    }
 
     /**
-     * Evento del mouse con clic liberado. No se usa en este panel.
-     * @param e evento del mouse.
+     * Reenvía al torneo las coordenadas del clic del mouse.
+     *
+     * @param e evento de mouse
      */
     @Override
-    public void mouseReleased(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+        if (torneo != null) {
+            try {
+                torneo.procesarClic(e.getX(), e.getY());
+            } catch (IOException ex) {
+                Logger.getLogger(JPAreaTorneo.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
     /**
-     * Evento del mouse con el cursor ingresado. No se usa en este panel.
-     * @param e evento del mouse.
+     * No se utiliza.
+     *
+     * @param e evento de mouse
      */
     @Override
-    public void mouseEntered(MouseEvent e) {}
+    public void mousePressed(MouseEvent e) {
+    }
 
     /**
-     * Evento del mouse con el cursor expulsado. No se usa en este panel.
-     * @param e evento del mouse.
+     * No se utiliza.
+     *
+     * @param e evento de mouse
      */
     @Override
-    public void mouseExited(MouseEvent e) {}
-} //fin clase
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    /**
+     * No se utiliza.
+     *
+     * @param e evento de mouse
+     */
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    /**
+     * No se utiliza.
+     *
+     * @param e evento de mouse
+     */
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+}

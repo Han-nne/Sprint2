@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 
 /**
  * Ventana principal de la aplicación. Funciona como escritorio ({@code JDesktopPane})
@@ -287,13 +289,23 @@ public class JFVentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_mniRankingActionPerformed
     
     /**
-     * Método que recibe las tripulaciones validadas e inicia JIFVentanaTorneo con las configuraciones guardadas.
-     * @param tripulacion1
-     * @param tripulacion2
-     * @throws java.io.IOException
+     * Recibe las tripulaciones validadas e inicia {@link JIFVentanaTorneo} con
+     * las configuraciones guardadas. Oculta la barra de menú mientras el torneo
+     * está en curso y la vuelve a mostrar cuando la ventana del torneo se cierra
+     * (por ejemplo, al elegir "Menú Principal" al terminar el torneo).
+     *
+     * @param tripulacion1 tripulación del jugador 1
+     * @param tripulacion2 tripulación del jugador 2
+     * @throws java.io.IOException si ocurre un error al cargar los recursos del torneo
      */
     public void iniciarTorneoConTripulaciones(Tripulacion tripulacion1, Tripulacion tripulacion2) throws IOException {
         JIFVentanaTorneo ventanaTorneo = new JIFVentanaTorneo(tripulacion1, tripulacion2, this.configuraciones);
+        ventanaTorneo.addInternalFrameListener(new InternalFrameAdapter() {
+            @Override
+            public void internalFrameClosed(InternalFrameEvent e) {
+                jmbPrincipal.setVisible(true);
+            }
+        });
         dtpContenedorPrincipal.add(ventanaTorneo);
         ventanaTorneo.setVisible(true);
         this.jmbPrincipal.setVisible(false);
