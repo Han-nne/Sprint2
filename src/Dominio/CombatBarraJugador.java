@@ -22,6 +22,8 @@ public class CombatBarraJugador {
     private int barraPoder;
     private boolean primerIntento;
     private int indiceProgreso;
+    private boolean mostrarCalavera;
+    private int contadorCalavera;
 
     public CombatBarraJugador(int valorInicialBarra, ArrayList<Integer> teclasPermitidas, int longitudSecuencia) {
         this.valorInicialBarra = valorInicialBarra;
@@ -31,6 +33,8 @@ public class CombatBarraJugador {
         this.secuenciaActual = new ArrayList<>();
         this.teclasPermitidas = teclasPermitidas;
         this.generadorAleatorio = new Random();
+        this.mostrarCalavera = false;
+        this.contadorCalavera = 0;
         generarNuevaSecuencia();
     }
  // getter y setters
@@ -45,6 +49,11 @@ public class CombatBarraJugador {
     public int getIndiceProgreso() {
         return indiceProgreso;
     }
+
+    public boolean isMostrarCalavera() {
+        return mostrarCalavera;
+    }
+    
     
     private void generarNuevaSecuencia() {
         this.secuenciaActual.clear();
@@ -67,6 +76,7 @@ public class CombatBarraJugador {
             
             if (this.indiceProgreso == this.secuenciaActual.size()) {
                 aciertoSecuencia();
+                this.mostrarCalavera = false;
                 generarNuevaSecuencia();
                 return true;
             } 
@@ -74,18 +84,28 @@ public class CombatBarraJugador {
         } else {
             this.primerIntento = false;
             falloSecuencia();
+            this.mostrarCalavera = true;
+            this.contadorCalavera = 2;
             generarNuevaSecuencia();
             return false;
         }
     }
     
+    public void actualizarTiempoCalavera(){
+        if (this.contadorCalavera > 0) {
+            this.contadorCalavera --;
+            if (this.contadorCalavera == 0) {
+                this.mostrarCalavera = false;
+            }
+        }
+    }
 
     private void aciertoSecuencia(){
         if (this.primerIntento) {
             this.barraPoder = this.valorInicialBarra;
             this.primerIntento = false;
         } else {
-            this.barraPoder = Math.min(0, this.barraPoder - 5);
+            this.barraPoder = Math.min(0, this.barraPoder + 5);
         }
         
     }

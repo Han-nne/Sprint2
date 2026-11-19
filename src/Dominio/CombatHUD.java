@@ -48,22 +48,38 @@ public class CombatHUD {
         
         dibujarPanelJugador(g, jugador1, nombreJugador1 + " (W, A, D)", 20, 95, colorAzul);
         dibujarPanelJugador(g, jugador2, nombreJugador2 + " (←, ↑, →)", anchoPantalla - 330, 95, colorRojo);
+        
+        dibujarCalavera(g, jugador1.isMostrarCalavera(), 325, 95);
+        dibujarCalavera(g, jugador2.isMostrarCalavera(), anchoPantalla - 375, 95);
+
     }
     
-    
+   
     private void dibujarPanelJugador(Graphics g, CombatBarraJugador jugador, String titulo, int x, int y, Color colorBarra){
         g.setColor(new Color(0, 0, 0, 160));
         g.fillRoundRect(x - 10, y - 8, 320, 100, 12, 12);
         
-        g.setColor(Color.DARK_GRAY);
-        g.fillRect(x, y, 300, 26);
+        int totalBloques = 20;
+        int anchoBloque = 15;
+        int altoBarra = 26;
+        int bloquesActivos = jugador.getBarraPoder() / 5;
         
-        g.setColor(colorBarra);
-        int anchoRelleno = Math.min(300, jugador.getBarraPoder() * 3);
-        g.fillRect(x, y, anchoRelleno, 26);
+        for (int i = 0; i < totalBloques; i++) {
+            int xBloque = x + (i * anchoBloque);
+            
+            if (i < bloquesActivos) {
+                g.setColor(colorBarra);
+            } else {
+                g.setColor(Color.DARK_GRAY);
+            }
+            g.fillRect(xBloque, y, anchoBloque, altoBarra);
+            
+            g.setColor(Color.BLACK);
+            g.drawRect(xBloque, y, anchoBloque, altoBarra);
+        } // fin de for
         
         g.setColor(Color.WHITE);
-        g.drawRect(x, y, 300, 26);
+        g.drawRect(x, y, 300, altoBarra);
         
         g.setFont(this.fuenteTexto);
         g.drawString("Barra de Poder: " + jugador.getBarraPoder() + " puntos", x, y + 48);
@@ -71,6 +87,26 @@ public class CombatHUD {
         g.setColor(colorBarra);
         g.drawString(titulo, x, y + 80);
         dibujarSecuenciaTeclas(g, jugador.getSecuenciaActual(), jugador.getIndiceProgreso(), x, y + 115);
+    }
+    
+    
+    public void dibujarCalavera(Graphics g, boolean mostrar, int x, int y){
+        if (!mostrar) {
+            return;
+        }
+        
+        g.setColor(Color.WHITE);
+        g.fillOval(x, y, 35, 30);
+        g.fillRect(x + 8, y + 25, 19, 12);
+
+        g.setColor(Color.BLACK);
+        g.fillOval(x + 7, y + 10, 7, 8);
+        g.fillOval(x + 21, y + 10, 7, 8);
+        g.fillRect(x + 15, y + 18, 4, 5);
+
+        g.drawLine(x + 11, y + 35, x + 11, y + 40);
+        g.drawLine(x + 16, y + 35, x + 16, y + 40);
+        g.drawLine(x + 21, y + 35, x + 21, y + 40);
     }
 
 

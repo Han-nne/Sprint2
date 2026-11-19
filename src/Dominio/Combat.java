@@ -31,6 +31,7 @@ public class Combat implements Juego {
     private CombatBarraJugador jugadorCombat2;
     private Tripulacion ganador;
     private int tiempoRestanteCombat;
+    private int turnoActual;
     private boolean partidaTerminadaCombat;
     private boolean continuarTorneo;
     private String mensajeResultado;
@@ -65,6 +66,7 @@ public class Combat implements Juego {
         this.jugadorCombat2 = new CombatBarraJugador(valorInicial, controlesJugador2, longitudSecuencia);
         
         this.ganador = null;
+        this.turnoActual = 1;
         this.tiempoRestanteCombat = 45;
         this.partidaTerminadaCombat = false;
         this.continuarTorneo = false;
@@ -78,6 +80,8 @@ public class Combat implements Juego {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!partidaTerminadaCombat) {
+                    jugadorCombat1.actualizarTiempoCalavera();
+                    jugadorCombat2.actualizarTiempoCalavera();
                     tiempoRestanteCombat--;
                     if (tiempoRestanteCombat <= 0) {
                         tiempoRestanteCombat = 0;
@@ -103,6 +107,10 @@ public class Combat implements Juego {
             return;
         }
         
+        if (this.tiempoRestanteCombat <= 0) {
+            return;
+        }
+        
         if (this.configuracionCombat.isTecladoCompartido()) {
             if (this.jugadorCombat1.perteneceTeclaJugador(keyCode)) {
                 if (this.jugadorCombat1.procesarIntento(keyCode)) {
@@ -113,18 +121,33 @@ public class Combat implements Juego {
                     this.jugadorCombat1.falloSecuencia();
                 }
             }
-            
+ 
             
             if (this.jugadorCombat1.getBarraPoder() <= 0 || this.jugadorCombat2.getBarraPoder()<= 0) {
                 finalizarRondaPorJugador();
+            } 
+            else { if (this.turnoActual == 1 && this.jugadorCombat1.perteneceTeclaJugador(keyCode)) {
+                    this.jugadorCombat1.procesarIntento(keyCode);
+                    this.turnoActual = 2;
+                } else if (this.turnoActual == 2 && this.jugadorCombat2.perteneceTeclaJugador(keyCode)) {
+                    this.jugadorCombat2.procesarIntento(keyCode);
+                    this.turnoActual = 1;
+                }
+                if (this.jugadorCombat1.getBarraPoder() <= 0 || this.jugadorCombat2.getBarraPoder() <= 0) {
+                    finalizarRondaPorJugador();
+                }
             }
-        }
+         }
     }
     
     
     @Override
     public void procesarTeclaLiberada(int keyCode){
+        if (this.partidaTerminadaCombat) {
+            this.continuarTorneo = true;
+        }
     }
+    
     
     
     public void finalizarRondaPorJugador(){
@@ -178,14 +201,9 @@ public class Combat implements Juego {
         return this.continuarTorneo;
     }
 
-    
-    public boolean listoParaAvanzar() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
     @Override
     public Tripulacion getGanador() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return this.ganador;
     }
     
 }
