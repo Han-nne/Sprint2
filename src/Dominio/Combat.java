@@ -101,17 +101,18 @@ public class Combat implements Juego {
     }
   
     @Override
-    public void procesarTeclaPresionada(int keyCode){
+    public void procesarTeclaPresionada(int keyCode) {
         if (this.partidaTerminadaCombat) {
             this.continuarTorneo = true;
             return;
         }
-        
+
         if (this.tiempoRestanteCombat <= 0) {
             return;
         }
-        
+
         if (this.configuracionCombat.isTecladoCompartido()) {
+
             if (this.jugadorCombat1.perteneceTeclaJugador(keyCode)) {
                 if (this.jugadorCombat1.procesarIntento(keyCode)) {
                     this.jugadorCombat2.falloSecuencia();
@@ -121,25 +122,29 @@ public class Combat implements Juego {
                     this.jugadorCombat1.falloSecuencia();
                 }
             }
- 
-            
-            if (this.jugadorCombat1.getBarraPoder() <= 0 || this.jugadorCombat2.getBarraPoder()<= 0) {
-                finalizarRondaPorJugador();
-            } 
-            else { if (this.turnoActual == 1 && this.jugadorCombat1.perteneceTeclaJugador(keyCode)) {
-                    this.jugadorCombat1.procesarIntento(keyCode);
+        } else {
+
+            if (this.turnoActual == 1 && this.jugadorCombat1.perteneceTeclaJugador(keyCode)) {
+                if (this.jugadorCombat1.procesarIntento(keyCode)) {
+                    this.jugadorCombat2.falloSecuencia();
+                }
+                if (this.jugadorCombat1.getIndiceProgreso() == 0) {
                     this.turnoActual = 2;
-                } else if (this.turnoActual == 2 && this.jugadorCombat2.perteneceTeclaJugador(keyCode)) {
-                    this.jugadorCombat2.procesarIntento(keyCode);
+                }
+            } else if (this.turnoActual == 2 && this.jugadorCombat2.perteneceTeclaJugador(keyCode)) {
+                if (this.jugadorCombat2.procesarIntento(keyCode)) {
+                    this.jugadorCombat1.falloSecuencia();
+                }
+                if (this.jugadorCombat2.getIndiceProgreso() == 0) {
                     this.turnoActual = 1;
                 }
-                if (this.jugadorCombat1.getBarraPoder() <= 0 || this.jugadorCombat2.getBarraPoder() <= 0) {
-                    finalizarRondaPorJugador();
-                }
             }
-         }
+        }
+
+        if (this.jugadorCombat1.getBarraPoder() <= 0 || this.jugadorCombat2.getBarraPoder() <= 0) {
+            finalizarRondaPorJugador();
+        }
     }
-    
     
     @Override
     public void procesarTeclaLiberada(int keyCode){

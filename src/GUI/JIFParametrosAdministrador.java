@@ -79,6 +79,7 @@ public class JIFParametrosAdministrador extends javax.swing.JInternalFrame {
 
         btngModalidadJuego.add(btnTurnos);
         btnTurnos.setText("Por turnos");
+        btnTurnos.addActionListener(this::btnTurnosActionPerformed);
 
         jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
@@ -172,35 +173,41 @@ public class JIFParametrosAdministrador extends javax.swing.JInternalFrame {
         if (!btnTecladoCompartido.isSelected() && !btnTurnos.isSelected()) {
             javax.swing.JOptionPane.showMessageDialog(rootPane, "Faltan parámetros por configurar, debe seleccionar una modalidad de juego para el minijuego Combat");
         } else {
+            this.configuraciones.clear();
             int opcion = jcbDificultad.getSelectedIndex() + 1;
+
             ConfiguracionDonutRace donut = new ConfiguracionDonutRace();
             donut.seleccionNivel(opcion);
-            this.configuraciones.add( donut );
-            
+            this.configuraciones.add(donut);
+
             ConfiguracionGroggyRing groggy = new ConfiguracionGroggyRing();
             groggy.seleccionNivel(opcion);
             this.configuraciones.add(groggy);
-        
+
             ConfiguracionCombat combat = new ConfiguracionCombat();
             combat.seleccionNivel(opcion);
+            combat.setTecladoCompartido(btnTecladoCompartido.isSelected());
             this.configuraciones.add(combat);
-        
-        if (this.ventanaPrincipal != null) {
-            this.ventanaPrincipal.guardarConfiguracion( this.configuraciones);
-        }
-        
-        this.dispose();
-        
+
+            if (this.ventanaPrincipal != null) {
+                this.ventanaPrincipal.guardarConfiguracion(this.configuraciones);
+            }
+
+            this.dispose();
         }
     }//GEN-LAST:event_jbtnGuardarConfiguracionActionPerformed
 
     private void btnTecladoCompartidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTecladoCompartidoActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here: 
     }//GEN-LAST:event_btnTecladoCompartidoActionPerformed
 
     private void jcbDificultadItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcbDificultadItemStateChanged
         // TODO add your handling code here:
     }//GEN-LAST:event_jcbDificultadItemStateChanged
+
+    private void btnTurnosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTurnosActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnTurnosActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

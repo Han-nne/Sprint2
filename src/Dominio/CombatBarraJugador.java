@@ -105,7 +105,7 @@ public class CombatBarraJugador {
             this.barraPoder = this.valorInicialBarra;
             this.primerIntento = false;
         } else {
-            this.barraPoder = Math.min(0, this.barraPoder + 5);
+            this.barraPoder = Math.min(100, this.barraPoder + 5);
         }
         
     }
