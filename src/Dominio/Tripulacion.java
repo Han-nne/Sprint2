@@ -39,6 +39,12 @@ public class Tripulacion  {
     /** Ruta del archivo de imagen de la bandera. */
     private String rutaImagen;
  
+    /** Mejor tiempo registrado de la tripulación. */
+    private double mejorTiempo = 840.0;
+    
+    /** Registro de victorias de la embarcación. */
+    private int cantidadVictorias = 0;
+    
     /**
      * Imagen de la bandera. Se carga bajo demanda en {@link #getBandera()};
      * es {@code null} mientras no se haya cargado o si la carga falló.
@@ -149,5 +155,23 @@ public class Tripulacion  {
     public void ajustarPuntaje(double delta){
         this.puntaje = Math.max(0, this.puntaje + delta);
     }
+
+    public double getMejorTiempo() {
+        return mejorTiempo;
+    }
+
+    public void setMejorTiempo(double mejorTiempo) {
+        this.mejorTiempo = mejorTiempo;
+    }
+
+    public int getCantidadVictorias() {
+        return cantidadVictorias;
+    }
+
+    public void setCantidadVictorias(int cantidadVictorias) {
+        this.cantidadVictorias = cantidadVictorias;
+    }
+    
+    
     
 } // fin clase
