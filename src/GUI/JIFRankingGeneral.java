@@ -98,38 +98,44 @@ public class JIFRankingGeneral extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jlRankingGeneral;
     // End of variables declaration//GEN-END:variables
 
-    private void cargarTablaTop10() {
-        
-        try {
-            DefaultTableModel modelo = (DefaultTableModel) jTPuntaje.getModel();
-            
-            // 2. Limpiar filas anteriores por si se recarga la ventana
-            modelo.setRowCount(0);
-            
-            // (Opcional) Definir los títulos de las columnas si no los pusiste en las propiedades de la tabla
-            modelo.setColumnIdentifiers(new Object[]{"Puesto", "Jugador", "Puntaje"});
-            
-            // 3. Llamar a tu capa de negocios para obtener la lista
-            ArrayList<Tripulacion> top10 = tripulacionNegocios.obtenerTop10();
-            
-            if (!top10.isEmpty()) {
-                  int puesto = 1;
+    
+private void cargarTablaTop10() {
+
+    try {
+        DefaultTableModel modelo = (DefaultTableModel) jTPuntaje.getModel();
+
+        // Limpiar filas anteriores por si se recarga la ventana
+        modelo.setRowCount(0);
+
+        modelo.setColumnIdentifiers(new Object[]{
+            "Puesto", "Jugador", "Puntaje", "Mejor tiempo", "Victorias"
+        });
+
+        ArrayList<Tripulacion> top10 = tripulacionNegocios.obtenerTop10();
+
+        if (!top10.isEmpty()) {
+            int puesto = 1;
             for (Tripulacion tripulacionActual : top10) {
                 modelo.addRow(new Object[]{
                     puesto++,
-                    tripulacionActual.getNombreTripulacion(), // O el método que uses para el nombre
-                    tripulacionActual.getPuntaje()  // El puntaje del objeto
-                });
-                }
-              }else{
-                modelo.addRow( new Object[]{
-                    "No hay " ,
-                    "puntuaciones registradas ",
-                     "aún"
+                    tripulacionActual.getNombreTripulacion(),
+                    tripulacionActual.getPuntaje(),
+                    tripulacionActual.getMejorTiempo(),
+                    tripulacionActual.getCantidadVictorias()
                 });
             }
-           } catch (IOException ex) {
-            JOptionPane.showMessageDialog(rootPane, "Ha ocurrido un error");
+        } else {
+            modelo.addRow(new Object[]{
+                "No hay",
+                "puntuaciones",
+                "registradas",
+                "aun",
+                "-"
+            });
         }
+    } catch (IOException ex) {
+        JOptionPane.showMessageDialog(rootPane, "Ha ocurrido un error");
     }
+}
+    
 }

@@ -96,22 +96,41 @@ public class TripulacionNegocios {
     }
     
 /**
- * Actualiza la tripulación luego del torneo, pero solo si su puntaje
- * es mayor al puntaje que ya tiene guardado.
+ * Actualiza la tripulación luego del torneo, conservando lo mejor de cada dato.
+ * <p>
+ * Cada atributo se valida por separado contra lo guardado en el archivo:
+ * el puntaje se actualiza si es mayor, el mejor tiempo si es mayor y las
+ * victorias si aumentaron. Si ninguno mejora, no se escribe nada.
+ * </p>
  *
- * @param tripulacion tripulación con el puntaje obtenido en el torneo
- * @return true si se actualizó; false si el puntaje no supera al guardado
- *         o la tripulación no existe
+ * @param tripulacion tripulación con los datos obtenidos en el torneo
+ * @return {@code true} si se actualizó al menos un dato; {@code false} si
+ *         nada mejoró o la tripulación no existe
  * @throws IOException si ocurre un error al leer o escribir el archivo
  */
 public boolean actualizarTripulacion(Tripulacion tripulacion) throws IOException {
     for (Tripulacion guardada : this.listarTripulaciones()) {
-        if (guardada.getNombreTripulacion().equals(tripulacion.getNombreTripulacion())) {
-            if (tripulacion.getPuntaje() > guardada.getPuntaje()) {
-                return this.tripulacionDatos.actualizar(tripulacion);
-            }
+        if (!guardada.getNombreTripulacion().equals(tripulacion.getNombreTripulacion())) {
+            continue;
+        }
+
+        boolean mejoraPuntaje = tripulacion.getPuntaje() > guardada.getPuntaje();
+        boolean mejoraTiempo = tripulacion.getMejorTiempo() < guardada.getMejorTiempo();
+        boolean masVictorias = tripulacion.getCantidadVictorias() > guardada.getCantidadVictorias();
+
+        if (!mejoraPuntaje && !mejoraTiempo && !masVictorias) {
             return false;
         }
+
+        // Copia con lo mejor de cada dato; no se modifica la tripulación recibida
+        Tripulacion actualizada = new Tripulacion(
+                guardada.getNombreTripulacion(), guardada.getRutaImagen());
+        actualizada.setPuntaje(mejoraPuntaje ? tripulacion.getPuntaje() : guardada.getPuntaje());
+        actualizada.setMejorTiempo(mejoraTiempo ? tripulacion.getMejorTiempo() : guardada.getMejorTiempo());
+        actualizada.setCantidadVictorias(masVictorias
+                ? tripulacion.getCantidadVictorias() : guardada.getCantidadVictorias());
+
+        return this.tripulacionDatos.actualizar(actualizada);
     }
     return false;
 }
