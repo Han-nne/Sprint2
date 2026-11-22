@@ -52,7 +52,7 @@ public class GroggyRingHUD {
         dibujarImagen(g, jugadorBola2, xImagen2, yImagen);
         
         int yPuntaje = yCaja + altoCaja + 6;
-        
+        g.setFont(FUENTE_PUNTAJE);
         //Puntaje jugador 1
         dibujarCaja(g, MARGEN, yPuntaje, ANCHO_CAJAS_PTS, ALTO_CAJAS_PTS);
         g.setColor(Color.CYAN);
