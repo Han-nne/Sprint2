@@ -95,15 +95,25 @@ public class TripulacionNegocios {
                 .collect(Collectors.toList());
     }
     
-    /**
-     *   Actualiza la tripulacion luego del torneo
-     * 
-     * @param tripulacion
-     * @return true si se actualizo correctamente 
-     * @throws IOException 
-     */
-    public boolean actualizarTripulacion( Tripulacion tripulacion) throws IOException{
-       return  this.tripulacionDatos.actualizar(tripulacion);
+/**
+ * Actualiza la tripulación luego del torneo, pero solo si su puntaje
+ * es mayor al puntaje que ya tiene guardado.
+ *
+ * @param tripulacion tripulación con el puntaje obtenido en el torneo
+ * @return true si se actualizó; false si el puntaje no supera al guardado
+ *         o la tripulación no existe
+ * @throws IOException si ocurre un error al leer o escribir el archivo
+ */
+public boolean actualizarTripulacion(Tripulacion tripulacion) throws IOException {
+    for (Tripulacion guardada : this.listarTripulaciones()) {
+        if (guardada.getNombreTripulacion().equals(tripulacion.getNombreTripulacion())) {
+            if (tripulacion.getPuntaje() > guardada.getPuntaje()) {
+                return this.tripulacionDatos.actualizar(tripulacion);
+            }
+            return false;
+        }
     }
+    return false;
+}
 
 }
