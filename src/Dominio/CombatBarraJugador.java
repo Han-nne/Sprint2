@@ -8,24 +8,72 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- *
+ * Representa el estado de un jugador durante el minijuego de combate:
+ * su barra de poder, la secuencia de teclas que debe acertar y el aviso
+ * visual de error (calavera).
+ * 
+ * Cada jugador tiene un conjunto de teclas permitidas (por ejemplo W, A, D).
+ * La clase genera una secuencia aleatoria de esas teclas y el jugador debe
+ * presionarlas en orden:
+ * 
+ * Si presiona una tecla incorrecta, pierde 5 puntos de la barra, se
+ *   activa la calavera durante 2 segundos y se genera una secuencia nueva. 
+ * 
+ * Si completa toda la secuencia, la barra sube (ver
+ *       {@link #aciertoSecuencia()}), se resta 5 puntos al jugador contrario y se
+ *       genera una secuencia nueva.
+ * 
  * @author Keithy Carrillo
+ * 
+ * @version 1.1
+ * @see Combat
+ * @see CombatHUD
+ * 
  */
 public class CombatBarraJugador {
     
+    /** Tripulación a la que pertenece este jugador, recibe los puntos al 
+     *  completar secuencias. Puede ser {@code null}. */
     private final Tripulacion tripulacion;
+    /** Valor con el que la barra de poder empieza y al que vuelve en el 
+     *  primer acierto limpio. */
     private final int valorInicialBarra;
+    /** Cantidad de teclas que tiene cada secuencia. */
     private final int longitudSecuencia;
+    /** Secuencia actual de códigos de tecla que el jugador debe presionar 
+     *  en orden. */
     private final ArrayList<Integer> secuenciaActual;
+    /** Códigos de tecla que pertenecen a este jugador y con los que se 
+     *  arman las secuencias. */
     private final ArrayList<Integer> teclasPermitidas;
+    /** Generador de números aleatorios usado para escoger las teclas de 
+     *  la secuencia. */
     private final Random generadorAleatorio;
     
+    /** Puntos actuales de la barra de poder (entre 0 y 100). */
     private int barraPoder;
+    /** {@code true} mientras el jugador no haya fallado ni completado una 
+     *  secuencia. */
     private boolean primerIntento;
+    /** Posición dentro de la secuencia de la próxima tecla que se debe 
+     *  presionar. */
     private int indiceProgreso;
+    /** {@code true} mientras se debe mostrar la calavera de error junto 
+     *  al panel del jugador. */
     private boolean mostrarCalavera;
+    /** Segundos que le quedan a la calavera antes de ocultarse. */
     private int contadorCalavera;
 
+    
+    /**
+     * Crea el estado de un jugador y genera su primera secuencia de teclas.
+     *
+     * @param tripulacion        tripulación del jugador, a la que se le suman puntos al acertar secuencias
+     *                           (si es {@code null}, no se suman puntos)
+     * @param valorInicialBarra  puntos con los que empieza la barra de poder
+     * @param teclasPermitidas   códigos de tecla que pertenecen a este jugador
+     * @param longitudSecuencia  cantidad de teclas de cada secuencia
+     */
     public CombatBarraJugador(Tripulacion tripulacion, int valorInicialBarra, ArrayList<Integer> teclasPermitidas, int longitudSecuencia) {
         this.tripulacion = tripulacion;
         this.valorInicialBarra = valorInicialBarra;
@@ -56,7 +104,10 @@ public class CombatBarraJugador {
         return mostrarCalavera;
     }
     
-    
+    /**
+     * Genera una nueva secuencia aleatoria con las teclas permitidas y
+     * reinicia el progreso a la primera tecla. La secuencia anterior se descarta.
+     */
     private void generarNuevaSecuencia() {
         this.secuenciaActual.clear();
         for (int i = 0; i < this.longitudSecuencia; i++) {
@@ -66,10 +117,30 @@ public class CombatBarraJugador {
         this.indiceProgreso = 0;
     }
     
+    /**
+     * Indica si una tecla pertenece a este jugador. Sirve para saber a quién
+     * corresponde cada pulsación cuando los dos jugadores usan el mismo teclado.
+     *
+     * @param keyCode código de la tecla presionada
+     * @return {@code true} si la tecla está entre las teclas permitidas del jugador
+     */
     public boolean perteneceTeclaJugador(int keyCode){
         return this.teclasPermitidas.contains(keyCode);
     }
     
+     /**
+     * Procesa una tecla presionada por el jugador contra la secuencia actual.
+     * Tecla correcta: Avanza el progreso. Si era la última de la
+     *       secuencia, llama a {@link #aciertoSecuencia()}, oculta la calavera
+     *       y genera una secuencia nueva.
+     * Tecla incorrecta: Marca que ya no es el primer intento,
+     *       llama a {@link #falloSecuencia()} (resta puntos), activa la calavera
+     *       por 2 segundos y genera una secuencia nueva.
+     *
+     * @param keyCode código de la tecla presionada
+     * @return {@code true} únicamente si con esta tecla se completó la secuencia
+     *         completa; {@code false} en cualquier otro caso (tecla intermedia o fallo)
+     */
     public boolean procesarIntento(int keyCode){
         int teclaEsperada = this.secuenciaActual.get(this.indiceProgreso);
         
@@ -93,6 +164,11 @@ public class CombatBarraJugador {
         }
     }
     
+     /**
+     * Descuenta un segundo al contador de la calavera y la oculta cuando
+     * llega a 0. Debe llamarse una vez por segundo (lo hace el temporizador
+     * de {@link Combat}).
+     */
     public void actualizarTiempoCalavera(){
         if (this.contadorCalavera > 0) {
             this.contadorCalavera --;
@@ -102,6 +178,15 @@ public class CombatBarraJugador {
         }
     }
 
+    /**
+     * Actualiza la barra de poder y el puntaje cuando el jugador completa
+     * una secuencia.
+     * 
+     *   Si es el primer intento (no ha fallado antes), la barra se deja en
+     *       {@code valorInicialBarra} y se marca que ya no es el primer intento.
+     *   En los demás casos la barra sube 5 puntos, con un máximo de 100.
+     * 
+     */
     private void aciertoSecuencia(){
         if (this.primerIntento) {
             this.barraPoder = this.valorInicialBarra;
@@ -114,6 +199,15 @@ public class CombatBarraJugador {
         }
     }
     
+    /**
+     * Aplica la penalización por fallo: resta 5 puntos a la barra de poder sin
+     * dejar que baje de 0, y marca que ya no es el primer intento.
+     * 
+     * Es pública porque {@link Combat} también la usa para penalizar a un
+     * jugador cuando su rival completa una secuencia. En ese caso no se
+     * activa la calavera, que solo aparece cuando el propio jugador se equivoca.
+     * 
+     */
     public void falloSecuencia() {
         this.primerIntento = false;
         this.barraPoder = Math.max(0, this.barraPoder - 5);

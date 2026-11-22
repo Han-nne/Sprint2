@@ -40,7 +40,7 @@ public class Tripulacion  {
     private String rutaImagen;
  
     /** Mejor tiempo registrado de la tripulación. */
-    private double mejorTiempo = 840.0;
+    private double mejorTiempo = 600.0;
     
     /** Registro de victorias de la embarcación. */
     private int cantidadVictorias = 0;
@@ -155,23 +155,5 @@ public class Tripulacion  {
     public void ajustarPuntaje(double delta){
         this.puntaje = Math.max(0, this.puntaje + delta);
     }
-
-    public double getMejorTiempo() {
-        return mejorTiempo;
-    }
-
-    public void setMejorTiempo(double mejorTiempo) {
-        this.mejorTiempo = mejorTiempo;
-    }
-
-    public int getCantidadVictorias() {
-        return cantidadVictorias;
-    }
-
-    public void setCantidadVictorias(int cantidadVictorias) {
-        this.cantidadVictorias = cantidadVictorias;
-    }
-    
-    
     
 } // fin clase

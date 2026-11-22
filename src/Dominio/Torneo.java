@@ -182,7 +182,7 @@ public class Torneo {
 
     /**
      * Cierra la pantalla de resultado y avanza al siguiente minijuego, o termina
-     * el torneo y actualiza el mejor tiempo de cada tripulación si ya se disputaron todos.
+     * el torneo si ya se disputaron todos.
      *
      * @throws IOException si ocurre un error al cargar los recursos del siguiente minijuego
      */
@@ -192,22 +192,10 @@ public class Torneo {
         if (indiceJuego + 1 < configuraciones.size()) {
             iniciarJuego(indiceJuego + 1);
         } else {
-            actualizarMejorTiempo(tripulacion1);
-            actualizarMejorTiempo(tripulacion2);
             this.finalizado = true;
         }
     }
 
-    /**
-     * Actualiza el mejor tiempo de la tripulación seleccionada.
-     * @param tripulacion tripulación a actualizar su mejor tiempo.
-     */
-    private void actualizarMejorTiempo (Tripulacion tripulacion){
-        if(tripulacion != null && tiempoTorneoSegundos < tripulacion.getMejorTiempo()){
-            tripulacion.setMejorTiempo(tiempoTorneoSegundos);
-        }
-    }
-    
     /**
      * Actualiza el minijuego actual. Cuando termina, muestra el resultado y espera
      * a que se presione la barra espaciadora para avanzar al siguiente minijuego.
@@ -259,40 +247,6 @@ public class Torneo {
         }
     }
 
-    /**
-     * Dibuja un recuadro semitransparente con el tiempo transcurrido del torneo.
-     * @param g contexto gráfico en el cual se dibuja.
-     */
-    private void dibujarCronometro(Graphics g){
-        int xUbicacionCronometro = 200;
-        int yUbicacionCronometro = 12;
-        int anchoCronometro = 145;
-        int altoCronometro = 24;
-        
-        Font fuenteAnterior = g.getFont();
-        Color colorAnterior = g.getColor();
-        
-        g.setColor(new Color(0, 0, 0, 140));
-        g.fillRoundRect(xUbicacionCronometro, yUbicacionCronometro, anchoCronometro, altoCronometro, 8, 8);
-        
-        g.setColor(Color.CYAN);
-        g.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        g.drawString(formatearTiempo(tiempoTorneoSegundos), xUbicacionCronometro + 10, yUbicacionCronometro + 16);
-    }
-    
-    /**
-     * Genera una cadena de texto con el tiempo del torneo .
-     * @param segundosTotales tiempo transcurrido del torneo.
-     * @return Una cadena formateada de la siguiente manera: "Tiempo: minutos:segundos"
-     */
-    private String formatearTiempo (double segundosTotales){
-        int totalSeg = (int) Math.max(0, segundosTotales);
-        int minutos = totalSeg / 60;
-        int segundos = totalSeg % 60;
-        return String.format("Tiempo: %02d:%02d", minutos, segundos);
-        
-    }
-    
     /**
      * Envía una tecla presionada al minijuego actual. Mientras se muestra la
      * pantalla de resultado, la barra espaciadora indica que se desea continuar y
