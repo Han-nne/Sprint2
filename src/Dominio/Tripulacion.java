@@ -34,7 +34,7 @@ public class Tripulacion  {
     private String nombreTripulacion;
  
     /** Puntaje acumulado de la tripulación. */
-    private double puntaje = 0;
+    private double puntaje = 1000;
  
     /** Ruta del archivo de imagen de la bandera. */
     private String rutaImagen;
@@ -140,4 +140,14 @@ public class Tripulacion  {
         this.puntaje = p;
     }
  
-}
+    /**
+     * Suma (o resta si {@code delta} es negativo) puntos a la tripulación,
+     * asegurando que el puntaje no baje a cero.
+     * 
+     * @param delta cantidad de puntos a sumar o restar.
+     */
+    public void ajustarPuntaje(double delta){
+        this.puntaje = Math.max(0, this.puntaje + delta);
+    }
+    
+} // fin clase

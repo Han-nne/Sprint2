@@ -62,8 +62,8 @@ public class Combat implements Juego {
         int valorInicial = this.configuracionCombat.getValorInicialBarra();
         int longitudSecuencia = 4;
         
-        this.jugadorCombat1 = new CombatBarraJugador(valorInicial, controlesJugador1, longitudSecuencia);
-        this.jugadorCombat2 = new CombatBarraJugador(valorInicial, controlesJugador2, longitudSecuencia);
+        this.jugadorCombat1 = new CombatBarraJugador(this.tripulacion1, valorInicial, controlesJugador1, longitudSecuencia);
+        this.jugadorCombat2 = new CombatBarraJugador(this.tripulacion2, valorInicial, controlesJugador2, longitudSecuencia);
         
         this.ganador = null;
         this.turnoActual = 1;
@@ -196,7 +196,8 @@ public class Combat implements Juego {
                     this.tripulacion1.getNombreTripulacion(),
                     this.tripulacion2.getNombreTripulacion(),
                     this.tiempoRestanteCombat, this.partidaTerminadaCombat,
-                    this.mensajeResultado);
+                    this.mensajeResultado,
+                    this.tripulacion1.getPuntaje(), this.tripulacion2.getPuntaje());
         }
         
     }

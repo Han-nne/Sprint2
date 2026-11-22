@@ -38,7 +38,7 @@ public class DonutRaceHUD {
 
     /** Posición vertical de los paneles de estado, en píxeles. */
     private static final int POS_Y_HUD = 65;
-
+    
     /** Ancho del panel de estado del jugador 1, en píxeles. */
     private static final int ANCHO_HUD_1 = 175;
 
@@ -53,6 +53,12 @@ public class DonutRaceHUD {
 
     /** Diámetro de las esquinas redondeadas de los paneles de estado, en píxeles. */
     private static final int ARCO_HUD = 8;
+    
+    /** Posición vertical del puntaje de los jugadores. */
+    private static final int POS_Y_PUNTAJE = POS_Y_HUD + ALTO_HUD + 4;
+    
+    /** Alto del panel de cada puntaje. */
+    private static final int ALTO_PUNTAJE = 20;
 
     /** Fuente de los textos de estado de los barcos. */
     private static final Font FUENTE_HUD = new Font("Segoe UI", Font.BOLD, 12);
@@ -115,6 +121,19 @@ public class DonutRaceHUD {
         g.fillRoundRect(posXBarco2HUD, POS_Y_HUD, ANCHO_HUD_2, ALTO_HUD, ARCO_HUD, ARCO_HUD);
         g.setColor(Color.CYAN);
         g.drawString(textoEstado(barco2), posXBarco2HUD + 8, POS_Y_HUD + 15);
+        
+        //Panel del puntaje del jugador 1 (izquierda)
+        g.setColor(COLOR_FONDO_HUD);
+        g.fillRoundRect(MARGEN, POS_Y_PUNTAJE, ANCHO_HUD_1, ALTO_PUNTAJE, ARCO_HUD, ARCO_HUD);
+        g.setColor(Color.CYAN);
+        g.drawString(textoPuntaje(barco1.getTripulacion()), 20, POS_Y_PUNTAJE + 14);
+        
+        //Panel del puntaje del jugador 2 (derecha)
+        g.setColor(COLOR_FONDO_HUD);
+        g.fillRoundRect(posXBarco2HUD, POS_Y_PUNTAJE, ANCHO_HUD_2, ALTO_PUNTAJE, ARCO_HUD, ARCO_HUD);
+        g.setColor(Color.CYAN);
+        g.drawString(textoPuntaje(barco2.getTripulacion()), posXBarco2HUD + 8, POS_Y_PUNTAJE + 14);
+        
     } // dibujar
 
     /**
@@ -132,6 +151,16 @@ public class DonutRaceHUD {
                 + "  |  Vel: " + velocidadTexto + "x";
     } // textoEstado
 
+    /**
+     * Construye un texto con el puntaje de una tripulación.
+     * @param tripulacion tripulación cuyo puntaje se describe
+     * @return texto con el formato {@code "Pts: (puntaje)"}
+     */
+    private String textoPuntaje (Tripulacion tripulacion){
+        long pts = Math.round(tripulacion.getPuntaje());
+        return "Pts: " + pts;
+    }
+    
     /**
      * Obtiene el barco del jugador 1 asociado al HUD.
      *

@@ -13,6 +13,7 @@ import java.util.Random;
  */
 public class CombatBarraJugador {
     
+    private final Tripulacion tripulacion;
     private final int valorInicialBarra;
     private final int longitudSecuencia;
     private final ArrayList<Integer> secuenciaActual;
@@ -25,7 +26,8 @@ public class CombatBarraJugador {
     private boolean mostrarCalavera;
     private int contadorCalavera;
 
-    public CombatBarraJugador(int valorInicialBarra, ArrayList<Integer> teclasPermitidas, int longitudSecuencia) {
+    public CombatBarraJugador(Tripulacion tripulacion, int valorInicialBarra, ArrayList<Integer> teclasPermitidas, int longitudSecuencia) {
+        this.tripulacion = tripulacion;
         this.valorInicialBarra = valorInicialBarra;
         this.barraPoder = valorInicialBarra;
         this.primerIntento = true;
@@ -107,7 +109,9 @@ public class CombatBarraJugador {
         } else {
             this.barraPoder = Math.min(100, this.barraPoder + 5);
         }
-        
+        if(this.tripulacion != null){
+            this.tripulacion.ajustarPuntaje(15);
+        }
     }
     
     public void falloSecuencia() {

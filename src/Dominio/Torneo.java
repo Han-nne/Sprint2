@@ -150,8 +150,10 @@ public class Torneo {
         ganadorUltimoJuego = juegoActual.getGanador();
         if (ganadorUltimoJuego == tripulacion1) {
             puntos1++;
+            tripulacion1.ajustarPuntaje(750);
         } else if (ganadorUltimoJuego == tripulacion2) {
             puntos2++;
+            tripulacion2.ajustarPuntaje(750);
         }
         mostrandoResultado = true;
         continuarPendiente = false;

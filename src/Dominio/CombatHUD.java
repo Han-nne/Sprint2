@@ -21,6 +21,9 @@ public class CombatHUD {
     private final Font fuenteTitulo;
     private final Font fuenteTexto;
     private final Font fuenteTeclas;
+    private static final Font FUENTE_PUNTAJE = new Font("Segoe UI", Font.BOLD, 12);
+    private static final Color COLOR_FONDO_PUNTAJE = new Color(0,0,0, 120);
+    
 
     public CombatHUD() {
         this.fuenteTitulo = new Font("Arial", Font.BOLD, 28);
@@ -28,7 +31,9 @@ public class CombatHUD {
         this.fuenteTeclas = new Font("Monospaced", Font.BOLD, 24);
     }
 
-    public void dibujar(Graphics g, CombatBarraJugador jugador1, CombatBarraJugador jugador2, String nombreJugador1, String nombreJugador2, int tiempoRestante, boolean terminado, String mensajeGanador){
+    public void dibujar(Graphics g, CombatBarraJugador jugador1, CombatBarraJugador jugador2, String nombreJugador1, 
+            String nombreJugador2, int tiempoRestante, boolean terminado, String mensajeGanador,
+            double jugador1PTS, double jugador2PTS){
         
         Rectangle limites = g.getClipBounds();
         int anchoPantalla = (limites != null && limites.width > 0) ? limites.width : 1280;
@@ -46,8 +51,8 @@ public class CombatHUD {
         Color colorAzul = new Color(0, 140, 255);
         Color colorRojo = new Color(220, 40, 40);
         
-        dibujarPanelJugador(g, jugador1, nombreJugador1 + " (W, A, D)", 20, 95, colorAzul);
-        dibujarPanelJugador(g, jugador2, nombreJugador2 + " (←, ↑, →)", anchoPantalla - 330, 95, colorRojo);
+        dibujarPanelJugador(g, jugador1, nombreJugador1 + " (W, A, D)", 20, 95, colorAzul, jugador1PTS);
+        dibujarPanelJugador(g, jugador2, nombreJugador2 + " (←, ↑, →)", anchoPantalla - 330, 95, colorRojo, jugador2PTS);
         
         dibujarCalavera(g, jugador1.isMostrarCalavera(), 325, 95);
         dibujarCalavera(g, jugador2.isMostrarCalavera(), anchoPantalla - 375, 95);
@@ -55,7 +60,7 @@ public class CombatHUD {
     }
     
    
-    private void dibujarPanelJugador(Graphics g, CombatBarraJugador jugador, String titulo, int x, int y, Color colorBarra){
+    private void dibujarPanelJugador(Graphics g, CombatBarraJugador jugador, String titulo, int x, int y, Color colorBarra, double jugadorPTS){
         g.setColor(new Color(0, 0, 0, 160));
         g.fillRoundRect(x - 10, y - 8, 320, 100, 12, 12);
         
@@ -87,6 +92,15 @@ public class CombatHUD {
         g.setColor(colorBarra);
         g.drawString(titulo, x, y + 80);
         dibujarSecuenciaTeclas(g, jugador.getSecuenciaActual(), jugador.getIndiceProgreso(), x, y + 115);
+        
+        int yPTS = y + 176;
+        g.setColor(COLOR_FONDO_PUNTAJE);
+        g.fillRoundRect(x - 10, yPTS, 150, 22, 8, 8);
+        g.setFont(FUENTE_PUNTAJE);
+        g.setColor(Color.CYAN);
+        g.drawString("Pts: " + Math.round(jugadorPTS), x - 2 , yPTS + 15);
+        
+        
     }
     
     

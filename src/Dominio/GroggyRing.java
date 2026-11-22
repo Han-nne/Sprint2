@@ -393,6 +393,7 @@ private void intentarMover(JugadorBola bola, int dFila, int dCol) {
             && ((CasillaNeumatico) destino).getDueno() != bola) {
 
         bola.sumarAnotacion();
+        bola.getTripulacion().ajustarPuntaje(375);
         anotador = bola;
         pausa = CICLOS_PAUSA;
         if (bola.getAnotaciones() >= puntuacionVictoria) {
@@ -438,6 +439,14 @@ private void intentarMover(JugadorBola bola, int dFila, int dCol) {
      * invoca desde {@link #procesarClic(int, int)}, de modo que las reglas del
      * turno no se puedan saltar desde fuera de la clase.
      * <p>
+     * 
+     * Cada carta suma al jugador en turno de la siguiente manera:
+     * <ul>
+     * <li> Carta de Ataque: suma 35 puntos. </li>
+     * <li> Carta de Defensa: suma 40 puntos. </li>
+     * <li> Carta de Desplazamiento: suma 15 puntos. </li>
+     * </ul>
+     * 
      * Se ignora si el juego terminó, si hay una pausa activa, si no es el turno
      * del jugador o si ya usó una carta del mismo tipo (ataque o defensa) en este turno.
      * </p>
@@ -451,10 +460,15 @@ private void intentarMover(JugadorBola bola, int dFila, int dCol) {
         if (carta instanceof CartaAtaque) {
             if (jugador.isAtaqueUsado()) return;
             jugador.setAtaqueUsado(true);
-
+            jugador.getTripulacion().ajustarPuntaje(35);
+            
         } else if (carta instanceof CartaDefensa) {
             if (jugador.isDefensaUsada()) return;
             jugador.setDefensaUsada(true);
+            jugador.getTripulacion().ajustarPuntaje(40);
+            
+        } else if (carta instanceof CartaDesplazamiento){
+            jugador.getTripulacion().ajustarPuntaje(15);
         }
 
         JugadorBola rival = rivalDe(jugador);

@@ -230,6 +230,10 @@ public class DonutRace implements Juego {
     @Override
     public void actualizar() {
         if (juegoTerminado) return;
+        
+        int choquesPreviosJ1 = barcoJugador1.getObstaculosColisionados();
+        int choquesPreviosJ2 = barcoJugador2.getObstaculosColisionados();
+        
         barcoJugador1.actualizar();
         barcoJugador2.actualizar();
 
@@ -241,6 +245,17 @@ public class DonutRace implements Juego {
         }
         this.motorColision.resolverColision();
 
+        int nuevosChoquesJ1 = barcoJugador1.getObstaculosColisionados() - choquesPreviosJ1;
+        int nuevosChoquesJ2 = barcoJugador2.getObstaculosColisionados() - choquesPreviosJ2;
+        
+        if(nuevosChoquesJ1 > 0){
+            barcoJugador1.getTripulacion().ajustarPuntaje(-25.0 * nuevosChoquesJ1);
+        }
+        
+        if(nuevosChoquesJ2 > 0){
+            barcoJugador2.getTripulacion().ajustarPuntaje(-25.0 * nuevosChoquesJ2);
+        }
+        
         obstaculos.removeIf((Obstaculo obstaculo) -> {
             if (!obstaculo.isActivo()) {
                 this.motorColision.eliminarObjeto(obstaculo);
