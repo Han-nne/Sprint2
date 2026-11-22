@@ -108,7 +108,7 @@ private void cargarTablaTop10() {
         modelo.setRowCount(0);
 
         modelo.setColumnIdentifiers(new Object[]{
-            "Puesto", "Jugador", "Puntaje", "Mejor tiempo", "Victorias"
+            "Puesto", "Jugador", "Mejor puntaje", "Mejor tiempo", "Victorias"
         });
 
         ArrayList<Tripulacion> top10 = tripulacionNegocios.obtenerTop10();
@@ -120,7 +120,7 @@ private void cargarTablaTop10() {
                     puesto++,
                     tripulacionActual.getNombreTripulacion(),
                     tripulacionActual.getPuntaje(),
-                    tripulacionActual.getMejorTiempo(),
+                    (int)tripulacionActual.getMejorTiempo() + " 's",
                     tripulacionActual.getCantidadVictorias()
                 });
             }
