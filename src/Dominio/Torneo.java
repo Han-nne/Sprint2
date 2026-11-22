@@ -34,6 +34,8 @@ import java.util.List;
  * @see DibujarMarcador
  */
 public class Torneo {
+    /** puntaje inicial para el torneo */
+    public static final double PUNTAJE_INICIAL = 1000;
 
     /** Posición de {@link DonutRace} en la secuencia de minijuegos. */
     private static final int JUEGO_DONUT_RACE = 0;
@@ -102,6 +104,7 @@ public class Torneo {
     public Torneo(Tripulacion tripulacion1, Tripulacion tripulacion2, List<ConfiguracionGeneral> configuraciones) throws IOException {
         this.tripulacion1 = tripulacion1;
         this.tripulacion2 = tripulacion2;
+        iniciarPuntajes();
         this.configuraciones = List.copyOf(configuraciones);
         this.dibujarBandera = new DibujarBandera(tripulacion1, tripulacion2);
         this.dibujarMarcador = new DibujarMarcador(tripulacion1, tripulacion2);
@@ -141,6 +144,14 @@ public class Torneo {
         this.juegoActual = nuevoJuego;
         this.indiceJuego = indice;
     }
+    
+    /**
+     * inicia el puntaje de las tripulaciones siempre en 1000 
+     */
+    private void iniciarPuntajes() {
+    tripulacion1.setPuntaje(PUNTAJE_INICIAL);
+    tripulacion2.setPuntaje(PUNTAJE_INICIAL);
+}
 
     /**
      * Registra el resultado del minijuego que acaba de terminar: suma el punto al
