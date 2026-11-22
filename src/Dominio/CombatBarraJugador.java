@@ -25,7 +25,6 @@ import java.util.Random;
  * 
  * @author Keithy Carrillo
  * 
- * @version 1.1
  * @see Combat
  * @see CombatHUD
  * 
@@ -58,9 +57,6 @@ public class CombatBarraJugador {
     /** Posición dentro de la secuencia de la próxima tecla que se debe 
      *  presionar. */
     private int indiceProgreso;
-    /** {@code true} mientras se debe mostrar la calavera de error junto 
-     *  al panel del jugador. */
-    private boolean mostrarCalavera;
     /** Segundos que le quedan a la calavera antes de ocultarse. */
     private int contadorCalavera;
 
@@ -83,25 +79,8 @@ public class CombatBarraJugador {
         this.secuenciaActual = new ArrayList<>();
         this.teclasPermitidas = teclasPermitidas;
         this.generadorAleatorio = new Random();
-        this.mostrarCalavera = false;
         this.contadorCalavera = 0;
         generarNuevaSecuencia();
-    }
- // getter y setters
-    public int getBarraPoder() {
-        return barraPoder;
-    }
-
-    public ArrayList<Integer> getSecuenciaActual() {
-        return secuenciaActual;
-    }
-
-    public int getIndiceProgreso() {
-        return indiceProgreso;
-    }
-
-    public boolean isMostrarCalavera() {
-        return mostrarCalavera;
     }
     
     /**
@@ -149,7 +128,7 @@ public class CombatBarraJugador {
             
             if (this.indiceProgreso == this.secuenciaActual.size()) {
                 aciertoSecuencia();
-                this.mostrarCalavera = false;
+                this.contadorCalavera = 0;
                 generarNuevaSecuencia();
                 return true;
             } 
@@ -157,7 +136,6 @@ public class CombatBarraJugador {
         } else {
             this.primerIntento = false;
             falloSecuencia();
-            this.mostrarCalavera = true;
             this.contadorCalavera = 2;
             generarNuevaSecuencia();
             return false;
@@ -172,9 +150,6 @@ public class CombatBarraJugador {
     public void actualizarTiempoCalavera(){
         if (this.contadorCalavera > 0) {
             this.contadorCalavera --;
-            if (this.contadorCalavera == 0) {
-                this.mostrarCalavera = false;
-            }
         }
     }
 
@@ -212,4 +187,142 @@ public class CombatBarraJugador {
         this.primerIntento = false;
         this.barraPoder = Math.max(0, this.barraPoder - 5);
     }
+    
+    // Getter y setters
+    /**
+     * Indica si debe mostrarse la calavera de error junto al panel del jugador.
+     *
+     * @return {@code true} mientras queden segundos en el contador de la calavera
+     */
+    public boolean isMostrarCalavera() {
+        return this.contadorCalavera > 0;
+    }
+    
+    /**
+     * Obtiene la tripulación asociada a este jugador.
+     *
+     * @return tripulación del jugador, o {@code null}
+     */
+    public Tripulacion getTripulacion() {
+        return this.tripulacion;
+    }
+
+    /**
+     * Obtiene el valor inicial configurado para la barra de poder.
+     *
+     * @return valor inicial de la barra
+     */
+    public int getValorInicialBarra() {
+        return this.valorInicialBarra;
+    }
+
+    /**
+     * Obtiene la cantidad de teclas que compone cada secuencia.
+     *
+     * @return longitud de la secuencia
+     */
+    public int getLongitudSecuencia() {
+        return this.longitudSecuencia;
+    }
+
+    /**
+     * Obtiene la secuencia actual de códigos de tecla.
+     *
+     * @return lista de códigos de tecla de la secuencia actual
+     */
+    public ArrayList<Integer> getSecuenciaActual() {
+        return this.secuenciaActual;
+    }
+
+    /**
+     * Obtiene las teclas permitidas para este jugador.
+     *
+     * @return lista de códigos de tecla permitidos
+     */
+    public ArrayList<Integer> getTeclasPermitidas() {
+        return this.teclasPermitidas;
+    }
+
+    /**
+     * Obtiene el generador aleatorio usado para crear las secuencias.
+     *
+     * @return generador aleatorio
+     */
+    public Random getGeneradorAleatorio() {
+        return this.generadorAleatorio;
+    }
+
+    /**
+     * Obtiene los puntos actuales de la barra de poder.
+     *
+     * @return puntos de poder (0 a 100)
+     */
+    public int getBarraPoder() {
+        return this.barraPoder;
+    }
+
+    /**
+     * Establece los puntos actuales de la barra de poder.
+     *
+     * @param barraPoder nuevos puntos de poder
+     */
+    public void setBarraPoder(int barraPoder) {
+        this.barraPoder = barraPoder;
+    }
+
+    /**
+     * Indica si el jugador sigue en su primer intento limpio.
+     *
+     * @return {@code true} si no ha fallado ni completado aún una secuencia
+     */
+    public boolean isPrimerIntento() {
+        return this.primerIntento;
+    }
+
+    /**
+     * Establece si el jugador sigue en su primer intento limpio.
+     *
+     * @param primerIntento nuevo estado de primer intento
+     */
+    public void setPrimerIntento(boolean primerIntento) {
+        this.primerIntento = primerIntento;
+    }
+
+    /**
+     * Obtiene el índice de la próxima tecla que debe presionar el jugador.
+     *
+     * @return posición actual dentro de la secuencia
+     */
+    public int getIndiceProgreso() {
+        return this.indiceProgreso;
+    }
+
+    /**
+     * Establece el índice de progreso dentro de la secuencia actual.
+     *
+     * @param indiceProgreso nueva posición de progreso
+     */
+    public void setIndiceProgreso(int indiceProgreso) {
+        this.indiceProgreso = indiceProgreso;
+    }
+
+    /**
+     * Obtiene los segundos restantes para mostrar la calavera de error.
+     *
+     * @return segundos restantes de la calavera
+     */
+    public int getContadorCalavera() {
+        return this.contadorCalavera;
+    }
+
+    /**
+     * Establece los segundos restantes para mostrar la calavera de error.
+     *
+     * @param contadorCalavera segundos de duración de la calavera
+     */
+    public void setContadorCalavera(int contadorCalavera) {
+        this.contadorCalavera = contadorCalavera;
+    }
+    
+    
 }
