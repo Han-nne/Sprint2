@@ -34,7 +34,7 @@ public class Tripulacion  {
     private String nombreTripulacion;
  
     /** Puntaje acumulado de la tripulación. */
-    private double puntaje = 1000;
+    private double puntaje;
  
     /** Ruta del archivo de imagen de la bandera. */
     private String rutaImagen;

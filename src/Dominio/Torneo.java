@@ -192,19 +192,7 @@ public class Torneo {
         if (indiceJuego + 1 < configuraciones.size()) {
             iniciarJuego(indiceJuego + 1);
         } else {
-            actualizarMejorTiempo(tripulacion1);
-            actualizarMejorTiempo(tripulacion2);
             this.finalizado = true;
-        }
-    }
-
-    /**
-     * Actualiza el mejor tiempo de la tripulación seleccionada.
-     * @param tripulacion tripulación a actualizar su mejor tiempo.
-     */
-    private void actualizarMejorTiempo (Tripulacion tripulacion){
-        if(tripulacion != null && tiempoTorneoSegundos < tripulacion.getMejorTiempo()){
-            tripulacion.setMejorTiempo(tiempoTorneoSegundos);
         }
     }
     
