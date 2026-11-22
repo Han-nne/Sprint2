@@ -115,7 +115,7 @@ public boolean actualizarTripulacion(Tripulacion tripulacion) throws IOException
         }
 
         boolean mejoraPuntaje = tripulacion.getPuntaje() > guardada.getPuntaje();
-        boolean mejoraTiempo = tripulacion.getMejorTiempo() > guardada.getMejorTiempo();
+        boolean mejoraTiempo = tripulacion.getMejorTiempo() < guardada.getMejorTiempo();
         boolean masVictorias = tripulacion.getCantidadVictorias() > guardada.getCantidadVictorias();
 
         if (!mejoraPuntaje && !mejoraTiempo && !masVictorias) {

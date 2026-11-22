@@ -127,9 +127,9 @@ private void cargarTablaTop10() {
         } else {
             modelo.addRow(new Object[]{
                 "No hay",
-                "puntuaciones registradas",
-                "aún",
-                "-",
+                "puntuaciones",
+                "registradas",
+                "aun",
                 "-"
             });
         }

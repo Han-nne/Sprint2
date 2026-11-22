@@ -192,6 +192,8 @@ public class Torneo {
         if (indiceJuego + 1 < configuraciones.size()) {
             iniciarJuego(indiceJuego + 1);
         } else {
+             tripulacion1.setMejorTiempo(tiempoTorneoSegundos);
+             tripulacion2.setMejorTiempo(tiempoTorneoSegundos);
             this.finalizado = true;
         }
     }
@@ -257,8 +259,6 @@ public class Torneo {
         int anchoCronometro = 145;
         int altoCronometro = 24;
         
-        Font fuenteAnterior = g.getFont();
-        Color colorAnterior = g.getColor();
         
         g.setColor(new Color(0, 0, 0, 140));
         g.fillRoundRect(xUbicacionCronometro, yUbicacionCronometro, anchoCronometro, altoCronometro, 8, 8);
