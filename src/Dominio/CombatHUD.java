@@ -240,7 +240,7 @@ public class CombatHUD {
         }
     }
     
-    //Getter y setters 
+    /**Getter y setters*/
      /**
      * Obtiene la fuente utilizada para el reloj de cuenta regresiva.
      *

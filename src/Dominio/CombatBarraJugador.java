@@ -188,7 +188,7 @@ public class CombatBarraJugador {
         this.barraPoder = Math.max(0, this.barraPoder - 5);
     }
     
-    // Getter y setters
+    /**Getter y setters*/
     /**
      * Indica si debe mostrarse la calavera de error junto al panel del jugador.
      *

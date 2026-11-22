@@ -310,7 +310,7 @@ public class Combat implements Juego {
     }
 
     
-    //Getters y setters
+    /**Getter y setters*/
     /**
      * Obtiene la tripulación del jugador 1.
      *
