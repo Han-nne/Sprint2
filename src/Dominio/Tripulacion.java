@@ -156,18 +156,34 @@ public class Tripulacion  {
         this.puntaje = Math.max(0, this.puntaje + delta);
     }
 
+    /**
+     * Obtiene el mejor tiempo registrado de la tripulación.
+     * @return mejor tiempo registrado.
+     */
     public double getMejorTiempo() {
         return mejorTiempo;
     }
 
+    /**
+     * Establece el mejor tiempo de la tripulación.
+     * @param mejorTiempo nuevo tiempo de la tripulación.
+     */
     public void setMejorTiempo(double mejorTiempo) {
         this.mejorTiempo = mejorTiempo;
     }
 
+    /**
+     * Obtiene la cantidad de veces que la tripulación ha ganado el torneo.
+     * @return numero de victoria de la tripulación.
+     */
     public int getCantidadVictorias() {
         return cantidadVictorias;
     }
 
+    /**
+     * Establece la cantidad de veces que la tripulación ha ganado el torneo.
+     * @param cantidadVictorias nuevo número de victorias de la tripulación.
+     */
     public void setCantidadVictorias(int cantidadVictorias) {
         this.cantidadVictorias = cantidadVictorias;
     }
