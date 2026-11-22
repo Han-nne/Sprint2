@@ -13,24 +13,58 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 /**
+ * Se encarga de dibujar la interfaz (HUD) del minijuego de combate.
+ * Esta clase no contiene lógica de juego: solo toma el estado de los dos
+ * jugadores ({@link CombatBarraJugador}), el tiempo restante y los puntajes
+ * de cada tripulación, y los pinta sobre un {@link Graphics}.
  *
+ * @version 1.1
+ * @see Combat
+ * @see CombatBarraJugador
+ * 
+ * 
  * @author Keithy Carrillo
  */
 public class CombatHUD {
     
+     /** Fuente usada para el reloj de la cuenta regresiva. */
     private final Font fuenteTitulo;
+    /** Fuente usada para los textos de los puntos de la barra y nombre del jugador. */
     private final Font fuenteTexto;
+    /** Fuente usada para el símbolo dentro de cada tecla de la secuencia. */
     private final Font fuenteTeclas;
+    /** Fuente usada para el texto del puntaje de la tripulación. */
     private static final Font FUENTE_PUNTAJE = new Font("Segoe UI", Font.BOLD, 12);
+   /** Color semitransparente del recuadro que se dibuja detrás del puntaje. */
     private static final Color COLOR_FONDO_PUNTAJE = new Color(0,0,0, 120);
     
-
+   /** Crea el HUD e inicializa las tres fuentes que se usarán al dibujar.*/
     public CombatHUD() {
         this.fuenteTitulo = new Font("Arial", Font.BOLD, 28);
         this.fuenteTexto = new Font("Arial", Font.BOLD, 20);
         this.fuenteTeclas = new Font("Monospaced", Font.BOLD, 24);
     }
 
+     /**
+     * Dibuja el HUD completo: el reloj, los paneles de ambos jugadores y las
+     * calaveras de error (si corresponde).
+     * 
+     * El ancho de la pantalla se obtiene del área de recorte
+     * ({@link Graphics#getClipBounds()}); si no está disponible se asume
+     * un ancho de 1280 píxeles. El reloj se dibuja con una sombra negra
+     * para que sea legible sobre cualquier fondo.
+     *
+     * @param g               contexto gráfico sobre el que se dibuja
+     * @param jugador1        estado del jugador 1 (panel izquierdo, azul)
+     * @param jugador2        estado del jugador 2 (panel derecho, rojo)
+     * @param nombreJugador1  nombre que se muestra en el panel del jugador 1
+     * @param nombreJugador2  nombre que se muestra en el panel del jugador 2
+     * @param tiempoRestante  segundos restantes que se muestran en el reloj
+     * @param terminado       indica si la partida terminó (actualmente no se usa al dibujar)
+     * @param mensajeGanador  mensaje del resultado (actualmente no se usa al dibujar)
+     * @param jugador1PTS     puntaje de la tripulación del jugador 1
+     * @param jugador2PTS     puntaje de la tripulación del jugador 2
+     */
     public void dibujar(Graphics g, CombatBarraJugador jugador1, CombatBarraJugador jugador2, String nombreJugador1, 
             String nombreJugador2, int tiempoRestante, boolean terminado, String mensajeGanador,
             double jugador1PTS, double jugador2PTS){
@@ -60,6 +94,25 @@ public class CombatHUD {
     }
     
    
+    /**
+     * Dibuja el panel de un jugador: fondo semitransparente, barra de poder
+     * dividida en bloques, texto con los puntos, nombre y controles,
+     * secuencia de teclas y puntaje de la tripulación.
+     * 
+     * La barra está formada por 20 bloques de 15 píxeles.
+     * Cada bloque representa 5 puntos de poder, por lo que la barra asume una
+     * escala de 0 a 100. Los bloques activos se pintan con el color del jugador
+     * y el resto en gris oscuro.
+     *
+     * @param g          contexto gráfico sobre el que se dibuja
+     * @param jugador    estado del jugador que se va a dibujar
+     * @param titulo     texto que se muestra bajo la barra (nombre y controles)
+     * @param x          coordenada X de la esquina superior izquierda del panel
+     * @param y          coordenada Y de la esquina superior izquierda del panel
+     * @param colorBarra color de los bloques activos de la barra y del título
+     * @param jugadorPTS puntaje de la tripulación, que se muestra redondeado
+     *                   en un recuadro debajo de la secuencia de teclas
+     */
     private void dibujarPanelJugador(Graphics g, CombatBarraJugador jugador, String titulo, int x, int y, Color colorBarra, double jugadorPTS){
         g.setColor(new Color(0, 0, 0, 160));
         g.fillRoundRect(x - 10, y - 8, 320, 100, 12, 12);
@@ -98,12 +151,23 @@ public class CombatHUD {
         g.fillRoundRect(x - 10, yPTS, 150, 22, 8, 8);
         g.setFont(FUENTE_PUNTAJE);
         g.setColor(Color.CYAN);
-        g.drawString("Pts: " + Math.round(jugadorPTS), x - 2 , yPTS + 15);
-        
-        
+        g.drawString("Pts: " + Math.round(jugadorPTS), x - 2 , yPTS + 15);        
     }
     
-    
+    /**
+     * Dibuja una calavera con figuras básicas
+     * para avisar visualmente que el jugador se equivocó. Si {@code mostrar}
+     * es {@code false}, no dibuja nada.
+     * 
+     * La calavera se compone de un cráneo y mandíbula blancos, dos ojos y una
+     * nariz negros, y tres líneas que simulan los dientes.
+     *
+     * @param g       contexto gráfico sobre el que se dibuja
+     * @param mostrar {@code true} para dibujar la calavera, {@code false} para omitirla
+     * @param x       coordenada X de la esquina superior izquierda de la calavera
+     * @param y       coordenada Y de la esquina superior izquierda de la calavera
+     * @see CombatBarraJugador#isMostrarCalavera()
+     */
     public void dibujarCalavera(Graphics g, boolean mostrar, int x, int y){
         if (!mostrar) {
             return;
@@ -123,7 +187,21 @@ public class CombatHUD {
         g.drawLine(x + 21, y + 35, x + 21, y + 40);
     }
 
-
+     /**
+     * Dibuja la secuencia de teclas que el jugador debe presionar, una casilla
+     * por tecla, separadas 65 píxeles horizontalmente.
+     * 
+     * El color de cada casilla indica el progreso:
+     * Verde: Tecla acertada.
+     * Blanco: Tecla que se debe presionar ahora.
+     * Gris claro: Teclas pendientes.
+     *
+     * @param g         contexto gráfico sobre el que se dibuja
+     * @param secuencia códigos de tecla ({@link KeyEvent}) de la secuencia actual
+     * @param progreso  índice de la tecla que toca presionar (las anteriores ya se acertaron)
+     * @param startX    coordenada X de la primera casilla
+     * @param startY    coordenada Y de las casillas
+     */
     private void dibujarSecuenciaTeclas(Graphics g, ArrayList<Integer> secuencia, int progreso, int startX, int startY) {
         g.setFont(this.fuenteTeclas);
         for (int i = 0; i < secuencia.size(); i++) {
@@ -140,11 +218,17 @@ public class CombatHUD {
             g.fillRoundRect(posX, startY, 55, 55, 10, 10);
             g.setColor(Color.BLACK);
             g.drawRoundRect(posX, startY, 55, 55, 10, 10);
-            g.drawString(obtenerSimboloTecla(secuencia.get(i)), posX + 19, startY + 36); 
-            
+            g.drawString(obtenerSimboloTecla(secuencia.get(i)), posX + 19, startY + 36);  
         } // fin de for
     }
 
+    /**
+     * Convierte el código de una tecla en el símbolo que se muestra dentro de
+     * la casilla.
+     *
+     * @param keyCode código de la tecla ({@link KeyEvent#VK_W}, {@link KeyEvent#VK_UP}, etc.)
+     * @return "W", "A", "D", "↑", "←" o "→" según la tecla; "?" si la tecla no es reconocida
+     */
     private String obtenerSimboloTecla(int keyCode) {
         switch (keyCode) {
             case KeyEvent.VK_W:

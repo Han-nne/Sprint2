@@ -1,2 +1,2 @@
-Johan ; src\assets\bandera_Johan.jpg ; 1000.0
-Keithy ; src\assets\bandera_Keithy.jpg ; 1000.0
+Johan ; src\assets\bandera_Johan.jpg ; 4950.0
+Keithy ; src\assets\bandera_Keithy.jpg ; 9290.0
