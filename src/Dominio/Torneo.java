@@ -4,6 +4,8 @@
  */
 package Dominio;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -34,7 +36,15 @@ import java.util.List;
  * @see DibujarMarcador
  */
 public class Torneo {
+    /** puntaje inicial para el torneo */
+    public static final double PUNTAJE_INICIAL = 1000;
 
+    /** Tiempo acumulado de juego activo del torneo, en segundos. */
+    private double tiempoTorneoSegundos = 0.0;
+    
+    /** Marca de tiempo del último ciclo de actualización, en nanosegundos. */
+    private long ultimoTickTiempo = 0L;
+    
     /** Posición de {@link DonutRace} en la secuencia de minijuegos. */
     private static final int JUEGO_DONUT_RACE = 0;
 
@@ -102,6 +112,7 @@ public class Torneo {
     public Torneo(Tripulacion tripulacion1, Tripulacion tripulacion2, List<ConfiguracionGeneral> configuraciones) throws IOException {
         this.tripulacion1 = tripulacion1;
         this.tripulacion2 = tripulacion2;
+        iniciarPuntajes();
         this.configuraciones = List.copyOf(configuraciones);
         this.dibujarBandera = new DibujarBandera(tripulacion1, tripulacion2);
         this.dibujarMarcador = new DibujarMarcador(tripulacion1, tripulacion2);
@@ -141,6 +152,14 @@ public class Torneo {
         this.juegoActual = nuevoJuego;
         this.indiceJuego = indice;
     }
+    
+    /**
+     * inicia el puntaje de las tripulaciones siempre en 1000 
+     */
+    private void iniciarPuntajes() {
+    tripulacion1.setPuntaje(PUNTAJE_INICIAL);
+    tripulacion2.setPuntaje(PUNTAJE_INICIAL);
+}
 
     /**
      * Registra el resultado del minijuego que acaba de terminar: suma el punto al
@@ -161,7 +180,7 @@ public class Torneo {
 
     /**
      * Cierra la pantalla de resultado y avanza al siguiente minijuego, o termina
-     * el torneo si ya se disputaron todos.
+     * el torneo, actualiza el mejor tiempo de cada tripulación y suma una victoria al ganador, si ya se disputaron todos.
      *
      * @throws IOException si ocurre un error al cargar los recursos del siguiente minijuego
      */
@@ -171,10 +190,26 @@ public class Torneo {
         if (indiceJuego + 1 < configuraciones.size()) {
             iniciarJuego(indiceJuego + 1);
         } else {
+             tripulacion1.setMejorTiempo(tiempoTorneoSegundos);
+             tripulacion2.setMejorTiempo(tiempoTorneoSegundos);
+             incrementarVictorias(puntos1, puntos2);
             this.finalizado = true;
         }
     }
-
+    
+    /**
+     * Suma una victoria a la tripulación ganadora del torneo.
+     * @param puntosJugador1 cantidad de juegos ganador del jugador 1 durante el torneo.
+     * @param puntosJugador2 cantidad de juegos ganador del jugador 2 durante el torneo.
+     */
+    private void incrementarVictorias (int puntosJugador1, int puntosJugador2){
+        if(puntosJugador1 > puntosJugador2){
+            tripulacion1.setCantidadVictorias(tripulacion1.getCantidadVictorias() + 1);
+        } else{
+            tripulacion2.setCantidadVictorias(tripulacion2.getCantidadVictorias() + 1);
+        }
+    }
+    
     /**
      * Actualiza el minijuego actual. Cuando termina, muestra el resultado y espera
      * a que se presione la barra espaciadora para avanzar al siguiente minijuego.
@@ -182,6 +217,14 @@ public class Torneo {
      * @throws IOException si ocurre un error al cargar los recursos del siguiente minijuego
      */
     public void actualizarJuego() throws IOException {
+        long tiempoActual = System.nanoTime();
+        double deltaSegundos = 0.0;
+        if(ultimoTickTiempo != 0L){
+            deltaSegundos = (tiempoActual - ultimoTickTiempo)/ 1_000_000_000.0;
+        }
+        ultimoTickTiempo = tiempoActual;
+        
+        
         if (finalizado) {
             return;
         }
@@ -191,6 +234,9 @@ public class Torneo {
             }
             return;
         }
+        
+        if(!juegoActual.haTerminado()) tiempoTorneoSegundos += deltaSegundos;
+        
         juegoActual.actualizar();
         if (juegoActual.haTerminado()) {
             registrarResultado();
@@ -199,13 +245,14 @@ public class Torneo {
 
     /**
      * Dibuja el minijuego actual y, encima, las banderas y nombres de las
-     * tripulaciones. Si hay una pantalla de resultado activa, la dibuja encima de todo.
+     * tripulaciones, y el cronómetro del torneo. Si hay una pantalla de resultado activa, la dibuja encima de todo.
      *
      * @param g contexto gráfico sobre el cual dibujar
      */
     public void dibujar(Graphics g) {
         juegoActual.dibujar(g);
         dibujarBandera.dibujar(g);
+        dibujarCronometro(g);
         if (mostrandoResultado) {
             boolean esUltimo = indiceJuego + 1 >= configuraciones.size();
             String siguiente = esUltimo ? null : NOMBRES_JUEGOS[indiceJuego + 1];
@@ -214,6 +261,38 @@ public class Torneo {
         }
     }
 
+    /**
+     * Dibuja un recuadro semitransparente con el tiempo transcurrido del torneo.
+     * @param g contexto gráfico en el cual se dibuja.
+     */
+    private void dibujarCronometro(Graphics g){
+        int xUbicacionCronometro = 200;
+        int yUbicacionCronometro = 12;
+        int anchoCronometro = 145;
+        int altoCronometro = 24;
+        
+        
+        g.setColor(new Color(0, 0, 0, 140));
+        g.fillRoundRect(xUbicacionCronometro, yUbicacionCronometro, anchoCronometro, altoCronometro, 8, 8);
+        
+        g.setColor(Color.CYAN);
+        g.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        g.drawString(formatearTiempo(tiempoTorneoSegundos), xUbicacionCronometro + 10, yUbicacionCronometro + 16);
+    }
+    
+    /**
+     * Genera una cadena de texto con el tiempo del torneo .
+     * @param segundosTotales tiempo transcurrido del torneo.
+     * @return Una cadena formateada de la siguiente manera: "Tiempo: minutos:segundos"
+     */
+    private String formatearTiempo (double segundosTotales){
+        int totalSeg = (int) Math.max(0, segundosTotales);
+        int minutos = totalSeg / 60;
+        int segundos = totalSeg % 60;
+        return String.format("Tiempo: %02d:%02d", minutos, segundos);
+        
+    }
+    
     /**
      * Envía una tecla presionada al minijuego actual. Mientras se muestra la
      * pantalla de resultado, la barra espaciadora indica que se desea continuar y
