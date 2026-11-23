@@ -170,11 +170,9 @@ public class Torneo {
         if (ganadorUltimoJuego == tripulacion1) {
             puntos1++;
             tripulacion1.ajustarPuntaje(750);
-            tripulacion1.setCantidadVictorias(tripulacion1.getCantidadVictorias() + 1);
         } else if (ganadorUltimoJuego == tripulacion2) {
             puntos2++;
             tripulacion2.ajustarPuntaje(750);
-            tripulacion2.setCantidadVictorias(tripulacion2.getCantidadVictorias() + 1);
         }
         mostrandoResultado = true;
         continuarPendiente = false;
@@ -194,10 +192,23 @@ public class Torneo {
         } else {
              tripulacion1.setMejorTiempo(tiempoTorneoSegundos);
              tripulacion2.setMejorTiempo(tiempoTorneoSegundos);
+             incrementarVictorias(puntos1, puntos2);
             this.finalizado = true;
         }
     }
 
+    /**
+     * Actualiza la cantidad de torneo ganados de una tripulación
+     * @param puntosJugador1 puntos obtenidos por el jugador 1.
+     * @param puntosJugador2 puntos obtenidos por el jugador 2.
+     */
+    private void incrementarVictorias(int puntosJugador1, int puntosJugador2){
+        if(puntosJugador1 > puntosJugador2){
+            tripulacion1.setCantidadVictorias(tripulacion1.getCantidadVictorias() + 1);
+        } else{
+            tripulacion2.setCantidadVictorias(tripulacion2.getCantidadVictorias() + 1);
+        }
+    }
     /**
      * Actualiza el minijuego actual. Cuando termina, muestra el resultado y espera
      * a que se presione la barra espaciadora para avanzar al siguiente minijuego.
