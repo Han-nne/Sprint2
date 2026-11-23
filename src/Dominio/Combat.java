@@ -48,7 +48,6 @@ import utility.TileSetManagerCombat;
  * 
  * @author Keithy Carrillo
  * 
- * @version 1.1
  * @see CombatBarraJugador
  * @see CombatHUD
  * @see Juego
@@ -80,15 +79,13 @@ public class Combat implements Juego {
     private int turnoActual;
     /** {@code true} cuando la ronda ya terminó y se conoce el resultado. */
     private boolean partidaTerminadaCombat;
-    /** Texto con el resultado de la ronda (ganador o empate). */
-    private String mensajeResultado;
     /** Temporizador de Swing que se ejecuta cada 1000 ms para descontar 
      *  un segundo del reloj. */
     private Timer temporizadorCombat;
 
     /**
-     * Crea un combate entre dos tripulaciones, carga la imagen de fondo e
-     * inicia la partida (jugadores, reloj y temporizador).
+     * Crea un combate entre dos tripulaciones, carga la imagen de fondo,
+     * crea las barras de ambos jugadores e inicia la partida.
      *
      * @param tripulacion1        primera tripulación (jugador 1)
      * @param tripulacion2        segunda tripulación (jugador 2)
@@ -101,21 +98,7 @@ public class Combat implements Juego {
         this.configuracionCombat = configuracionCombat;
         this.hudCombat = new CombatHUD();
         this.fondo = TileSetManagerCombat.cargarImagenFondoCombat();
-        iniciarJuego();
-    }
-
-     /**
-     * Prepara una partida nueva: define las teclas de cada jugador, crea sus
-     * barras de poder, reinicia el estado de la ronda y arranca el temporizador.
-     * 
-     * El temporizador se ejecuta cada segundo mientras la partida no haya
-     * terminado: actualiza el tiempo de las calaveras de ambos jugadores y
-     * descuenta un segundo del reloj. Al llegar a 0 se detiene y finaliza la
-     * ronda con {@link #finalizarRondaPorJugador()}. Si ya existía un
-     * temporizador previo, se detiene antes de crear el nuevo.
-     * 
-     */    
-    private void iniciarJuego() {
+        
         ArrayList<Integer> controlesJugador1 = new ArrayList<>();
         controlesJugador1.add(KeyEvent.VK_W);
         controlesJugador1.add(KeyEvent.VK_A);
@@ -132,11 +115,25 @@ public class Combat implements Juego {
         this.jugadorCombat1 = new CombatBarraJugador(this.tripulacion1, valorInicial, controlesJugador1, longitudSecuencia);
         this.jugadorCombat2 = new CombatBarraJugador(this.tripulacion2, valorInicial, controlesJugador2, longitudSecuencia);
         
+        iniciarJuego();
+    }
+
+     /**
+     * Prepara una partida nueva.
+     * 
+     * El temporizador se ejecuta cada segundo mientras la partida no haya
+     * terminado: actualiza el tiempo de las calaveras de ambos jugadores y
+     * descuenta un segundo del reloj. Al llegar a 0 se detiene y finaliza la
+     * ronda con {@link #finalizarRondaPorJugador()}. Si ya existía un
+     * temporizador previo, se detiene antes de crear el nuevo.
+     * 
+     */    
+    private void iniciarJuego() {
+        
         this.ganador = null;
         this.turnoActual = 1;
         this.tiempoRestanteCombat = 45;
         this.partidaTerminadaCombat = false;
-        this.mensajeResultado = "";
         
         if (this.temporizadorCombat != null) {
             this.temporizadorCombat.stop();
@@ -254,7 +251,7 @@ public class Combat implements Juego {
      * 
      * Se llama cuando se acaba el tiempo o cuando la barra de un jugador llega a 0.
      */
-    public void finalizarRondaPorJugador(){
+    private void finalizarRondaPorJugador(){
         this.partidaTerminadaCombat = true;
         
         if (this.temporizadorCombat != null) {
@@ -264,16 +261,6 @@ public class Combat implements Juego {
         int poderJugador1 = this.jugadorCombat1.getBarraPoder();
         int poderJugador2 = this.jugadorCombat2.getBarraPoder();
         
-        if (poderJugador1 > poderJugador2) {
-            this.ganador = this.tripulacion1;
-            this.mensajeResultado = "El ganador es " + this.tripulacion1.getNombreTripulacion();
-        } else if (poderJugador2 > poderJugador1) {
-            this.ganador = this.tripulacion2;
-            this.mensajeResultado = "El ganador es " + this.tripulacion2.getNombreTripulacion();
-        } else {
-            this.ganador = null;
-            this.mensajeResultado = "Empataron con " + poderJugador1 + " puntos";
-        }
     }
     
     /**
@@ -300,13 +287,13 @@ public class Combat implements Juego {
         
         
         if (this.jugadorCombat1!= null && this.jugadorCombat2!= null) {
-            this.hudCombat.dibujar(g, 
+            this.hudCombat.dibujar(g,
                     this.jugadorCombat1, this.jugadorCombat2,
                     this.tripulacion1.getNombreTripulacion(),
                     this.tripulacion2.getNombreTripulacion(),
-                    this.tiempoRestanteCombat, this.partidaTerminadaCombat,
-                    this.mensajeResultado,
-                    this.tripulacion1.getPuntaje(), this.tripulacion2.getPuntaje());
+                    this.tiempoRestanteCombat,
+                    this.tripulacion1.getPuntaje(),
+                    this.tripulacion2.getPuntaje());
         }
         
     }
@@ -322,15 +309,143 @@ public class Combat implements Juego {
         return this.partidaTerminadaCombat;
     }
 
-     /**
+    
+    /**Getter y setters*/
+    /**
+     * Obtiene la tripulación del jugador 1.
+     *
+     * @return tripulación 1
+     */
+    public Tripulacion getTripulacion1() {
+        return tripulacion1;
+    }
+    /**
+     * Obtiene la tripulación del jugador 2.
+     *
+     * @return tripulación 2
+     */
+    public Tripulacion getTripulacion2() {
+        return tripulacion2;
+    }
+    /**
+     * Obtiene la configuración activa del combate.
+     *
+     * @return configuración del combate
+     */
+    public ConfiguracionCombat getConfiguracionCombat() {
+        return configuracionCombat;
+    }
+    /**
+     * Obtiene la imagen de fondo del combate.
+     *
+     * @return imagen de fondo
+     */
+    public BufferedImage getFondo() {
+        return fondo;
+    }
+    /**
+     * Obtiene el componente encargado de dibujar el HUD.
+     *
+     * @return instancia de {@link CombatHUD}
+     */
+    public CombatHUD getHudCombat() {
+        return hudCombat;
+    }
+    /**
+     * Obtiene el estado de la barra de poder del jugador 1.
+     *
+     * @return barra del jugador 1
+     */
+    public CombatBarraJugador getJugadorCombat1() {
+        return jugadorCombat1;
+    }
+    /**
+     * Obtiene el estado de la barra de poder del jugador 2.
+     *
+     * @return barra del jugador 2
+     */
+    public CombatBarraJugador getJugadorCombat2() {
+        return jugadorCombat2;
+    }
+    /**
      * Obtiene la tripulación ganadora del combate.
      *
-     * @return la tripulación ganadora, o {@code null} si el combate aún no
-     *         termina o terminó en empate
+     * @return la tripulación ganadora, o {@code null} si aún no termina o hubo empate
      */
     @Override
     public Tripulacion getGanador() {
         return this.ganador;
     }
-    
+    /**
+     * Establece la tripulación ganadora del combate.
+     *
+     * @param ganador tripulación ganadora o {@code null} en caso de empate
+     */
+    public void setGanador(Tripulacion ganador) {
+        this.ganador = ganador;
+    }
+    /**
+     * Obtiene los segundos restantes del reloj de combate.
+     *
+     * @return segundos restantes
+     */
+    public int getTiempoRestanteCombat() {
+        return tiempoRestanteCombat;
+    }
+    /**
+     * Establece los segundos restantes del reloj de combate.
+     *
+     * @param tiempoRestanteCombat segundos restantes
+     */
+    public void setTiempoRestanteCombat(int tiempoRestanteCombat) {
+        this.tiempoRestanteCombat = tiempoRestanteCombat;
+    }
+    /**
+     * Obtiene el número de jugador que tiene el turno actual en modo por turnos.
+     *
+     * @return 1 para jugador 1 o 2 para jugador 2
+     */
+    public int getTurnoActual() {
+        return turnoActual;
+    }
+    /**
+     * Establece el jugador que tiene el turno actual.
+     *
+     * @param turnoActual 1 para jugador 1 o 2 para jugador 2
+     */
+    public void setTurnoActual(int turnoActual) {
+        this.turnoActual = turnoActual;
+    }
+    /**
+     * Indica si la ronda del combate ya finalizó.
+     *
+     * @return {@code true} si la ronda terminó
+     */
+    public boolean isPartidaTerminadaCombat() {
+        return partidaTerminadaCombat;
+    }
+    /**
+     * Establece si la ronda del combate ya finalizó.
+     *
+     * @param partidaTerminadaCombat nuevo estado de finalización
+     */
+    public void setPartidaTerminadaCombat(boolean partidaTerminadaCombat) {
+        this.partidaTerminadaCombat = partidaTerminadaCombat;
+    }
+    /**
+     * Obtiene el temporizador de Swing del combate.
+     *
+     * @return temporizador del combate
+     */
+    public Timer getTemporizadorCombat() {
+        return temporizadorCombat;
+    }
+    /**
+     * Establece el temporizador de Swing del combate.
+     *
+     * @param temporizadorCombat nuevo temporizador
+     */
+    public void setTemporizadorCombat(Timer temporizadorCombat) {
+        this.temporizadorCombat = temporizadorCombat;
+    }   
 }

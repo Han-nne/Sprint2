@@ -154,6 +154,11 @@ public class JIFRegistroTripulacion extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "Error: El nombre no puede estar vacío");
             return;
         }
+        
+        if (nombre.contains(";")) {
+        JOptionPane.showMessageDialog(this, "Error: El nombre no puede contener ';' ");
+        return;
+        }
  
         try {
             if (tripulacionNegocios.existeTripulacion(nombre)) {

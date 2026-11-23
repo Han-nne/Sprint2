@@ -18,12 +18,10 @@ import java.util.ArrayList;
  * jugadores ({@link CombatBarraJugador}), el tiempo restante y los puntajes
  * de cada tripulación, y los pinta sobre un {@link Graphics}.
  *
- * @version 1.1
+ * @author Keithy Carrillo
+ * 
  * @see Combat
  * @see CombatBarraJugador
- * 
- * 
- * @author Keithy Carrillo
  */
 public class CombatHUD {
     
@@ -33,10 +31,6 @@ public class CombatHUD {
     private final Font fuenteTexto;
     /** Fuente usada para el símbolo dentro de cada tecla de la secuencia. */
     private final Font fuenteTeclas;
-    /** Fuente usada para el texto del puntaje de la tripulación. */
-    private static final Font FUENTE_PUNTAJE = new Font("Segoe UI", Font.BOLD, 12);
-   /** Color semitransparente del recuadro que se dibuja detrás del puntaje. */
-    private static final Color COLOR_FONDO_PUNTAJE = new Color(0,0,0, 120);
     
    /** Crea el HUD e inicializa las tres fuentes que se usarán al dibujar.*/
     public CombatHUD() {
@@ -61,13 +55,10 @@ public class CombatHUD {
      * @param nombreJugador2  nombre que se muestra en el panel del jugador 2
      * @param tiempoRestante  segundos restantes que se muestran en el reloj
      * @param terminado       indica si la partida terminó (actualmente no se usa al dibujar)
-     * @param mensajeGanador  mensaje del resultado (actualmente no se usa al dibujar)
      * @param jugador1PTS     puntaje de la tripulación del jugador 1
      * @param jugador2PTS     puntaje de la tripulación del jugador 2
      */
-    public void dibujar(Graphics g, CombatBarraJugador jugador1, CombatBarraJugador jugador2, String nombreJugador1, 
-            String nombreJugador2, int tiempoRestante, boolean terminado, String mensajeGanador,
-            double jugador1PTS, double jugador2PTS){
+    public void dibujar(Graphics g, CombatBarraJugador jugador1, CombatBarraJugador jugador2, String nombreJugador1, String nombreJugador2, int tiempoRestante, double jugador1PTS, double jugador2PTS){
         
         Rectangle limites = g.getClipBounds();
         int anchoPantalla = (limites != null && limites.width > 0) ? limites.width : 1280;
@@ -147,10 +138,11 @@ public class CombatHUD {
         dibujarSecuenciaTeclas(g, jugador.getSecuenciaActual(), jugador.getIndiceProgreso(), x, y + 115);
         
         int yPTS = y + 176;
-        g.setColor(COLOR_FONDO_PUNTAJE);
+        Color colorFondoPuntaje = new Color(0, 0, 0, 120);
+        Font fuentePuntaje = new Font("Segoe UI", Font.BOLD, 12);
+        g.setColor(colorFondoPuntaje);
         g.fillRoundRect(x - 10, yPTS, 150, 22, 8, 8);
-        g.setFont(FUENTE_PUNTAJE);
-        g.setColor(Color.CYAN);
+        g.setFont(fuentePuntaje);
         g.drawString("Pts: " + Math.round(jugadorPTS), x - 2 , yPTS + 15);        
     }
     
@@ -168,7 +160,7 @@ public class CombatHUD {
      * @param y       coordenada Y de la esquina superior izquierda de la calavera
      * @see CombatBarraJugador#isMostrarCalavera()
      */
-    public void dibujarCalavera(Graphics g, boolean mostrar, int x, int y){
+    private void dibujarCalavera(Graphics g, boolean mostrar, int x, int y){
         if (!mostrar) {
             return;
         }
@@ -246,5 +238,31 @@ public class CombatHUD {
             default:
                 return "?";
         }
+    }
+    
+    /**Getter y setters*/
+     /**
+     * Obtiene la fuente utilizada para el reloj de cuenta regresiva.
+     *
+     * @return fuente del título
+     */
+    public Font getFuenteTitulo() {
+        return fuenteTitulo;
+    }
+    /**
+     * Obtiene la fuente utilizada para los textos de barra de poder y nombres.
+     *
+     * @return fuente de texto
+     */
+    public Font getFuenteTexto() {
+        return fuenteTexto;
+    }
+    /**
+     * Obtiene la fuente utilizada para los símbolos de las teclas.
+     *
+     * @return fuente de las teclas
+     */
+    public Font getFuenteTeclas() {
+        return fuenteTeclas;
     }
 }
