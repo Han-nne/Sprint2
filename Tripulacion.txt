@@ -1,3 +1,3 @@
-Johan ; src\assets\bandera_Johan.jpg ; 2535.0 ; 187.62579860000005 ; 1
-Keithy ; src\assets\bandera_Keithy.jpg ; 4665.0 ; 187.62579860000005 ; 2
+Johan ; src\assets\bandera_Johan.jpg ; 3205.0 ; 136.2758994999999 ; 2
+Keithy ; src\assets\bandera_Keithy.jpg ; 4665.0 ; 136.2758994999999 ; 3
 Josh ; src\assets\bandera_Josh.jpg ; 0.0 ; 840.0 ; 0

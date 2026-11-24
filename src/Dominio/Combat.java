@@ -66,9 +66,9 @@ public class Combat implements Juego {
     private final CombatHUD hudCombat;
     
     /** Estado de la barra de poder y la secuencia del jugador 1. */
-    private CombatBarraJugador jugadorCombat1;
+    private final CombatBarraJugador jugadorCombat1;
     /** Estado de la barra de poder y la secuencia del jugador 2. */
-    private CombatBarraJugador jugadorCombat2;
+    private final CombatBarraJugador jugadorCombat2;
     /** Tripulación ganadora de la ronda; {@code null} si aún no termina o 
      *  si hubo empate. */
     private Tripulacion ganador;
@@ -252,15 +252,22 @@ public class Combat implements Juego {
      * Se llama cuando se acaba el tiempo o cuando la barra de un jugador llega a 0.
      */
     private void finalizarRondaPorJugador(){
-        this.partidaTerminadaCombat = true;
-        
+       this.partidaTerminadaCombat = true;
+
         if (this.temporizadorCombat != null) {
             this.temporizadorCombat.stop();
         }
-        
+
         int poderJugador1 = this.jugadorCombat1.getBarraPoder();
         int poderJugador2 = this.jugadorCombat2.getBarraPoder();
-        
+
+        if (poderJugador1 > poderJugador2) {
+            this.ganador = this.tripulacion1;
+        } else if (poderJugador2 > poderJugador1) {
+            this.ganador = this.tripulacion2;
+        } else {
+            this.ganador = null;
+        }
     }
     
     /**
